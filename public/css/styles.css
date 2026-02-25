@@ -334,14 +334,14 @@ main.container .link { color: var(--text-primary); }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
   border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 
 .sticky-note-title {
   font-weight: bold;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -367,8 +367,8 @@ main.container .link { color: var(--text-primary); }
 }
 
 .sticky-note-content {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  line-height: 1.3;
   color: #ffffff;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -381,8 +381,8 @@ main.container .link { color: var(--text-primary); }
   border: none;
   color: #ffffff;
   font-family: 'Courier New', monospace;
-  font-size: 0.85rem;
-  line-height: 1.4;
+  font-size: 0.8rem;
+  line-height: 1.3;
   resize: none;
   outline: none;
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
@@ -393,19 +393,19 @@ main.container .link { color: var(--text-primary); }
 }
 
 .sticky-note-text p {
-  margin: 0 0 8px 0;
-  line-height: 1.35;
-  font-size: 0.85rem;
+  margin: 0 0 4px 0;
+  line-height: 1.25;
+  font-size: 0.8rem;
 }
 
 .sticky-note-text p:last-child {
   margin-bottom: 0;
   text-align: center;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .sticky-me-text {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: bold;
   font-family: 'Playfair Display', serif;
   font-style: italic;
