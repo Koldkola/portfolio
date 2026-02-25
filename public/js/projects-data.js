@@ -29,7 +29,7 @@ const projectsMedia = {
   goodair: {
     id: 'goodair',
     thumbnail: '/assets/projects/goodair-thumb.jpg',
-    video: 'C:\Users\User\Downloads\VSCODE\portfolio\public\assets\Campdb-demo.mp4'
+    video: 'public/assets/Campdb-demo.mp4'
   },
   
   flowerml: {

@@ -39,6 +39,7 @@
           <h3>Camp Database — Employee Dashboard</h3>
           <p>Secure login, PHP session management, CRUD operations and data sanitization for employee management and reporting.</p>
           <a class="link" href="/projects.html#campdb" data-project-id="campdb">Details →</a>
+          <a class="link" href="https://github.com/Koldkola/Camp-database" target="_blank" rel="noopener">Repo →</a>
         </div>
       </article>
 
@@ -48,6 +49,7 @@
           <h3>Good Air Is Fair — KeanuHackathon</h3>
           <p>Air quality monitoring web app combining multiple data points, JSON handling, and responsive visualizations.</p>
           <a class="link" href="/projects.html#goodair" data-project-id="goodair">Details →</a>
+          <a class="link" href="https://github.com/Koldkola/Kean-Hackathon" target="_blank" rel="noopener">Repo →</a>
         </div>
       </article>
       
@@ -103,6 +105,7 @@
         <li>Implemented security measures such as session validation and data sanitization to prevent unauthorized access and maintain data integrity.</li>
         <li>Enhanced user experience and improved site responsiveness by incorporating meta tags and scalable styling.</li>
       </ul>
+      <p><a class="link" href="https://github.com/Koldkola/Camp-database" target="_blank" rel="noopener">Repo →</a></p>
       
       <h3 style="margin-top: 24px;">Project Gallery</h3>
       <div class="media-gallery" data-project="campdb"></div>
@@ -121,6 +124,7 @@
         <li>Enhanced user activity by combining multiple data points into visualizations with JSON handling and real-time error checking.</li>
         <li>Performed code reviews, UI/UX testing, and cross-browser compatibility checks to ensure high-quality deliverables.</li>
       </ul>
+      <p><a class="link" href="https://github.com/Koldkola/Kean-Hackathon" target="_blank" rel="noopener">Repo →</a></p>
       
       <h3 style="margin-top: 24px;">Project Gallery</h3>
       <div class="media-gallery" data-project="goodair"></div>
@@ -199,19 +203,30 @@
       document.querySelectorAll('.media-gallery[data-project]').forEach(gallery => {
         const projectId = gallery.dataset.project;
         const project = projectsMedia[projectId];
+        const galleryHeading = gallery.previousElementSibling;
         
-        if (project && project.screenshots) {
+        if (project && Array.isArray(project.screenshots) && project.screenshots.length > 0) {
           gallery.innerHTML = project.screenshots
             .map(src => `<img src="${src}" alt="${projectId} screenshot" class="gallery-img" />`)
             .join('');
+
+          if (galleryHeading && galleryHeading.tagName === 'H3') {
+            galleryHeading.style.display = '';
+          }
+          gallery.style.display = '';
           
           // Add click handlers for lightbox
-          gallery.querySelectorAll('.gallery-img').forEach((img, index) => {
+          gallery.querySelectorAll('.gallery-img').forEach((img) => {
             img.addEventListener('click', () => {
               currentImageIndex = allGalleryImages.indexOf(img.src);
               openImageModal(img.src);
             });
           });
+        } else {
+          if (galleryHeading && galleryHeading.tagName === 'H3') {
+            galleryHeading.style.display = 'none';
+          }
+          gallery.style.display = 'none';
         }
       });
       
@@ -221,12 +236,22 @@
       document.querySelectorAll('.video-container[data-project]').forEach(container => {
         const projectId = container.dataset.project;
         const project = projectsMedia[projectId];
+        const videoHeading = container.previousElementSibling;
         
         if (project && project.video) {
           container.innerHTML = `<video width="100%" height="auto" controls style="border-radius: 8px;">
             <source src="${project.video}" type="video/mp4">
             Your browser does not support the video tag.
           </video>`;
+          if (videoHeading && videoHeading.tagName === 'H3') {
+            videoHeading.style.display = '';
+          }
+          container.style.display = '';
+        } else {
+          if (videoHeading && videoHeading.tagName === 'H3') {
+            videoHeading.style.display = 'none';
+          }
+          container.style.display = 'none';
         }
       });
     }
