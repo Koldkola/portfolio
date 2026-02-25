@@ -14,11 +14,9 @@
 const projectsMedia = {
   ai4all: {
     id: 'ai4all',
-    thumbnail: '/assets/projects/ai4all-thumb.jpg',
+    thumbnail: 'https://media.licdn.com/dms/image/v2/D4E2DAQGtGLwEfDl1NA/profile-treasury-document-cover-images_480/B4EZimbsreGoBI-/0/1755138938323?e=1772647200&v=beta&t=j4QiQJl4ps1enLJZpQqxd4OsN9tVLdmcv_z0nELUQQA',
     screenshots: [
-      '/assets/projects/ai4all-screenshot1.jpg',
-      '/assets/projects/ai4all-screenshot2.jpg',
-      '/assets/projects/ai4all-screenshot3.jpg'
+      '/assets/ai4all-Poster.jpg'
     ],
     video: '/assets/projects/ai4all-demo.mp4'
   },
