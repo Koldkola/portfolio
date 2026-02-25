@@ -191,8 +191,8 @@ main.container .link { color: var(--text-primary); }
 .weekly-grid.fade-out { opacity: 0; transform: translateY(10px); }
 
 /* Weekly Descriptions Grid */
-.weekly-descriptions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px; margin-top: 32px; width: 100%; }
-.weekly-desc-card { padding: 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s var(--ease-out-expo); min-height: 200px; }
+.weekly-descriptions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 48px; margin-top: 32px; width: 100%; }
+.weekly-desc-card { padding: 28px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s var(--ease-out-expo); min-height: 250px; aspect-ratio: 1 / 1; display: flex; flex-direction: column; }
 .weekly-desc-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-3px); }
 .weekly-desc-card .curation-tag { display: block; margin-bottom: 8px; }
 .weekly-desc-card h4 { font-family: var(--font-serif); font-size: 1.1rem; color: #fff; margin-bottom: 8px; line-height: 1.3; }
