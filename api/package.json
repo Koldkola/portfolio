@@ -1,0 +1,32 @@
+{
+  "name": "colorful-portfolio-ai",
+  "version": "1.0.0",
+  "description": "A colorful portfolio site with an AI chatbot",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "vercel-build": "echo 'Building for Vercel'",
+    "vercel": "vercel --prod"
+  },
+  "keywords": [
+    "portfolio",
+    "ai",
+    "chatbot",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

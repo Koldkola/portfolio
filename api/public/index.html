@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Colorful Portfolio</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="/">MyPortfolio</a>
+      <ul class="nav-links">
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/resume.html">Resume</a></li>
+      </ul>
+      <button id="chat-toggle" class="chat-btn">Chat 🤖</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-headshot">
+        <img src="/assets/headshot.jpg" alt="Kenechi Obiozor" class="headshot" />
+      </div>
+      <h1>Kenechi Obiozor </h1>
+      <h2>Information Technology & Cybersecurity Student</h2>
+      <p class="sub">Every project I take on is rooted in thoughtful design, resilient code</p>
+       <p class="sub">and a drive to make technology more accessible and meaningful.</p>
+      <div class="hero-cta">
+        <a class="btn" href="/projects.html">See Projects</a>
+        <a class="btn ghost" href="/contact.html">Work with me</a>
+      </div>
+    </section>
+
+    <section class="featured">
+      <h2>Featured Work</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="card-art" style="background:linear-gradient(135deg,#0072ff,#00c6ff);">AI</div>
+          <h3>AI4ALL — Water & Sanitation</h3>
+          <p>Time-series forecasting and analysis of urban water and sanitation access; visualizations and policy insights.</p>
+          <a href="/projects.html#ai4all" class="link">View project →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-art" style="background:linear-gradient(135deg,#ff7a18,#af002d);">DB</div>
+          <h3>Camp Database — Employee Dashboard</h3>
+          <p>Secure dashboard with login, CRUD, and administrative tools for employee management.</p>
+          <a href="/projects.html#campdb" class="link">View project →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-art" style="background:linear-gradient(135deg,#ffe259,#ffa751);">GA</div>
+          <h3>Good Air Is Fair — Air Quality App</h3>
+          <p>Air quality monitoring app combining multiple data sources with accessible visualizations.</p>
+          <a href="/projects.html#goodair" class="link">View project →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-art" style="background:linear-gradient(135deg,#9b59b6,#e91e63);">FM</div>
+          <h3>Flower Machine Learning</h3>
+          <p>Real-time flower classification using a live webcam and an interactive UI (≈70% accuracy).</p>
+          <a href="/projects.html#flowerml" class="link">View project →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="about">
+      
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Kenechi Obiozor  &amp; 2025 — <a href="/contact.html">Get in touch</a> • <a href="https://github.com/Koldkola" target="_blank" rel="noopener">GitHub</a> • <a href="https://www.linkedin.com/in/kenechi-obiozor-3ba523228/" target="_blank" rel="noopener">LinkedIn</a></p>
+  </footer>
+
+  <!-- Chat widget -->
+  <div id="chat-widget" class="chat-widget hidden">
+    <div class="chat-header">
+      <strong>Chat with me</strong>
+      <button id="chat-close">✕</button>
+    </div>
+    <div id="chat-log" class="chat-log"></div>
+    <form id="chat-form" class="chat-form">
+      <input id="chat-input" placeholder="Ask me about projects, contact, or tech" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script src="/js/chat.js"></script>
+</body>
+</html>

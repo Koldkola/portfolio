@@ -38,24 +38,10 @@ module.exports = async (req, res) => {
   }
 };
 
-
 function simpleBotReply(msg) {
   const lower = (msg || '').toLowerCase();
-
-  if (lower.includes('hello') || lower.includes('hi')) 
-    return "Hi! I'm a local helper bot. Ask me about the site or your projects.";
-
-  if (lower.includes('project')) 
-    return "I build web apps, interfaces, and small tools. Check the Projects page for examples.";
-
-  if (lower.includes('contact')) 
-    return "Use the Contact page or email me at: Kenechi596@example.com";
-
-  if (lower.includes('year')) 
-    return "It's 2025, and the tech world is evolving fast. Stay curious.";
-
-  if (lower.includes('who')) 
-    return "I'm Kenechi's helper bot—here to guide you through the portfolio and projects.";
-
-  return "I'm not sure how to respond to that yet. Try asking about projects, contact, or the year.";
+  if (lower.includes('hello') || lower.includes('hi')) return "Hi! I'm a local helper bot. Ask me about the site or your projects.";
+  if (lower.includes('project')) return "I build web apps, interfaces, and small tools. Check the Projects page for examples.";
+  if (lower.includes('contact')) return "Use the Contact page or email me at: Kenechi596@gmail.com";
+  return "Nice question! I don't have an OpenAI key configured, so I'm replying with a canned response. Provide OPENAI_API_KEY to enable full AI chat.";
 }
