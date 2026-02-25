@@ -313,14 +313,14 @@ main.container .link { color: var(--text-primary); }
   width: 240px;
   height: 240px;
   min-height: 240px;
-  padding: 20px;
+  padding: 12px;
   background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   border-radius: 4px;
   cursor: move;
   z-index: 1000;
   resize: both;
-  overflow: auto;
+  overflow: hidden;
   font-family: 'Courier New', monospace;
   color: #ffffff;
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
@@ -334,27 +334,27 @@ main.container .link { color: var(--text-primary); }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
-  padding-bottom: 4px;
+  margin-bottom: 6px;
+  padding-bottom: 3px;
   border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 
 .sticky-note-title {
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .sticky-note-close {
   background: none;
   border: none;
   color: #ffffff;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
   padding: 0;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -367,8 +367,8 @@ main.container .link { color: var(--text-primary); }
 }
 
 .sticky-note-content {
-  font-size: 0.85rem;
-  line-height: 1.3;
+  font-size: 0.7rem;
+  line-height: 1.2;
   color: #ffffff;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -381,8 +381,8 @@ main.container .link { color: var(--text-primary); }
   border: none;
   color: #ffffff;
   font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
-  line-height: 1.3;
+  font-size: 0.7rem;
+  line-height: 1.2;
   resize: none;
   outline: none;
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
@@ -393,19 +393,19 @@ main.container .link { color: var(--text-primary); }
 }
 
 .sticky-note-text p {
-  margin: 0 0 4px 0;
-  line-height: 1.25;
-  font-size: 0.8rem;
+  margin: 0 0 3px 0;
+  line-height: 1.2;
+  font-size: 0.7rem;
 }
 
 .sticky-note-text p:last-child {
   margin-bottom: 0;
   text-align: center;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .sticky-me-text {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   font-family: 'Playfair Display', serif;
   font-style: italic;
