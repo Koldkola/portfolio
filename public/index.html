@@ -61,8 +61,73 @@
     <p>© 2025 Kenechi Obiozor.</p>
   </footer>
 
+  <!-- Sticky Notes -->
+  <div class="sticky-note" id="sticky1" style="top: 120px; right: 30px;">
+    <div class="sticky-note-header">
+      <span class="sticky-note-title">Note 1</span>
+      <button class="sticky-note-close" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+    </div>
+    <div class="sticky-note-content">
+      <textarea placeholder="Write something...">Remember to check out the new projects!</textarea>
+    </div>
+  </div>
+
+  <div class="sticky-note" id="sticky2" style="top: 380px; right: 30px;">
+    <div class="sticky-note-header">
+      <span class="sticky-note-title">Note 2</span>
+      <button class="sticky-note-close" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+    </div>
+    <div class="sticky-note-content">
+      <textarea placeholder="Write something...">Weekly highlights are updated every Saturday!</textarea>
+    </div>
+  </div>
+
   <script src="/js/search-index.js"></script>
   <script src="/js/site-search.js"></script>
   <script src="/js/weekly.js"></script>
+  <script>
+    // Sticky note drag functionality
+    document.querySelectorAll('.sticky-note').forEach(note => {
+      let isDragging = false;
+      let currentX;
+      let currentY;
+      let initialX;
+      let initialY;
+      let xOffset = 0;
+      let yOffset = 0;
+
+      const header = note.querySelector('.sticky-note-header');
+      
+      header.addEventListener('mousedown', dragStart);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+
+      function dragStart(e) {
+        const rect = note.getBoundingClientRect();
+        initialX = e.clientX - rect.left;
+        initialY = e.clientY - rect.top;
+        
+        if (e.target === header || e.target.classList.contains('sticky-note-title')) {
+          isDragging = true;
+        }
+      }
+
+      function drag(e) {
+        if (isDragging) {
+          e.preventDefault();
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+
+          note.style.left = currentX + 'px';
+          note.style.top = currentY + 'px';
+          note.style.right = 'auto';
+        }
+      }
+
+      function dragEnd(e) {
+        isDragging = false;
+      }
+    });
+  </script>
 </body>
 </html>
