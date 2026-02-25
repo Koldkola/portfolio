@@ -3,53 +3,93 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kenechi Obiozor | Portfolio & Archive</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <title>Kenechi | Tech & Curations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
-  <div class="ambient-bg"></div>
+  <div class="ps5-ambient">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+    <div class="glow glow-3"></div>
+  </div>
 
-  <header class="site-header">
+  <header class="site-header glass-panel">
     <nav class="nav">
       <a class="logo" href="/">Kenechi.</a>
       <ul class="nav-links">
-        <li><a href="/projects.html"> Projects</a></li>
-        <li><a href="/archive.html">Archive</a></li>
+        <li><a href="#lab">The Lab</a></li>
+        <li><a href="#curations">Weekly Curations</a></li>
         <li><a href="/resume.html">Resume</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
-    <div class="site-search">
-      <input id="siteSearch" type="search" placeholder="Search my portfolio..." aria-label="Search my portfolio" />
-      <div id="siteSearchResults" class="site-search-results" role="listbox" aria-label="Search results"></div>
-    </div>
   </header>
 
   <main>
     <section class="hero">
       <div class="hero-content">
-        <p class="eyebrow">Creative Technologist / Wannabe Curator / Nerd of Sorts</p>
-                <p class="sub">A digital space in which im working on blending all of my interests in its diverse forms in order to create a page that screams <h1> <span class="italic-art">Me!</span></h1></p>
+        <p class="eyebrow">Technologist & Creative</p>
+        <h1>Engineering logic. <br> <span class="italic-art">Designing ambience.</span></h1>
+        <p class="sub">A digital space bridging robust cybersecurity and software development with an appreciation for abstract art, fashion, horror, and interactive media.</p>
         <div class="hero-cta">
-          <a class="btn primary" href="/projects.html">View Projects</a>
-          <a class="btn secondary" href="/archive.html">Explore my Archive</a>
+          <a class="btn primary glass-btn" href="#lab">View Tech Projects</a>
         </div>
       </div>
       <div class="hero-visual">
-        <div class="abstract-portrait">
+        <div class="abstract-portrait glass-panel">
           <img src="/assets/headshot.jpg" alt="Kenechi Obiozor" class="headshot" />
-          <div class="glitch-overlay"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="curations" class="weekly-section">
+      <div class="section-header interactive-header">
+        <h2>Weekly Wonder</h2>
+        <div class="week-controls glass-panel">
+          <button id="prev-btn" class="ctrl-btn">←</button>
+          <span id="week-label">Week 1</span>
+          <button id="next-btn" class="ctrl-btn">→</button>
+        </div>
+      </div>
+      
+      <div class="weekly-grid" id="weekly-grid">
+        </div>
+    </section>
+
+    <section id="lab" class="tech-section">
+      <div class="section-header">
+        <h2>The Lab</h2>
+        <p>Cybersecurity research, application development, and data pipelines.</p>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-card glass-panel ps5-hover">
+          <div class="tech-indicator"></div>
+          <h3>AI4ALL — Water & Sanitation</h3>
+          <p>Time-series forecasting and analysis of urban water access.</p>
+          <a href="/projects.html#ai4all" class="tech-link">Initialize_</a>
+        </div>
+        <div class="tech-card glass-panel ps5-hover">
+          <div class="tech-indicator neon"></div>
+          <h3>Flower Machine Learning</h3>
+          <p>Real-time flower classification using a live webcam and interactive UI.</p>
+          <a href="/projects.html#flowerml" class="tech-link">Initialize_</a>
+        </div>
+        <div class="tech-card glass-panel ps5-hover">
+          <div class="tech-indicator"></div>
+          <h3>Camp Database</h3>
+          <p>Secure dashboard with login, CRUD, and administrative tools.</p>
+          <a href="/projects.html#campdb" class="tech-link">Initialize_</a>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <p>© 2025 Kenechi Obiozor.</p>
+    <p>© 2025 Kenechi Obiozor. Designed in the shadows.</p>
   </footer>
 
-  <script src="/js/search-index.js"></script>
-  <script src="/js/site-search.js"></script>
+  <script src="/js/weekly.js"></script>
 </body>
 </html>
