@@ -1,4 +1,4 @@
-// Snake.io — JavaScript by Aileen
+// Snake.io — JavaScript by Kenechi
 // Features: Title screen, pause menu, speeds (1/2/3), moving foods w/ slower defaults
 // & live tuning via [ and ], surprise spawns, grapes/grass/bomb art, explosion,
 // random snake color on eat, SFX (M to mute), score + high score (+ DOM "Best" badge).
@@ -8,7 +8,7 @@
   const ctx = canvas.getContext('2d');
   const scoreEl = document.getElementById('score');
 
-  const AUTHOR = 'JavaScript by Aileen';
+  const AUTHOR = 'JavaScript by Kenechi';
   const HS_KEY = 'snake_high_score_v3';
 
   // Grid
