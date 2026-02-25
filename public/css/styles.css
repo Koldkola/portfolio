@@ -391,6 +391,37 @@ main.container .link { color: var(--text-primary); }
   color: rgba(255,255,255,0.6);
 }
 
+.sticky-note-text p {
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+.sticky-note-text p:last-child {
+  margin-bottom: 0;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.sticky-me-text {
+  font-size: 2.5rem;
+  font-weight: bold;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  display: inline-block;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    text-shadow: 0 0 20px rgba(255,255,255,0.6), 0 1px 2px rgba(0,0,0,0.3);
+  }
+}
+
 .site-footer { text-align: center; padding: 50px 20px; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.9rem; }
 
 @media (max-width: 900px) {
