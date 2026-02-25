@@ -191,7 +191,7 @@ main.container .link { color: var(--text-primary); }
 .weekly-grid.fade-out { opacity: 0; transform: translateY(10px); }
 
 /* Weekly Descriptions Grid */
-.weekly-descriptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-top: 24px; }
+.weekly-descriptions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; margin-top: 24px; }
 .weekly-desc-card { padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s var(--ease-out-expo); }
 .weekly-desc-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-3px); }
 .weekly-desc-card .curation-tag { display: block; margin-bottom: 8px; }
@@ -226,7 +226,8 @@ main.container .link { color: var(--text-primary); }
 .site-footer { text-align: center; padding: 50px 20px; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.9rem; }
 
 @media (max-width: 900px) {
-  .weekly-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .weekly-grid { grid-template-columns: 1fr; }
+  .weekly-descriptions-grid { grid-template-columns: 1fr; }
   .curation-card { height: 250px; }
 }
 @media (max-width: 768px) {
