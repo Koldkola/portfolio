@@ -114,7 +114,7 @@ body {
 .curation-title { font-family: var(--font-serif); font-size: 1.2rem; color: #fff; line-height: 1.2; }
 
 /* =========================================
-   THE LAB (Tech Projects)
+   THE PROJECTS (Tech Projects)
 ========================================= */
 .tech-section { max-width: 1200px; margin: 100px auto; padding: 0 40px; }
 .section-header h2 { font-family: var(--font-serif); font-size: 2.5rem; font-style: italic; margin-bottom: 10px; }
