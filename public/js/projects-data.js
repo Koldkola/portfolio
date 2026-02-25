@@ -39,6 +39,14 @@ const projectsMedia = {
     screenshots: [
       'public/assets/HCI Project.pptx (1).pdf'
     ]
+  },
+  'ocr-platform': {
+    id: 'ocr-platform',
+    video: '/assets/ocr-platform.mp4'
+  },
+  pedometer: {
+    id: 'pedometer',
+    video: '/assets/pedometer.mp4'
   }
 };
 
