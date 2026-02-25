@@ -60,8 +60,6 @@
         </div>
       </article>
     </div>
-  </main>
-
   <main class="container" style="margin-top:24px;">
   <section id="ai4all" class="project-detail">
       <h2>AI4ALL Project</h2>
@@ -143,9 +141,23 @@
     </section>
   </main>
 
+  <!-- Image Lightbox Modal -->
+  <div id="imageModal" class="image-modal">
+    <button class="image-modal-close" id="modalClose">&times;</button>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Enlarged project image" />
+      <div class="image-modal-counter"><span id="modalCounter"></span></div>
+    </div>
+    <button class="image-modal-prev" id="modalPrev">&#10094;</button>
+    <button class="image-modal-next" id="modalNext">&#10095;</button>
+  </div>
+
   <script src="/js/projects-data.js"></script>
   <script src="/js/projects.js"></script>
   <script>
+    let allGalleryImages = [];
+    let currentImageIndex = 0;
+    
     // Load media galleries from projects-data.js
     function loadProjectMedia() {
       document.querySelectorAll('.media-gallery[data-project]').forEach(gallery => {
@@ -156,8 +168,19 @@
           gallery.innerHTML = project.screenshots
             .map(src => `<img src="${src}" alt="${projectId} screenshot" class="gallery-img" />`)
             .join('');
+          
+          // Add click handlers for lightbox
+          gallery.querySelectorAll('.gallery-img').forEach((img, index) => {
+            img.addEventListener('click', () => {
+              currentImageIndex = allGalleryImages.indexOf(img.src);
+              openImageModal(img.src);
+            });
+          });
         }
       });
+      
+      // Collect all gallery images for lightbox navigation
+      allGalleryImages = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
       
       document.querySelectorAll('.video-container[data-project]').forEach(container => {
         const projectId = container.dataset.project;
@@ -171,6 +194,55 @@
         }
       });
     }
+    
+    // Lightbox Functions
+    function openImageModal(src) {
+      const modal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+      const counter = document.getElementById('modalCounter');
+      
+      modalImage.src = src;
+      counter.textContent = `${currentImageIndex + 1} / ${allGalleryImages.length}`;
+      modal.classList.add('active');
+    }
+    
+    function closeImageModal() {
+      document.getElementById('imageModal').classList.remove('active');
+    }
+    
+    function nextImage() {
+      currentImageIndex = (currentImageIndex + 1) % allGalleryImages.length;
+      document.getElementById('modalImage').src = allGalleryImages[currentImageIndex];
+      document.getElementById('modalCounter').textContent = `${currentImageIndex + 1} / ${allGalleryImages.length}`;
+    }
+    
+    function prevImage() {
+      currentImageIndex = (currentImageIndex - 1 + allGalleryImages.length) % allGalleryImages.length;
+      document.getElementById('modalImage').src = allGalleryImages[currentImageIndex];
+      document.getElementById('modalCounter').textContent = `${currentImageIndex + 1} / ${allGalleryImages.length}`;
+    }
+    
+    // Modal event listeners
+    document.getElementById('modalClose').addEventListener('click', closeImageModal);
+    document.getElementById('modalPrev').addEventListener('click', prevImage);
+    document.getElementById('modalNext').addEventListener('click', nextImage);
+    
+    // Close modal when clicking outside the image
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeImageModal();
+      }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('imageModal');
+      if (!modal.classList.contains('active')) return;
+      
+      if (e.key === 'ArrowRight') nextImage();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'Escape') closeImageModal();
+    });
     
     // Load on page load
     window.addEventListener('DOMContentLoaded', loadProjectMedia);

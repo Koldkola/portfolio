@@ -24,23 +24,13 @@ const projectsMedia = {
   campdb: {
     id: 'campdb',
     thumbnail: '/assets/projects/campdb-thumb.jpg',
-    screenshots: [
-      '/assets/projects/campdb-screenshot1.jpg',
-      '/assets/projects/campdb-screenshot2.jpg',
-      '/assets/projects/campdb-screenshot3.jpg'
-    ],
-    video: '/assets/projects/campdb-demo.mp4'
+     
   },
   
   goodair: {
     id: 'goodair',
     thumbnail: '/assets/projects/goodair-thumb.jpg',
-    screenshots: [
-      '/assets/projects/goodair-screenshot1.jpg',
-      '/assets/projects/goodair-screenshot2.jpg',
-      '/assets/projects/goodair-screenshot3.jpg'
-    ],
-    video: '/assets/projects/goodair-demo.mp4'
+    video: 'C:\Users\User\Downloads\VSCODE\portfolio\public\assets\Campdb-demo.mp4'
   },
   
   flowerml: {
