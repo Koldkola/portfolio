@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flower Machine Learning</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="/">MyPortfolio</a>
+      <ul class="nav-links">
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/resume.html">Resume</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Flower Machine Learning</h1>
+    <p><strong>Technologies:</strong> HTML, CSS, JavaScript — <strong>Union, NJ — 10/2023 - 12/2023</strong></p>
+    <ul>
+      <li>Developed a real-time flower classification tool leveraging machine learning for classifications of flower types with a 70% success rate.</li>
+      <li>Included a responsive interface for seamless interaction and live model visualization, integrating live webcam functionality to capture images.</li>
+      <li>Employed modern web design principles for clean UI/UX, including interactive real-time result displays.</li>
+    </ul>
+
+    <h3 style="margin-top: 24px;">Project Gallery</h3>
+    <div class="media-gallery" data-project="flowerml"></div>
+
+    <h3>Project Video</h3>
+    <div class="video-container" data-project="flowerml"></div>
+
+    <p><a class="back-to-all link" href="/projects.html">← Back to all projects</a></p>
+  </main>
+
+  <div id="imageModal" class="image-modal">
+    <button class="image-modal-close" id="modalClose">&times;</button>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Enlarged project image" />
+      <div class="image-modal-counter"><span id="modalCounter"></span></div>
+    </div>
+    <button class="image-modal-prev" id="modalPrev">&#10094;</button>
+    <button class="image-modal-next" id="modalNext">&#10095;</button>
+  </div>
+
+  <script src="/js/projects-data.js"></script>
+  <script src="/js/project-media.js"></script>
+</body>
+</html>

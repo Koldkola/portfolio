@@ -22,12 +22,16 @@
     <h1>Projects</h1>
     <p class="lead">A selection of projects exploring UI, color, and AI.</p>
 
+    <div class="project-search">
+      <input id="projectSearch" type="search" placeholder="Search projects..." aria-label="Search projects" />
+    </div>
+
   <div id="projects-grid" class="projects-grid">
       <article class="project-card">
         <div class="project-info">
           <h3>AI4ALL — Water & Sanitation Forecasts</h3>
           <p>Prophet time series forecasting of urban water and sanitation access; identified regions meeting 90% access targets and visualized historical trends.</p>
-          <a class="link" href="/projects.html#ai4all" data-project-id="ai4all">Details →</a>
+          <a class="link" href="/projects/ai4all.html">Details →</a>
           <a class="link" href="https://github.com/Koldkola/ai4all-official.github.io" target="_blank" rel="noopener">Repo →</a>
         </div>
       </article>
@@ -36,7 +40,7 @@
         <div class="project-info">
           <h3>Camp Database — Employee Dashboard</h3>
           <p>Secure login, PHP session management, CRUD operations and data sanitization for employee management and reporting.</p>
-          <a class="link" href="/projects.html#campdb" data-project-id="campdb">Details →</a>
+          <a class="link" href="/projects/campdb.html">Details →</a>
           <a class="link" href="https://github.com/Koldkola/Camp-database" target="_blank" rel="noopener">Repo →</a>
         </div>
       </article>
@@ -45,7 +49,7 @@
         <div class="project-info">
           <h3>Good Air Is Fair — KeanuHackathon</h3>
           <p>Air quality monitoring web app combining multiple data points, JSON handling, and responsive visualizations.</p>
-          <a class="link" href="/projects.html#goodair" data-project-id="goodair">Details →</a>
+          <a class="link" href="/projects/goodair.html">Details →</a>
           <a class="link" href="https://github.com/Koldkola/Kean-Hackathon" target="_blank" rel="noopener">Repo →</a>
         </div>
       </article>
@@ -54,7 +58,7 @@
         <div class="project-info">
           <h3>Flower Machine Learning</h3>
           <p>Real-time flower classification with live webcam capture and interactive UI; ~70% classification accuracy.</p>
-          <a class="link" href="/projects.html#flowerml" data-project-id="flowerml">Details →</a>
+          <a class="link" href="/projects/flowerml.html">Details →</a>
         </div>
       </article>
 
@@ -62,7 +66,7 @@
         <div class="project-info">
           <h3>Human Computer Interaction</h3>
           <p>Heuristic evaluation and UX redesign for the KeanWise platform with research-driven improvements.</p>
-          <a class="link" href="/projects.html#hci" data-project-id="hci">Details →</a>
+          <a class="link" href="/projects/hci.html">Details →</a>
         </div>
       </article>
 
@@ -70,7 +74,7 @@
         <div class="project-info">
           <h3>OCR Platform</h3>
           <p>Document OCR experience with streamlined capture and text extraction flow.</p>
-          <a class="link" href="/projects.html#ocr-platform" data-project-id="ocr-platform">Details →</a>
+          <a class="link" href="/projects/ocr-platform.html">Details →</a>
           <a class="link" href="https://evade-gong-90126479.figma.site/" target="_blank" rel="noopener">Live →</a>
         </div>
       </article>
@@ -79,7 +83,7 @@
         <div class="project-info">
           <h3>Pedometer Web App</h3>
           <p>Health tracking concept with step insights, goal progress, and clean UX.</p>
-          <a class="link" href="/projects.html#pedometer" data-project-id="pedometer">Details →</a>
+          <a class="link" href="/projects/pedometer.html">Details →</a>
           <a class="link" href="https://grainy-ego-26190581.figma.site/" target="_blank" rel="noopener">Live →</a>
         </div>
       </article>
@@ -130,297 +134,21 @@
         </div>
       </article>
     </div>
-  <main class="container" style="margin-top:24px;">
-  <section id="ai4all" class="project-detail">
-      <h2>AI4ALL Project</h2>
-      <p><strong>Technologies:</strong> Python, JavaScript, Pandas</p>
-      <p><strong>Topic:</strong> Water and Sanitation — <strong>Remote</strong> — <strong>05/2025 - 08/2025</strong></p>
-      <ul>
-        <li>Deployed a Prophet time series model to forecast urban water and sanitation access rates for various regions in a large dataset.</li>
-        <li>Analyzed forecasts to determine which countries are predicted to meet a 90% access goal by 2028; over 58% of regions met the forecast goal.</li>
-        <li>Investigated and identified the years with the largest positive and negative gaps while generating visualizations to illustrate historical trends in access rates.</li>
-        <li>Summarized project goals, key findings, and limitations, including challenges in forecasting for certain geographies in a punctual manner.</li>
-      </ul>
-      <p><a class="link" href="https://github.com/Koldkola/ai4all-official.github.io" target="_blank" rel="noopener">Repo →</a></p>
-      
-      <h3 style="margin-top: 24px;">Project Gallery</h3>
-      <div class="media-gallery" data-project="ai4all"></div>
-      
-      <h3>Project Video</h3>
-      <div class="video-container" data-project="ai4all"></div>
-      
-      <p><a class="back-to-all link" href="#">← Back to all projects</a></p>
-    </section>
-
-  <section id="campdb" class="project-detail">
-      <h2>Personal Project — Camp Database</h2>
-      <p><strong>Technologies:</strong> SQL, HTML, CSS (PHP backend)</p>
-      <p><strong>Location:</strong> Union, NJ — <strong>03/2025 - 04/2025</strong></p>
-      <ul>
-        <li>Built an employee dashboard with a secure login system using PHP and session management to authenticate and monitor access.</li>
-        <li>Integrated CRUD functionality for updating employee departments, titles, salaries, and termination processes.</li>
-        <li>Implemented security measures such as session validation and data sanitization to prevent unauthorized access and maintain data integrity.</li>
-        <li>Enhanced user experience and improved site responsiveness by incorporating meta tags and scalable styling.</li>
-      </ul>
-      <p><a class="link" href="https://github.com/Koldkola/Camp-database" target="_blank" rel="noopener">Repo →</a></p>
-      
-      <h3 style="margin-top: 24px;">Project Gallery</h3>
-      <div class="media-gallery" data-project="campdb"></div>
-      
-      <h3>Project Video</h3>
-      <div class="video-container" data-project="campdb"></div>
-      
-      <p><a class="back-to-all link" href="#">← Back to all projects</a></p>
-    </section>
-
-  <section id="goodair" class="project-detail">
-      <h2>KeanuHackathon Project — Good Air Is Fair</h2>
-      <p><strong>Technologies:</strong> CSS, HTML, JavaScript — <strong>Union, NJ — 03/2025</strong></p>
-      <ul>
-        <li>Designed a user-friendly application using HCI principles, ensuring accessibility and optimized layout for various screen sizes.</li>
-        <li>Enhanced user activity by combining multiple data points into visualizations with JSON handling and real-time error checking.</li>
-        <li>Performed code reviews, UI/UX testing, and cross-browser compatibility checks to ensure high-quality deliverables.</li>
-      </ul>
-      <p><a class="link" href="https://github.com/Koldkola/Kean-Hackathon" target="_blank" rel="noopener">Repo →</a></p>
-      
-      <h3 style="margin-top: 24px;">Project Gallery</h3>
-      <div class="media-gallery" data-project="goodair"></div>
-      
-      <h3>Project Video</h3>
-      <div class="video-container" data-project="goodair"></div>
-      
-      <p><a class="back-to-all link" href="#">← Back to all projects</a></p>
-    </section>
-
-  <section id="flowerml" class="project-detail">
-      <h2>Personal Project — Flower Machine Learning</h2>
-      <p><strong>Technologies:</strong> HTML, CSS, JavaScript — <strong>Union, NJ — 10/2023 - 12/2023</strong></p>
-      <ul>
-        <li>Developed a real-time flower classification tool leveraging machine learning for classifications of flower types with a 70% success rate.</li>
-        <li>Included a responsive interface for seamless interaction and live model visualization, integrating live webcam functionality to capture images.</li>
-        <li>Employed modern web design principles for clean UI/UX, including interactive real-time result displays.</li>
-      </ul>
-      
-      <h3 style="margin-top: 24px;">Project Gallery</h3>
-      <div class="media-gallery" data-project="flowerml"></div>
-      
-      <h3>Project Video</h3>
-      <div class="video-container" data-project="flowerml"></div>
-      
-      <p><a class="back-to-all link" href="#">← Back to all projects</a></p>
-    </section>
-
-  <section id="hci" class="project-detail">
-      <h2>Human Computer Interaction — KeanWise UX Redesign</h2>
-      <p><strong>Focus:</strong> Usability, Navigation, Consistency, Accessibility</p>
-      <ul>
-        <li>Performed a heuristic evaluation of the KeanWise platform, uncovering usability, navigation, and consistency issues that informed redesign priorities.</li>
-        <li>Conducted user research and feedback synthesis, translating participant insights into actionable design requirements.</li>
-        <li>Created and iterated low- and high-fidelity prototypes, improving information architecture, mobile responsiveness, and overall user flow.</li>
-        <li>Delivered a redesigned interface emphasizing clarity, accessibility, and intuitive interaction patterns, strengthening the foundation for future UX testing.</li>
-      </ul>
-
-      <h3 style="margin-top: 24px;">Presentation</h3>
-      <div class="video-container">
-        <iframe
-          src="https://drive.google.com/file/d/1pd6gMt7A3nofToCQ1POAWN8lLJiD2Obk/preview"
-          width="100%"
-          height="520"
-          allow="autoplay"
-          style="border:0; border-radius:8px;"
-          title="Human Computer Interaction Presentation"></iframe>
-      </div>
-
-      
-      <div class="media-gallery" data-project="hci"></div>
-
-      <p><a class="back-to-all link" href="#">← Back to all projects</a></p>
-    </section>
-
-  <section id="ocr-platform" class="project-detail">
-      <h2>OCR Platform</h2>
-      <p><strong>Focus:</strong> OCR workflow design, document capture, and clarity-focused UI</p>
-      <ul>
-        <li>Designed a guided OCR flow that reduces user friction during document capture and upload.</li>
-        <li>Structured the UI to prioritize clarity around scan status, extraction results, and next actions.</li>
-        <li>Emphasized accessibility and readability for high-confidence text review and export.</li>
-        <li>Created a clean visual system to support consistent navigation and task completion.</li>
-      </ul>
-
-      <h3 style="margin-top: 24px;">Prototype</h3>
-      <div class="video-container">
-        <iframe
-          src="https://evade-gong-90126479.figma.site/"
-          width="100%"
-          height="520"
-          style="border:0; border-radius:8px;"
-          title="OCR Platform Prototype"></iframe>
-      </div>
-
-      <p><a class="link" href="https://evade-gong-90126479.figma.site/" target="_blank" rel="noopener">Open Prototype →</a></p>
-
-      <h3 style="margin-top: 24px;">Project Gallery</h3>
-      <div class="media-gallery" data-project="ocr-platform"></div>
-
-      <p><a class="back-to-all link" href="#">← Back to all projects</a></p>
-    </section>
-
-  <section id="pedometer" class="project-detail">
-      <h2>Pedometer Web App</h2>
-      <p><strong>Focus:</strong> Step tracking, goal progress, and health insights</p>
-      <ul>
-        <li>Built a concept flow for tracking daily steps, streaks, and activity goals.</li>
-        <li>Created a clean dashboard layout to surface progress, trends, and milestones.</li>
-        <li>Designed intuitive navigation for quick access to stats and personalized goals.</li>
-        <li>Emphasized readability and simple visuals for fast comprehension on mobile.</li>
-      </ul>
-
-      <h3 style="margin-top: 24px;">Prototype</h3>
-      <div class="video-container">
-        <iframe
-          src="https://grainy-ego-26190581.figma.site/"
-          width="100%"
-          height="520"
-          style="border:0; border-radius:8px;"
-          title="Pedometer Web App Prototype"></iframe>
-      </div>
-
-      <p><a class="link" href="https://grainy-ego-26190581.figma.site/" target="_blank" rel="noopener">Open Prototype →</a></p>
-
-      <h3 style="margin-top: 24px;">Project Gallery</h3>
-      <div class="media-gallery" data-project="pedometer"></div>
-
-      <p><a class="back-to-all link" href="#">← Back to all projects</a></p>
-    </section>
+      <script>
+        const searchInput = document.getElementById('projectSearch');
+        const cards = Array.from(document.querySelectorAll('.project-card'));
+        const filterCards = () => {
+          const term = searchInput.value.toLowerCase();
+          cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            card.style.display = text.includes(term) ? '' : 'none';
+          });
+        };
+        searchInput.addEventListener('input', filterCards);
+      </script>
   </main>
 
-  <!-- Image Lightbox Modal -->
-  <div id="imageModal" class="image-modal">
-    <button class="image-modal-close" id="modalClose">&times;</button>
-    <div class="image-modal-content">
-      <img id="modalImage" src="" alt="Enlarged project image" />
-      <div class="image-modal-counter"><span id="modalCounter"></span></div>
-    </div>
-    <button class="image-modal-prev" id="modalPrev">&#10094;</button>
-    <button class="image-modal-next" id="modalNext">&#10095;</button>
-  </div>
-
-  <script src="/js/projects-data.js"></script>
-  <script src="/js/projects.js"></script>
-  <script>
-    let allGalleryImages = [];
-    let currentImageIndex = 0;
-
-    // Load media galleries from projects-data.js
-    function loadProjectMedia() {
-      document.querySelectorAll('.media-gallery[data-project]').forEach(gallery => {
-        const projectId = gallery.dataset.project;
-        const project = projectsMedia[projectId];
-        const galleryHeading = gallery.previousElementSibling;
-
-        if (project && Array.isArray(project.screenshots) && project.screenshots.length > 0) {
-          gallery.innerHTML = project.screenshots
-            .map(src => `<img src="${src}" alt="${projectId} screenshot" class="gallery-img" />`)
-            .join('');
-
-          if (galleryHeading && galleryHeading.tagName === 'H3') {
-            galleryHeading.style.display = '';
-          }
-          gallery.style.display = '';
-
-          // Add click handlers for lightbox
-          gallery.querySelectorAll('.gallery-img').forEach((img) => {
-            img.addEventListener('click', () => {
-              currentImageIndex = allGalleryImages.indexOf(img.src);
-              openImageModal(img.src);
-            });
-          });
-        } else {
-          if (galleryHeading && galleryHeading.tagName === 'H3') {
-            galleryHeading.style.display = 'none';
-          }
-          gallery.style.display = 'none';
-        }
-      });
-
-      // Collect all gallery images for lightbox navigation
-      allGalleryImages = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
-
-      document.querySelectorAll('.video-container[data-project]').forEach(container => {
-        const projectId = container.dataset.project;
-        const project = projectsMedia[projectId];
-        const videoHeading = container.previousElementSibling;
-
-        if (project && project.video) {
-          container.innerHTML = `<video width="100%" height="auto" controls style="border-radius: 8px;">
-            <source src="${project.video}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>`;
-          if (videoHeading && videoHeading.tagName === 'H3') {
-            videoHeading.style.display = '';
-          }
-          container.style.display = '';
-        } else {
-          if (videoHeading && videoHeading.tagName === 'H3') {
-            videoHeading.style.display = 'none';
-          }
-          container.style.display = 'none';
-        }
-      });
-    }
-
-    // Lightbox Functions
-    function openImageModal(src) {
-      const modal = document.getElementById('imageModal');
-      const modalImage = document.getElementById('modalImage');
-      const counter = document.getElementById('modalCounter');
-
-      modalImage.src = src;
-      counter.textContent = `${currentImageIndex + 1} / ${allGalleryImages.length}`;
-      modal.classList.add('active');
-    }
-
-    function closeImageModal() {
-      document.getElementById('imageModal').classList.remove('active');
-    }
-
-    function nextImage() {
-      currentImageIndex = (currentImageIndex + 1) % allGalleryImages.length;
-      document.getElementById('modalImage').src = allGalleryImages[currentImageIndex];
-      document.getElementById('modalCounter').textContent = `${currentImageIndex + 1} / ${allGalleryImages.length}`;
-    }
-
-    function prevImage() {
-      currentImageIndex = (currentImageIndex - 1 + allGalleryImages.length) % allGalleryImages.length;
-      document.getElementById('modalImage').src = allGalleryImages[currentImageIndex];
-      document.getElementById('modalCounter').textContent = `${currentImageIndex + 1} / ${allGalleryImages.length}`;
-    }
-
-    // Modal event listeners
-    document.getElementById('modalClose').addEventListener('click', closeImageModal);
-    document.getElementById('modalPrev').addEventListener('click', prevImage);
-    document.getElementById('modalNext').addEventListener('click', nextImage);
-
-    // Close modal when clicking outside the image
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeImageModal();
-      }
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
-      const modal = document.getElementById('imageModal');
-      if (!modal.classList.contains('active')) return;
-
-      if (e.key === 'ArrowRight') nextImage();
-      if (e.key === 'ArrowLeft') prevImage();
-      if (e.key === 'Escape') closeImageModal();
-    });
-
-    // Load on page load
-    window.addEventListener('DOMContentLoaded', loadProjectMedia);
-  </script>
+  <footer class="site-footer">
     <p>Back to <a href="/">Home</a></p>
   </footer>
 </body>

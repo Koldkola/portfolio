@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Good Air Is Fair — KeanuHackathon</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="/">MyPortfolio</a>
+      <ul class="nav-links">
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/resume.html">Resume</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Good Air Is Fair — KeanuHackathon</h1>
+    <p><strong>Technologies:</strong> CSS, HTML, JavaScript — <strong>Union, NJ — 03/2025</strong></p>
+    <ul>
+      <li>Designed a user-friendly application using HCI principles, ensuring accessibility and optimized layout for various screen sizes.</li>
+      <li>Enhanced user activity by combining multiple data points into visualizations with JSON handling and real-time error checking.</li>
+      <li>Performed code reviews, UI/UX testing, and cross-browser compatibility checks to ensure high-quality deliverables.</li>
+    </ul>
+    <p><a class="link" href="https://github.com/Koldkola/Kean-Hackathon" target="_blank" rel="noopener">Repo →</a></p>
+
+    <h3 style="margin-top: 24px;">Project Gallery</h3>
+    <div class="media-gallery" data-project="goodair"></div>
+
+    <h3>Project Video</h3>
+    <div class="video-container" data-project="goodair"></div>
+
+    <p><a class="back-to-all link" href="/projects.html">← Back to all projects</a></p>
+  </main>
+
+  <div id="imageModal" class="image-modal">
+    <button class="image-modal-close" id="modalClose">&times;</button>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Enlarged project image" />
+      <div class="image-modal-counter"><span id="modalCounter"></span></div>
+    </div>
+    <button class="image-modal-prev" id="modalPrev">&#10094;</button>
+    <button class="image-modal-next" id="modalNext">&#10095;</button>
+  </div>
+
+  <script src="/js/projects-data.js"></script>
+  <script src="/js/project-media.js"></script>
+</body>
+</html>

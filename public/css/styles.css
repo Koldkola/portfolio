@@ -135,6 +135,21 @@ body {
 .project-info p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 14px; }
 .project-info .link { display: inline-block; margin-right: 12px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
 
+.project-search {
+  margin: 20px 0 10px;
+}
+.project-search input {
+  width: 100%;
+  max-width: 420px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0b0b0b;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+.project-search input::placeholder { color: var(--text-muted); }
+
 @media (max-width: 768px) {
   .hero { flex-direction: column; text-align: center; margin: 50px auto; }
   .hero-content { margin-bottom: 50px; }

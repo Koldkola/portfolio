@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pedometer Web App</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="/">MyPortfolio</a>
+      <ul class="nav-links">
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/resume.html">Resume</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Pedometer Web App</h1>
+    <p><strong>Focus:</strong> Step tracking, goal progress, and health insights</p>
+    <ul>
+      <li>Built a concept flow for tracking daily steps, streaks, and activity goals.</li>
+      <li>Created a clean dashboard layout to surface progress, trends, and milestones.</li>
+      <li>Designed intuitive navigation for quick access to stats and personalized goals.</li>
+      <li>Emphasized readability and simple visuals for fast comprehension on mobile.</li>
+    </ul>
+
+    <h3 style="margin-top: 24px;">Project Video</h3>
+    <div class="video-container" data-project="pedometer"></div>
+
+    <h3 style="margin-top: 24px;">Prototype</h3>
+    <div class="video-container">
+      <iframe
+        src="https://grainy-ego-26190581.figma.site/"
+        width="100%"
+        height="520"
+        style="border:0; border-radius:8px;"
+        title="Pedometer Web App Prototype"></iframe>
+    </div>
+
+    <p><a class="link" href="https://grainy-ego-26190581.figma.site/" target="_blank" rel="noopener">Open Prototype →</a></p>
+
+    <h3 style="margin-top: 24px;">Project Gallery</h3>
+    <div class="media-gallery" data-project="pedometer"></div>
+
+    <p><a class="back-to-all link" href="/projects.html">← Back to all projects</a></p>
+  </main>
+
+  <div id="imageModal" class="image-modal">
+    <button class="image-modal-close" id="modalClose">&times;</button>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Enlarged project image" />
+      <div class="image-modal-counter"><span id="modalCounter"></span></div>
+    </div>
+    <button class="image-modal-prev" id="modalPrev">&#10094;</button>
+    <button class="image-modal-next" id="modalNext">&#10095;</button>
+  </div>
+
+  <script src="/js/projects-data.js"></script>
+  <script src="/js/project-media.js"></script>
+</body>
+</html>

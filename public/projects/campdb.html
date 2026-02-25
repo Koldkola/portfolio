@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Camp Database — Employee Dashboard</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="/">MyPortfolio</a>
+      <ul class="nav-links">
+        <li><a href="/projects.html">Projects</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/resume.html">Resume</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Camp Database — Employee Dashboard</h1>
+    <p><strong>Technologies:</strong> SQL, HTML, CSS (PHP backend)</p>
+    <p><strong>Location:</strong> Union, NJ — <strong>03/2025 - 04/2025</strong></p>
+    <ul>
+      <li>Built an employee dashboard with a secure login system using PHP and session management to authenticate and monitor access.</li>
+      <li>Integrated CRUD functionality for updating employee departments, titles, salaries, and termination processes.</li>
+      <li>Implemented security measures such as session validation and data sanitization to prevent unauthorized access and maintain data integrity.</li>
+      <li>Enhanced user experience and improved site responsiveness by incorporating meta tags and scalable styling.</li>
+    </ul>
+    <p><a class="link" href="https://github.com/Koldkola/Camp-database" target="_blank" rel="noopener">Repo →</a></p>
+
+    <h3 style="margin-top: 24px;">Project Gallery</h3>
+    <div class="media-gallery" data-project="campdb"></div>
+
+    <h3>Project Video</h3>
+    <div class="video-container" data-project="campdb"></div>
+
+    <p><a class="back-to-all link" href="/projects.html">← Back to all projects</a></p>
+  </main>
+
+  <div id="imageModal" class="image-modal">
+    <button class="image-modal-close" id="modalClose">&times;</button>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Enlarged project image" />
+      <div class="image-modal-counter"><span id="modalCounter"></span></div>
+    </div>
+    <button class="image-modal-prev" id="modalPrev">&#10094;</button>
+    <button class="image-modal-next" id="modalNext">&#10095;</button>
+  </div>
+
+  <script src="/js/projects-data.js"></script>
+  <script src="/js/project-media.js"></script>
+</body>
+</html>
