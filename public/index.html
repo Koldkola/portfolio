@@ -12,7 +12,7 @@
 
   <header class="site-header">
     <nav class="nav">
-      <a class="logo" href="/">Kenechi.</a>
+      <a class="logo" href="/">Kumachi.</a>
       <ul class="nav-links">
         <li><a href="/projects.html"> Projects</a></li>
         <li><a href="/archive.html">Archive</a></li>
@@ -40,7 +40,7 @@
 
     <section class="weekly-section">
       <div class="interactive-header">
-        <h2>Weekly Highlights</h2>
+        <h2>Whats in my Korner?</h2>
         <div class="week-controls">
           <button class="ctrl-btn" id="prev-btn" aria-label="Previous week">←</button>
           <span id="week-label"></span>
@@ -61,19 +61,16 @@
       <span class="dot red"></span>
       <span class="dot yellow"></span>
       <span class="dot green"></span>
-      <span class="window-title">about.txt</span>
+      <span class="window-title">Me.txt</span>
     </div>
     <div class="window-body">
       <pre class="about-text">Creative Technologist / Wannabe Curator / Nerd of Sorts
-
+hi im Kenechi, but i did name this kumachi.
 
 kumachi's korner a digital congregation in which im working on blending all of my interests
-in its diverse forms, in order to create a page that shows my Undertow.
+in its diverse forms, in order to create a page that shows my <span class="tooltip-word">Undertow<span class="tooltip-popup">A quiet internal current that shapes their decisions or mood</span></span>.
 
-media, entertainment, art, music, films, writing
-whatever im infatuated with.
-
-Will be adding to it as much as i can</pre>
+</pre>
     </div>
   </section>
 
@@ -82,10 +79,12 @@ Will be adding to it as much as i can</pre>
       <span class="dot red"></span>
       <span class="dot yellow"></span>
       <span class="dot green"></span>
-      <span class="window-title">notes.txt</span>
+      <span class="window-title">content.txt</span>
     </div>
     <div class="window-body">
-      <pre class="about-text">Weekly highlights are updated every Saturday!</pre>
+      <pre class="about-text">media, entertainment, art, music, films, writing whatever im infatuated with atm.
+
+Will be adding to it as much as i can</pre>
     </div>
   </section>
 
@@ -166,5 +165,70 @@ Will be adding to it as much as i can</pre>
       makeDraggable(note);
     });
   </script>
+  
+  <style>
+    .tooltip-word {
+      position: relative;
+      text-decoration: underline;
+      text-decoration-color: var(--accent, #8b5cf6);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      cursor: help;
+      color: var(--accent, #8b5cf6);
+    }
+    
+    .tooltip-popup {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: rgba(139, 92, 246, 0.95);
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      white-space: normal;
+      max-width: 250px;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+      z-index: 1000;
+      line-height: 1.4;
+    }
+    
+    .tooltip-popup::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(139, 92, 246, 0.95);
+    }
+    
+    .tooltip-word:hover .tooltip-popup {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-12px);
+      animation: tooltipBounce 0.5s ease;
+    }
+    
+    @keyframes tooltipBounce {
+      0% {
+        transform: translateX(-50%) translateY(-8px) scale(0.9);
+        opacity: 0;
+      }
+      50% {
+        transform: translateX(-50%) translateY(-14px) scale(1.05);
+      }
+      100% {
+        transform: translateX(-50%) translateY(-12px) scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
 </body>
 </html>
