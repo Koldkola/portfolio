@@ -61,20 +61,28 @@
     <p>© 2025 Kenechi Obiozor.</p>
   </footer>
 
-  <!-- Sticky Notes -->
-  <div class="sticky-note" id="sticky1" style="top: 120px; left: 30px;">
-    <div class="sticky-note-header">
-      <span class="sticky-note-title">About.txt</span>
-      <button class="sticky-note-close" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+  <!-- About Window -->
+  <section class="window about-window" id="aboutWindow" style="position: fixed; top: 120px; left: 30px;">
+    <div class="window-header drag-handle">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="window-title">about.txt</span>
     </div>
-    <div class="sticky-note-content">
-      <div class="sticky-note-text">
-        <p>Creative Technologist / Wannabe Curator / Nerd of Sorts</p>
-        <p>A digital space in which im working on blending all of my interests in its diverse forms in order to create a page that screams</p>
-        <p><span class="sticky-me-text">Me!</span></p>
-      </div>
+    <div class="window-body">
+      <pre class="about-text">Creative Technologist / Wannabe Curator / Nerd of Sorts
+
+
+kumachi's korner a digital congregation in which im working 
+on blending all of my interests in its diverse forms,
+ in order to create a page that shows my Undertow 
+
+media, entertainment, art, music, films, writing
+whatever im infatuated with.
+
+Will be adding to it as much as i can</pre>
     </div>
-  </div>
+  </section>
 
   <div class="sticky-note" id="sticky2" style="top: 380px; right: 30px;">
     <div class="sticky-note-header">
@@ -90,30 +98,27 @@
   <script src="/js/site-search.js"></script>
   <script src="/js/weekly.js"></script>
   <script>
-    // Sticky note drag functionality
-    document.querySelectorAll('.sticky-note').forEach(note => {
+    // Window and sticky note drag functionality
+    function makeDraggable(element) {
       let isDragging = false;
       let currentX;
       let currentY;
       let initialX;
       let initialY;
-      let xOffset = 0;
-      let yOffset = 0;
 
-      const header = note.querySelector('.sticky-note-header');
+      const header = element.querySelector('.window-header') || element.querySelector('.sticky-note-header');
       
-      header.addEventListener('mousedown', dragStart);
-      document.addEventListener('mousemove', drag);
-      document.addEventListener('mouseup', dragEnd);
+      if (header) {
+        header.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+      }
 
       function dragStart(e) {
-        const rect = note.getBoundingClientRect();
+        const rect = element.getBoundingClientRect();
         initialX = e.clientX - rect.left;
         initialY = e.clientY - rect.top;
-        
-        if (e.target === header || e.target.classList.contains('sticky-note-title')) {
-          isDragging = true;
-        }
+        isDragging = true;
       }
 
       function drag(e) {
@@ -122,15 +127,34 @@
           currentX = e.clientX - initialX;
           currentY = e.clientY - initialY;
 
-          note.style.left = currentX + 'px';
-          note.style.top = currentY + 'px';
-          note.style.right = 'auto';
+          element.style.left = currentX + 'px';
+          element.style.top = currentY + 'px';
+          element.style.right = 'auto';
         }
       }
 
       function dragEnd(e) {
         isDragging = false;
       }
+    }
+
+    // Make window draggable
+    const aboutWindow = document.getElementById('aboutWindow');
+    if (aboutWindow) {
+      makeDraggable(aboutWindow);
+      
+      // Add close functionality to red dot
+      const redDot = aboutWindow.querySelector('.dot.red');
+      if (redDot) {
+        redDot.addEventListener('click', () => {
+          aboutWindow.style.display = 'none';
+        });
+      }
+    }
+
+    // Make sticky notes draggable
+    document.querySelectorAll('.sticky-note').forEach(note => {
+      makeDraggable(note);
     });
   </script>
 </body>

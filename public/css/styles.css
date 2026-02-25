@@ -431,6 +431,82 @@ main.container .link { color: var(--text-primary); }
   .weekly-descriptions-grid { grid-template-columns: 1fr; }
   .curation-card { height: 250px; }
 }
+
+/* Window Styles */
+.window {
+  position: fixed;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  min-width: 280px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.window-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  cursor: move;
+  user-select: none;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dot.red {
+  background: #ff5f57;
+}
+
+.dot.yellow {
+  background: #ffbd2e;
+}
+
+.dot.green {
+  background: #28c940;
+}
+
+.window-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-left: 8px;
+  flex: 1;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.window-body {
+  padding: 12px;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.about-text {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.about-window {
+  width: 350px;
+}
+
 @media (max-width: 768px) {
   .hero { flex-direction: column; text-align: center; margin: 40px auto; }
   .hero-content { margin-bottom: 40px; }
