@@ -64,10 +64,10 @@
       <span class="window-title">Me.txt</span>
     </div>
     <div class="window-body">
-      <pre class="about-text">Creative Technologist / Wannabe Curator / Nerd of Sorts
-hi im Kenechi, but i did name this kumachi.
+      <pre class="about-text">creative technologist / wannabe curator / nerd of sorts<br>
+hi im Kenechi, but i did name this <span class="tooltip-word">kumachi<span class="tooltip-popup">"bartholemew kuma" (kumachi) is a fictional character from "one piece" who is a priest focused on his community</span></span>.
 
-kumachi's korner a digital congregation in which im working on blending all of my interests
+<span class="tooltip-word">kumachi<span class="tooltip-popup">"bartholemew kuma" (kumachi) is a fictional character from "one piece" who is a priest focused on his community</span></span>'s korner a digital congregation in which im working on blending all of my interests <br>
 in its diverse forms, in order to create a page that shows my <span class="tooltip-word">Undertow<span class="tooltip-popup">A quiet internal current that shapes their decisions or mood</span></span>.
 
 </pre>
@@ -82,7 +82,8 @@ in its diverse forms, in order to create a page that shows my <span class="toolt
       <span class="window-title">content.txt</span>
     </div>
     <div class="window-body">
-      <pre class="about-text">media, entertainment, art, music, films, writing whatever im infatuated with atm.
+      <pre class="about-text">media, entertainment, art, music, films, writing whatever 
+        im <span class="tooltip-word">infatuated<span class="tooltip-popup">⋆strong emotional pull<br>⋆usually temporary<br>⋆idealizes the other person<br>⋆feels urgent or consuming</span></span> with atm.
 
 Will be adding to it as much as i can</pre>
     </div>
@@ -167,6 +168,15 @@ Will be adding to it as much as i can</pre>
   </script>
   
   <style>
+    /* Allow tooltips to escape window boundaries */
+    .window-body {
+      overflow: visible !important;
+    }
+    
+    .about-text {
+      overflow: visible !important;
+    }
+    
     .tooltip-word {
       position: relative;
       text-decoration: underline;
@@ -175,28 +185,33 @@ Will be adding to it as much as i can</pre>
       text-underline-offset: 3px;
       cursor: help;
       color: var(--accent, #8b5cf6);
+      font-weight: 600;
     }
     
     .tooltip-popup {
-      position: absolute;
-      bottom: 100%;
+      position: fixed;
+      bottom: auto;
       left: 50%;
       transform: translateX(-50%) translateY(-8px);
-      background: rgba(139, 92, 246, 0.95);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.98), rgba(109, 40, 217, 0.98));
       color: #ffffff;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
       white-space: normal;
-      max-width: 250px;
+      min-width: 280px;
+      max-width: 320px;
       text-align: center;
       pointer-events: none;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
-      z-index: 1000;
-      line-height: 1.4;
+      box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      z-index: 10000;
+      line-height: 1.5;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(10px);
     }
     
     .tooltip-popup::after {
@@ -205,27 +220,27 @@ Will be adding to it as much as i can</pre>
       top: 100%;
       left: 50%;
       transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: rgba(139, 92, 246, 0.95);
+      border: 8px solid transparent;
+      border-top-color: rgba(109, 40, 217, 0.98);
     }
     
     .tooltip-word:hover .tooltip-popup {
       opacity: 1;
       visibility: visible;
-      transform: translateX(-50%) translateY(-12px);
-      animation: tooltipBounce 0.5s ease;
+      transform: translateX(-50%) translateY(-16px);
+      animation: tooltipBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
     
     @keyframes tooltipBounce {
       0% {
-        transform: translateX(-50%) translateY(-8px) scale(0.9);
+        transform: translateX(-50%) translateY(-8px) scale(0.8);
         opacity: 0;
       }
       50% {
-        transform: translateX(-50%) translateY(-14px) scale(1.05);
+        transform: translateX(-50%) translateY(-20px) scale(1.08);
       }
       100% {
-        transform: translateX(-50%) translateY(-12px) scale(1);
+        transform: translateX(-50%) translateY(-16px) scale(1);
         opacity: 1;
       }
     }

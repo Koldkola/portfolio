@@ -27,10 +27,10 @@
   </header>
 
   <main class="container">
-    <h1>OCR Platform</h1>
+    <h1><span class="tooltip-word">OCR<span class="tooltip-popup">optical character recognition</span></span> Platform</h1>
     <p><strong>Focus:</strong> OCR workflow design, document capture, and clarity-focused UI</p>
     <ul>
-      <li>Designed a guided Optical Character Recognition (OCR) flow that reduces user friction during document capture and upload.</li>
+      <li>Designed a guided OCR flow that reduces user friction during document capture and upload.</li>
       <li>Structured the UI to prioritize clarity around scan status, extraction results, and next actions.</li>
       <li>Emphasized accessibility and readability for high-confidence text review and export.</li>
       <li>Created a clean visual system to support consistent navigation and task completion.</li>
@@ -71,5 +71,75 @@
   <script src="/js/project-media.js"></script>
   <script src="/js/search-index.js"></script>
   <script src="/js/site-search.js"></script>
+  
+  <style>
+    .tooltip-word {
+      position: relative;
+      text-decoration: underline;
+      text-decoration-color: var(--accent, #8b5cf6);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      cursor: help;
+      color: var(--accent, #8b5cf6);
+      font-weight: 600;
+    }
+    
+    .tooltip-popup {
+      position: fixed;
+      bottom: auto;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.98), rgba(109, 40, 217, 0.98));
+      color: #ffffff;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      white-space: normal;
+      min-width: 280px;
+      max-width: 320px;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      z-index: 10000;
+      line-height: 1.5;
+      letter-spacing: 0.3px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .tooltip-popup::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 8px solid transparent;
+      border-top-color: rgba(109, 40, 217, 0.98);
+    }
+    
+    .tooltip-word:hover .tooltip-popup {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-16px);
+      animation: tooltipBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    @keyframes tooltipBounce {
+      0% {
+        transform: translateX(-50%) translateY(-8px) scale(0.8);
+        opacity: 0;
+      }
+      50% {
+        transform: translateX(-50%) translateY(-20px) scale(1.08);
+      }
+      100% {
+        transform: translateX(-50%) translateY(-16px) scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
 </body>
 </html>
