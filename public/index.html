@@ -73,9 +73,8 @@
       <pre class="about-text">Creative Technologist / Wannabe Curator / Nerd of Sorts
 
 
-kumachi's korner a digital congregation in which im working 
-on blending all of my interests in its diverse forms,
- in order to create a page that shows my Undertow 
+kumachi's korner a digital congregation in which im working on blending all of my interests
+in its diverse forms, in order to create a page that shows my Undertow.
 
 media, entertainment, art, music, films, writing
 whatever im infatuated with.
@@ -84,15 +83,17 @@ Will be adding to it as much as i can</pre>
     </div>
   </section>
 
-  <div class="sticky-note" id="sticky2" style="top: 380px; right: 30px;">
-    <div class="sticky-note-header">
-      <span class="sticky-note-title">Note 2</span>
-      <button class="sticky-note-close" onclick="this.parentElement.parentElement.style.display='none'">&times;</button>
+  <section class="window notes-window" id="notesWindow" style="position: fixed; top: 380px; right: 30px;">
+    <div class="window-header drag-handle">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="window-title">notes.txt</span>
     </div>
-    <div class="sticky-note-content">
-      <textarea placeholder="Write something...">Weekly highlights are updated every Saturday!</textarea>
+    <div class="window-body">
+      <pre class="about-text">Weekly highlights are updated every Saturday!</pre>
     </div>
-  </div>
+  </section>
 
   <script src="/js/search-index.js"></script>
   <script src="/js/site-search.js"></script>
@@ -148,6 +149,20 @@ Will be adding to it as much as i can</pre>
       if (redDot) {
         redDot.addEventListener('click', () => {
           aboutWindow.style.display = 'none';
+        });
+      }
+    }
+
+    // Make notes window draggable
+    const notesWindow = document.getElementById('notesWindow');
+    if (notesWindow) {
+      makeDraggable(notesWindow);
+      
+      // Add close functionality to red dot
+      const redDot = notesWindow.querySelector('.dot.red');
+      if (redDot) {
+        redDot.addEventListener('click', () => {
+          notesWindow.style.display = 'none';
         });
       }
     }
