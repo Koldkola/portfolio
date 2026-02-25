@@ -14,12 +14,16 @@
     <nav class="nav">
       <a class="logo" href="/">Kenechi.</a>
       <ul class="nav-links">
-        <li><a href="#lab">The Lab (Tech)</a></li>
-        <li><a href="#archive">Archive (Blog)</a></li>
+        <li><a href="/projects.html">The Lab (Tech)</a></li>
+        <li><a href="/archive.html">Archive (Blog)</a></li>
         <li><a href="/resume.html">Resume</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
+    <div class="site-search">
+      <input id="siteSearch" type="search" placeholder="Search the portfolio..." aria-label="Search the portfolio" />
+      <div id="siteSearchResults" class="site-search-results" role="listbox" aria-label="Search results"></div>
+    </div>
   </header>
 
   <main>
@@ -29,8 +33,8 @@
         <h1>Engineering logic. <br> <span class="italic-art">Designing ambience.</span></h1>
         <p class="sub">A digital space bridging robust cybersecurity and software development with an appreciation for abstract art, fashion, horror, and interactive media.</p>
         <div class="hero-cta">
-          <a class="btn primary" href="#lab">View Tech Projects</a>
-          <a class="btn secondary" href="#archive">Explore the Archive</a>
+          <a class="btn primary" href="/projects.html">View Tech Projects</a>
+          <a class="btn secondary" href="/archive.html">Explore the Archive</a>
         </div>
       </div>
       <div class="hero-visual">
@@ -40,71 +44,13 @@
         </div>
       </div>
     </section>
-
-    <section id="archive" class="creative-section">
-      <div class="section-header">
-        <h2>The Archive</h2>
-        <p>Musings on film, horror, abstract fashion, and game design.</p>
-      </div>
-      
-      <div class="masonry-grid">
-        <article class="art-card tall" style="background-image: url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=800');">
-          <div class="card-content">
-            <span class="tag tag-horror">Horror & Film</span>
-            <h3>The Anatomy of Suspense</h3>
-            <p>Analyzing the ambient sound design in modern psychological horror...</p>
-          </div>
-        </article>
-
-        <article class="art-card" style="background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800');">
-          <div class="card-content">
-            <span class="tag tag-fashion">Fashion</span>
-            <h3>Silhouettes & Shadows</h3>
-            <p>How abstract geometry is reshaping modern streetwear.</p>
-          </div>
-        </article>
-
-        <article class="art-card wide" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800');">
-          <div class="card-content">
-            <span class="tag tag-gaming">Gaming</span>
-            <h3>Atmosphere as a Mechanic</h3>
-            <p>Why the best video games rely on environmental storytelling over dialogue.</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="lab" class="tech-section">
-      <div class="section-header">
-        <h2>The Lab</h2>
-        <p>Cybersecurity research, application development, and data pipelines.</p>
-      </div>
-
-      <div class="tech-grid">
-        <div class="tech-card">
-          <div class="tech-indicator"></div>
-          <h3>AI4ALL — Water & Sanitation</h3>
-          <p>Time-series forecasting and analysis of urban water access.</p>
-          <a href="/projects.html#ai4all" class="tech-link">Initialize Project_</a>
-        </div>
-        <div class="tech-card">
-          <div class="tech-indicator neon"></div>
-          <h3>Flower Machine Learning</h3>
-          <p>Real-time flower classification using a live webcam and interactive UI.</p>
-          <a href="/projects.html#flowerml" class="tech-link">Initialize Project_</a>
-        </div>
-        <div class="tech-card">
-          <div class="tech-indicator"></div>
-          <h3>Camp Database</h3>
-          <p>Secure dashboard with login, CRUD, and administrative tools.</p>
-          <a href="/projects.html#campdb" class="tech-link">Initialize Project_</a>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
     <p>© 2025 Kenechi Obiozor. Designed in the shadows.</p>
   </footer>
+
+  <script src="/js/search-index.js"></script>
+  <script src="/js/site-search.js"></script>
 </body>
 </html>

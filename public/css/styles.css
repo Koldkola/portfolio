@@ -48,6 +48,47 @@ body {
 .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s ease; }
 .nav-links a:hover { color: #fff; }
 
+/* Site search */
+.site-search {
+  max-width: 1200px;
+  margin: 12px auto 0;
+  padding: 0 40px;
+  position: relative;
+}
+.site-search input {
+  width: 100%;
+  max-width: 520px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0b0b0b;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+.site-search input::placeholder { color: var(--text-muted); }
+.site-search-results {
+  position: absolute;
+  top: 50px;
+  left: 40px;
+  right: 40px;
+  max-width: 520px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  display: none;
+  z-index: 200;
+}
+.site-search-results.active { display: block; }
+.site-search-results a {
+  display: block;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.site-search-results a:last-child { border-bottom: none; }
+.site-search-results a:hover { background: #141414; }
+
 /* HERO SECTION */
 .hero {
   display: flex;
