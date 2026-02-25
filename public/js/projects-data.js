@@ -18,7 +18,6 @@ const projectsMedia = {
     screenshots: [
       '/assets/ai4all-Poster.jpg'
     ],
-    video: '/assets/projects/ai4all-demo.mp4'
   },
   
   campdb: {
@@ -36,12 +35,15 @@ const projectsMedia = {
   flowerml: {
     id: 'flowerml',
     thumbnail: '/assets/projects/flowerml-thumb.jpg',
+    
+  }
+  ,
+  hci: {
+    id: 'hci',
+    thumbnail: '/assets/projects/hci-thumb.jpg',
     screenshots: [
-      '/assets/projects/flowerml-screenshot1.jpg',
-      '/assets/projects/flowerml-screenshot2.jpg',
-      '/assets/projects/flowerml-screenshot3.jpg'
-    ],
-    video: '/assets/projects/flowerml-demo.mp4'
+      'public/assets/HCI Project.pptx (1).pdf'
+    ]
   }
 };
 
