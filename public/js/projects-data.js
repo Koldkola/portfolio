@@ -14,7 +14,6 @@
 const projectsMedia = {
   ai4all: {
     id: 'ai4all',
-    thumbnail: 'https://media.licdn.com/dms/image/v2/D4E2DAQGtGLwEfDl1NA/profile-treasury-document-cover-images_480/B4EZimbsreGoBI-/0/1755138938323?e=1772647200&v=beta&t=j4QiQJl4ps1enLJZpQqxd4OsN9tVLdmcv_z0nELUQQA',
     screenshots: [
       '/assets/ai4all-Poster.jpg'
     ],
@@ -22,25 +21,21 @@ const projectsMedia = {
   
   campdb: {
     id: 'campdb',
-    thumbnail: '/assets/projects/campdb-thumb.jpg',
-     
+    
   },
   
   goodair: {
     id: 'goodair',
-    thumbnail: '/assets/projects/goodair-thumb.jpg',
-    video: 'public/assets/Campdb-demo.mp4'
+    video: '/assets/goodair-demo.mp4'
   },
   
   flowerml: {
     id: 'flowerml',
-    thumbnail: '/assets/projects/flowerml-thumb.jpg',
     
   }
   ,
   hci: {
     id: 'hci',
-    thumbnail: '/assets/projects/hci-thumb.jpg',
     screenshots: [
       'public/assets/HCI Project.pptx (1).pdf'
     ]
