@@ -313,7 +313,7 @@ main.container .link { color: var(--text-primary); }
   width: 220px;
   min-height: 220px;
   padding: 20px;
-  background: linear-gradient(135deg, #f3d250 0%, #f4e285 100%);
+  background: linear-gradient(135deg, #9ca3af 0%, #b8bfc7 100%);
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   border-radius: 4px;
   cursor: move;
@@ -326,7 +326,7 @@ main.container .link { color: var(--text-primary); }
 }
 
 #sticky2 {
-  background: linear-gradient(135deg, #e8a87c 0%, #f0c19b 100%);
+  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
 }
 
 .sticky-note-header {
