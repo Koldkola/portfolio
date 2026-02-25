@@ -1,36 +1,33 @@
 // Database of weekly curations
 const weeklyData = [
   {
-    weekNumber: 1,
     startDate: new Date(2026, 1, 14), // February 14, 2026 (Saturday)
     items: [
-      { category: "Music", title: "Ambient Darkwave Synths", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600" },
-      { category: "Art", title: "Geometric Shadows", img: "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?q=80&w=600" },
-      { category: "Fashion", title: "Y2K Techwear", img: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=600" },
-      { category: "Film", title: "The Anatomy of Suspense", img: "https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=600" },
-      { category: "Random", title: "PS5 UI Case Study", img: "https://images.unsplash.com/photo-1606144042888-517865780d32?q=80&w=600" }
+      { category: "Music", title: "Ambient Darkwave Synths", description: "Exploring atmospheric synth layers and dark wave influences.", img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600" },
+      { category: "Art", title: "Geometric Shadows", description: "How shadows create depth in minimalist compositions.", img: "https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?q=80&w=600" },
+      { category: "Fashion", title: "Y2K Techwear", description: "The resurgence of 2000s tech aesthetics in modern fashion.", img: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=600" },
+      { category: "Film", title: "The Anatomy of Suspense", description: "Analyzing tension-building techniques in psychological thrillers.", img: "https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=600" },
+      { category: "Random", title: "PS5 UI Case Study", description: "Breaking down the design systems behind next-gen console interfaces.", img: "https://images.unsplash.com/photo-1606144042888-517865780d32?q=80&w=600" }
     ]
   },
   {
-    weekNumber: 2,
     startDate: new Date(2026, 1, 21), // February 21, 2026 (Saturday)
     items: [
-      { category: "Music", title: "Lo-Fi Horror Soundtracks", img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600" },
-      { category: "Art", title: "Brutalist Architecture", img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600" },
-      { category: "Fashion", title: "Asymmetrical Silhouettes", img: "https://images.unsplash.com/photo-1550614000-4b95d466f914?q=80&w=600" },
-      { category: "Film", title: "Lighting in Sci-Fi", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600" },
-      { category: "Random", title: "Mechanical Keyboard Mods", img: "https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=600" }
+      { category: "Music", title: "Lo-Fi Horror Soundtracks", description: "Blending relaxing beats with eerie ambient textures.", img: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600" },
+      { category: "Art", title: "Brutalist Architecture", description: "Raw concrete forms and monumental design principles.", img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600" },
+      { category: "Fashion", title: "Asymmetrical Silhouettes", description: "Deconstructed tailoring and unexpected fabric layering.", img: "https://images.unsplash.com/photo-1550614000-4b95d466f914?q=80&w=600" },
+      { category: "Film", title: "Lighting in Sci-Fi", description: "How neon and practical lights shape cyberpunk aesthetics.", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600" },
+      { category: "Random", title: "Mechanical Keyboard Mods", description: "Custom switches, stabilizers, and typing experience optimization.", img: "https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=600" }
     ]
   },
   {
-    weekNumber: 3,
     startDate: new Date(2026, 1, 28), // February 28, 2026 (Saturday)
     items: [
-      { category: "Music", title: "Synthwave Nostalgia", img: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600" },
-      { category: "Art", title: "Digital Expressionism", img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600" },
-      { category: "Fashion", title: "Minimalist Maximalism", img: "https://images.unsplash.com/photo-1551028719-00167b16ebc5?q=80&w=600" },
-      { category: "Film", title: "Color Grading Mastery", img: "https://images.unsplash.com/photo-1485579149c01123123bf4dc5a7eb46?q=80&w=600" },
-      { category: "Random", title: "Retro Gaming Aesthetics", img: "https://images.unsplash.com/photo-1559808295-51a1da00554c?q=80&w=600" }
+      { category: "Music", title: "Synthwave Nostalgia", description: "Electronic soundscapes evoking 80s retro-futurism.", img: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600" },
+      { category: "Art", title: "Digital Expressionism", description: "Expressive brushwork translated into digital mediums.", img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600" },
+      { category: "Fashion", title: "Minimalist Maximalism", description: "Bold statements through carefully curated understated pieces.", img: "https://images.unsplash.com/photo-1551028719-00167b16ebc5?q=80&w=600" },
+      { category: "Film", title: "Color Grading Mastery", description: "Mood and narrative told through sophisticated color palettes.", img: "https://images.unsplash.com/photo-1485579149c01123123bf4dc5a7eb46?q=80&w=600" },
+      { category: "Random", title: "Retro Gaming Aesthetics", description: "Pixel art revival and nostalgia-driven game design trends.", img: "https://images.unsplash.com/photo-1559808295-51a1da00554c?q=80&w=600" }
     ]
   }
 ];
@@ -63,17 +60,11 @@ function getCurrentWeekIndex() {
   return 0;
 }
 
-// Function to format date range for display
-function getDateRange(startDate) {
+// Function to format date for display (just show start date)
+function getDateDisplay(startDate) {
   const start = new Date(startDate);
-  const end = new Date(startDate);
-  end.setDate(end.getDate() + 6); // Add 6 days to get Friday
-  
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const startStr = `${months[start.getMonth()]} ${start.getDate()}`;
-  const endStr = `${months[end.getMonth()]} ${end.getDate()}`;
-  
-  return `${startStr} - ${endStr}`;
+  return `${months[start.getMonth()]} ${start.getDate()}`;
 }
 
 function renderWeek(index) {
@@ -83,24 +74,28 @@ function renderWeek(index) {
   gridElement.classList.add('fade-out');
   
   setTimeout(() => {
-    const dateRange = getDateRange(data.startDate);
-    weekLabel.innerHTML = `Week ${data.weekNumber} <span style="opacity: 0.5; margin-left: 8px; font-weight: 300;">| ${dateRange}</span>`;
+    const dateDisplay = getDateDisplay(data.startDate);
+    weekLabel.innerHTML = `<span style="opacity: 0.5; font-weight: 300;">${dateDisplay}</span>`;
     gridElement.innerHTML = '';
     
+    // Create a grid container for descriptions
+    const descriptionsGrid = document.createElement('div');
+    descriptionsGrid.className = 'weekly-descriptions-grid';
+    
     data.items.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'curation-card';
-      card.style.backgroundImage = `url('${item.img}')`;
+      const descCard = document.createElement('div');
+      descCard.className = 'weekly-desc-card';
       
-      card.innerHTML = `
-        <div class="curation-content">
-          <span class="curation-tag">${item.category}</span>
-          <h3 class="curation-title">${item.title}</h3>
-        </div>
+      descCard.innerHTML = `
+        <span class="curation-tag">${item.category}</span>
+        <h4>${item.title}</h4>
+        <p>${item.description}</p>
       `;
       
-      gridElement.appendChild(card);
+      descriptionsGrid.appendChild(descCard);
     });
+    
+    gridElement.appendChild(descriptionsGrid);
     
     // Fade back in
     gridElement.classList.remove('fade-out');

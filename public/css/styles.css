@@ -102,8 +102,8 @@ body {
 /* Button Variants */
 .btn { display: inline-block; padding: 14px 28px; border-radius: 30px; text-decoration: none; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-glow); backdrop-filter: blur(10px); transition: all 0.4s var(--ease-out-expo); cursor: pointer; color: #fff; }
 .btn:hover { background: rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: scale(1.05); }
-.btn.primary { background: rgba(0, 255, 136, 0.15); border-color: var(--accent-gaming); color: var(--accent-gaming); }
-.btn.primary:hover { background: rgba(0, 255, 136, 0.25); box-shadow: 0 0 20px rgba(0, 255, 136, 0.3); }
+.btn.primary { background: rgba(139, 92, 246, 0.15); border-color: var(--accent-gaming); color: var(--accent-gaming); }
+.btn.primary:hover { background: rgba(139, 92, 246, 0.25); box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
 .btn.secondary { background: rgba(255,255,255,0.1); border-color: var(--glass-glow); color: #fff; }
 .btn.secondary:hover { background: rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(255,255,255,0.2); }
 
@@ -189,6 +189,14 @@ main.container .link { color: var(--text-primary); }
 
 .weekly-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; transition: opacity 0.4s var(--ease-out-expo); }
 .weekly-grid.fade-out { opacity: 0; transform: translateY(10px); }
+
+/* Weekly Descriptions Grid */
+.weekly-descriptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-top: 24px; }
+.weekly-desc-card { padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s var(--ease-out-expo); }
+.weekly-desc-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-3px); }
+.weekly-desc-card .curation-tag { display: block; margin-bottom: 8px; }
+.weekly-desc-card h4 { font-family: var(--font-serif); font-size: 1.1rem; color: #fff; margin-bottom: 8px; line-height: 1.3; }
+.weekly-desc-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin: 0; }
 .curation-card { height: 350px; border-radius: 12px; overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; background-size: cover; background-position: center; text-decoration: none; transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s; cursor: pointer;}
 .curation-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 100%); z-index: 1; transition: opacity 0.4s; }
 .curation-card:hover { transform: scale(1.05) translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.8); z-index: 10; border: 1px solid rgba(255,255,255,0.3);}
