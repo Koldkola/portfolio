@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>House of the Dragon — Game by Kenechi Obiozor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>House of the Dragon — Game by Kenechi Obiozor</h1>
+
+    <div id="controls">
+        <button id="muteBtn" aria-pressed="false">Sound: On</button>
+        <label>Music Volume <input id="musicVol" type="range" min="0" max="1" step="0.01" value="0.4"></label>
+        <label>SFX Volume <input id="sfxVol" type="range" min="0" max="1" step="0.01" value="0.7"></label>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="hud">
+            <div id="score">Score: 0</div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop crossorigin="anonymous">
+        <source src="https://cdn.pixabay.com/download/audio/2022/02/01/audio_2a8f8d0f2d.mp3?filename=medieval-ambience-11288.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="game.js"></script>
+</body>
+</html>

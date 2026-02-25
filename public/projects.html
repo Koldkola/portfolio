@@ -99,9 +99,16 @@
       </article>
       <article class="project-card">
         <div class="project-info">
-          <h3>Arcade Game</h3>
-          <p>Lightweight arcade-style class project emphasizing gameplay loop and UI feedback.</p>
-          <a class="link" href="/class-projects/game/index.html" target="_blank" rel="noopener">Open →</a>
+          <h3>Tic Tac Tactics</h3>
+          <p>Hosted Tic Tac Tactics game with a clean UI and smooth gameplay.</p>
+          <a class="link" href="https://tic-tac-tactics.vercel.app/" target="_blank" rel="noopener">Open →</a>
+        </div>
+      </article>
+      <article class="project-card">
+        <div class="project-info">
+          <h3>Labyrinth Game</h3>
+          <p>Web-based maze game featuring navigation challenges and responsive controls.</p>
+          <a class="link" href="https://labyrinthgame-e3xnf6i0d-koldkolas-projects.vercel.app/" target="_blank" rel="noopener">Open →</a>
         </div>
       </article>
     </div>
@@ -225,13 +232,6 @@
   </div>
 
   <script src="/js/projects-data.js"></script>
-  <script src="/js/projects.js"></script>
-  <script>
-    let allGalleryImages = [];
-    let currentImageIndex = 0;
-    
-    // Load media galleries from projects-data.js
-    function loadProjectMedia() {
       document.querySelectorAll('.media-gallery[data-project]').forEach(gallery => {
         const projectId = gallery.dataset.project;
         const project = projectsMedia[projectId];
