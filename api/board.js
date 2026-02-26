@@ -1,3 +1,5 @@
+import { kv } from '@vercel/kv';
+
 let db;
 
 // Only use better-sqlite3 in development (local/Node.js environment)
@@ -26,9 +28,6 @@ if (process.env.VERCEL !== '1') {
   `);
 }
 
-// In-memory fallback for Vercel (temporary storage, resets on deployment)
-let entries = [];
-
 // Sanitization functions
 function sanitizeInput(input) {
   if (typeof input !== 'string') return '';
@@ -43,7 +42,7 @@ function sanitizePhotoData(photo) {
   return photo;
 }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -60,7 +59,8 @@ export default function handler(req, res) {
         const allEntries = db.prepare('SELECT * FROM board_entries ORDER BY timestamp DESC').all();
         return res.status(200).json(allEntries);
       } else {
-        // Vercel: Use in-memory storage
+        // Vercel: Use Vercel KV (Redis)
+        const entries = await kv.get('board:entries') || [];
         return res.status(200).json(entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
       }
     } catch (error) {
@@ -111,9 +111,10 @@ export default function handler(req, res) {
           message: 'Entry saved successfully'
         });
       } else {
-        // Vercel: Use in-memory storage
-        const id = entries.length + 1;
-        entries.push({
+        // Vercel: Use Vercel KV (Redis)
+        const entries = await kv.get('board:entries') || [];
+        const id = Date.now();
+        const newEntry = {
           id,
           name: sanitizedName,
           text: sanitizedText,
@@ -123,7 +124,10 @@ export default function handler(req, res) {
           photo: sanitizedPhoto,
           timestamp,
           created_at: new Date().toISOString()
-        });
+        };
+        
+        entries.unshift(newEntry); // Add to beginning (newest first)
+        await kv.set('board:entries', entries);
 
         return res.status(201).json({ 
           id,
