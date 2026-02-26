@@ -341,9 +341,9 @@ function renderWeek(index) {
       
       descCard.innerHTML = `
         <div class="sticky-tape"></div>
-        <span class="curation-tag" style="color: #2d2d2d; font-style: italic;">${item.category}</span>
-        <h4 style="color: #2d2d2d;">${item.title}</h4>
-        <p style="color: #2d2d2d;">${item.description}</p>
+        <span class="curation-tag" style="color: #000; font-style: italic;">${item.category}</span>
+        <h4 style="color: #000;">${item.title}</h4>
+        <p style="color: #000;">${item.description}</p>
       `;
       
       // Add click handler to open modal with color
@@ -382,15 +382,15 @@ function openCategoryModal(item, bgColor) {
     modalContent.style.position = 'relative';
     
     // Apply dark text colors for readability on pastel backgrounds
-    modalTitle.style.color = '#2d2d2d';
-    modalCategory.style.color = '#2d2d2d';
-    modalWeek.style.color = '#2d2d2d';
-    modalIntro.style.color = '#2d2d2d';
+    modalTitle.style.color = '#000';
+    modalCategory.style.color = '#000';
+    modalWeek.style.color = '#000';
+    modalIntro.style.color = '#000';
     
     // Style all content in modal body
     const modalBody = modal.querySelector('.category-modal-body');
     if (modalBody) {
-      modalBody.style.color = '#2d2d2d';
+      modalBody.style.color = '#000';
     }
   }
   
@@ -405,12 +405,12 @@ function openCategoryModal(item, bgColor) {
     modalIntro.textContent = item.detailedContent.intro;
     
     // Create highlights list
-    modalHighlights.innerHTML = '<h3 style="color: #2d2d2d;">Key Highlights</h3><ul>' + 
+    modalHighlights.innerHTML = '<h3 style="color: #000;">Key Highlights</h3><ul>' + 
       item.detailedContent.highlights.map(h => `<li>${h}</li>`).join('') + 
       '</ul>';
     
-    modalInspiration.innerHTML = `<h3 style="color: #2d2d2d;">Inspiration</h3><p>${item.detailedContent.inspiration}</p>`;
-    modalTools.innerHTML = `<h3 style="color: #2d2d2d;">Tools & Resources</h3><p>${item.detailedContent.tools}</p>`;
+    modalInspiration.innerHTML = `<h3 style="color: #000;">Inspiration</h3><p>${item.detailedContent.inspiration}</p>`;
+    modalTools.innerHTML = `<h3 style="color: #000;">Tools & Resources</h3><p>${item.detailedContent.tools}</p>`;
   }
   
   modal.classList.add('active');
