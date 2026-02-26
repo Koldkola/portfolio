@@ -3,6 +3,9 @@ const cors = require('cors');
 const axios = require('axios');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs');
+const path = require('path');
+const { PDFDocument, rgb } = require('pdf-lib');
 require('dotenv').config();
 
 const app = express();
@@ -106,10 +109,6 @@ async function handleChat(req, res) {
 app.post('/api/chat', handleChat);
 
 // PDF Resume with blurred phone number
-const fs = require('fs');
-const path = require('path');
-const { PDFDocument, rgb } = require('pdf-lib');
-
 app.get('/api/resume/download', async (req, res) => {
   try {
     const resumePath = path.join(__dirname, 'public', 'assets', 'resume.pdf');
