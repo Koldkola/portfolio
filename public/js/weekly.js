@@ -550,6 +550,12 @@ function closeWeeklyAdminModal() {
     modal.classList.remove('active');
     document.body.style.overflow = '';
   }
+  
+  // Hide label settings panel when closing
+  const settingsPanel = document.getElementById('weekly-label-settings');
+  if (settingsPanel) {
+    settingsPanel.style.display = 'none';
+  }
 }
 
 function openWeeklyEditor(weekIndex = currentWeekIndex, itemIndex = null) {
@@ -595,6 +601,19 @@ function closeWeeklyEditor() {
   }
   editingWeekIndex = null;
   editingItemIndex = null;
+  
+  // Auto-lock weekly admin mode when editor closes
+  if (isWeeklyAdminMode) {
+    isWeeklyAdminMode = false;
+    updateWeeklyAdminButton();
+    renderWeek(currentWeekIndex);
+    
+    // Hide label settings in admin modal
+    const settingsPanel = document.getElementById('weekly-label-settings');
+    if (settingsPanel) {
+      settingsPanel.style.display = 'none';
+    }
+  }
 }
 
 function populateWeekSelect() {

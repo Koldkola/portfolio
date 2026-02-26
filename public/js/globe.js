@@ -194,6 +194,14 @@ function closeGlobeViewModal() {
     document.body.style.overflow = '';
   }
   
+  // Auto-lock globe admin mode when board modal closes
+  if (isAdminMode) {
+    isAdminMode = false;
+    selectedEntries.clear();
+    updateAdminButton();
+    renderBoardModal();
+  }
+  
   // Restore windows visibility
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
@@ -303,6 +311,14 @@ function closeGlobeViewModal() {
   if (modal) {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+  }
+  
+  // Auto-lock globe admin mode when board modal closes
+  if (isAdminMode) {
+    isAdminMode = false;
+    selectedEntries.clear();
+    updateAdminButton();
+    renderBoardModal();
   }
   
   // Restore windows visibility
