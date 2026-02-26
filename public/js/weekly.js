@@ -341,9 +341,9 @@ function renderWeek(index) {
       
       descCard.innerHTML = `
         <div class="sticky-tape"></div>
-        <span class="curation-tag" style="color: rgba(0,0,0,0.7);">${item.category}</span>
+        <span class="curation-tag" style="color: #2d2d2d; font-style: italic;">${item.category}</span>
         <h4 style="color: #2d2d2d;">${item.title}</h4>
-        <p style="color: #4d4d4d;">${item.description}</p>
+        <p style="color: #2d2d2d;">${item.description}</p>
       `;
       
       // Add click handler to open modal with color
