@@ -202,10 +202,10 @@ function openGlobeViewModal() {
 function getEntryRowSpan(entry) {
   const textLength = (entry.text || '').length;
   const hasPhoto = !!entry.photo;
-  const base = hasPhoto ? 20 : 14;
-  const extra = Math.ceil(textLength / 120);
+  const base = hasPhoto ? 14 : 9;
+  const extra = Math.ceil(textLength / 160);
   const span = base + extra * 2;
-  return Math.min(Math.max(span, hasPhoto ? 18 : 12), 36);
+  return Math.min(Math.max(span, hasPhoto ? 12 : 8), 26);
 }
 
 // Helper function to adjust color opacity
