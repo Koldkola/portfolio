@@ -107,7 +107,7 @@ function openGlobeViewModal() {
         return `
           <div class="board-polaroid ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffffff'};" data-index="${index}">
             ${checkboxHtml}
-            <img src="${entry.photo}" class="board-polaroid-photo" alt="User photo" />
+            <img src="${entry.photo}" class="board-polaroid-photo" alt="User photo" data-photo="${entry.photo}" onclick="openPhotoModal('${entry.photo}')" />
             <div class="board-polaroid-content">
               <div class="board-polaroid-name" style="color: ${entry.textColor || '#333'};">${entry.name}</div>
               <div class="board-polaroid-text" style="color: ${entry.textColor || '#555'};">${entry.text}</div>
@@ -165,6 +165,25 @@ function adjustOpacity(color, opacity) {
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   }
   return color;
+}
+
+// Photo enlargement functions
+function openPhotoModal(photoSrc) {
+  const modal = document.getElementById('photo-modal');
+  const img = document.getElementById('photo-modal-img');
+  if (modal && img) {
+    img.src = photoSrc;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closePhotoModal() {
+  const modal = document.getElementById('photo-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 }
 
 // Close expanded view modal
@@ -466,6 +485,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  
+  // Photo modal backdrop click and escape key
+  const photoModal = document.getElementById('photo-modal');
+  if (photoModal) {
+    photoModal.addEventListener('click', (e) => {
+      if (e.target === photoModal) {
+        closePhotoModal();
+      }
+    });
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && photoModal.classList.contains('active')) {
+        closePhotoModal();
+      }
+    });
+  }
 });
 
 // Add CSS animations
@@ -481,3 +516,7 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+
+// Make photo modal functions globally accessible
+window.openPhotoModal = openPhotoModal;
+window.closePhotoModal = closePhotoModal;
