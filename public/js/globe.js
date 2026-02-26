@@ -32,19 +32,26 @@ function updateGlobeDisplay() {
     return;
   }
   
-  const entry = globeEntries[currentEntryIndex];
-  globe.innerHTML = `
-    <div class="globe-prompt" style="cursor: pointer;">
-      <div style="font-size: 0.85rem; opacity: 0.7; margin-bottom: 8px;">
+  // Create scrolling list of all entries
+  const entriesHTML = globeEntries.map((entry, index) => `
+    <div class="globe-scroll-item" style="animation-delay: ${index * 0.2}s;">
+      <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; opacity: 0.9;">
         ${entry.name}
       </div>
-      <div style="font-size: 0.9rem; line-height: 1.4;">
-        "${entry.text.substring(0, 60)}${entry.text.length > 60 ? '...' : ''}"
-      </div>
-      <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 8px;">
-        Click to see board
+      <div style="font-size: 0.75rem; line-height: 1.3; opacity: 0.8;">
+        "${entry.text.substring(0, 50)}${entry.text.length > 50 ? '...' : ''}"
       </div>
     </div>
+  `).join('');
+  
+  globe.innerHTML = `
+    <div class="globe-scroll-container">
+      <div class="globe-scroll-content">
+        ${entriesHTML}
+        ${entriesHTML}
+      </div>
+    </div>
+    <div class="globe-click-hint">Click to see full board</div>
   `;
 }
 
@@ -334,11 +341,6 @@ function showNotification(message) {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   loadEntries();
-  
-  // Rotate entries every 5 seconds
-  if (globeEntries.length > 1) {
-    setInterval(rotateEntries, 5000);
-  }
   
   // Add button click handler
   const addBtn = document.getElementById('globeAddBtn');
