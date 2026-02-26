@@ -341,6 +341,12 @@ function renderWeek(index) {
 
 // Modal functionality
 function openCategoryModal(item) {
+  // Hide me.txt and content.txt windows
+  const aboutWindow = document.getElementById('aboutWindow');
+  const notesWindow = document.getElementById('notesWindow');
+  if (aboutWindow) aboutWindow.style.display = 'none';
+  if (notesWindow) notesWindow.style.display = 'none';
+  
   const modal = document.getElementById('category-modal');
   const modalTitle = document.getElementById('modal-title');
   const modalCategory = document.getElementById('modal-category');
@@ -377,6 +383,19 @@ function closeCategoryModal() {
   const modal = document.getElementById('category-modal');
   modal.classList.remove('active');
   document.body.style.overflow = '';
+  
+  // Restore windows visibility
+  const aboutWindow = document.getElementById('aboutWindow');
+  const notesWindow = document.getElementById('notesWindow');
+  const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
+  const notesVisible = sessionStorage.getItem('notesWindowVisible');
+  
+  if (aboutWindow && aboutVisible !== 'false') {
+    aboutWindow.style.display = 'block';
+  }
+  if (notesWindow && notesVisible !== 'false') {
+    notesWindow.style.display = 'block';
+  }
 }
 
 // Event Listeners

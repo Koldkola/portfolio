@@ -40,7 +40,7 @@
       <!-- Right side interactive elements -->
       <div class="hero-right">
         <!-- Interactive Globe -->
-        <h3 style="text-align: center; margin-bottom: 20px; font-size: 1.5rem; color: var(--text-primary);">
+        <h3 style="text-align: center; margin-bottom: 20px; font-family: 'Playfair Display', serif; font-style: italic; font-size: 2.5rem; color: var(--text-primary);">
           whats in your <span class="tooltip-word" style="text-decoration: underline; text-decoration-color: var(--accent-gaming);">Korner<span class="tooltip-popup">share with others and see whats going on</span></span>?
         </h3>
         <div class="globe-container" id="globeContainer">
@@ -298,6 +298,44 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
     // Make sticky notes draggable
     document.querySelectorAll('.sticky-note').forEach(note => {
       makeDraggable(note);
+    });
+
+    // Hide windows when navigating away and restore on return
+    // Store visibility state in sessionStorage
+    const storeWindowState = () => {
+      if (aboutWindow) {
+        sessionStorage.setItem('aboutWindowVisible', aboutWindow.style.display !== 'none');
+      }
+      if (notesWindow) {
+        sessionStorage.setItem('notesWindowVisible', notesWindow.style.display !== 'none');
+      }
+    };
+
+    // Hide windows when clicking navigation links
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        // Only hide if navigating to different pages (not home)
+        if (href && href !== '/' && href !== '/index.html' && !href.startsWith('#')) {
+          storeWindowState();
+          if (aboutWindow) aboutWindow.style.display = 'none';
+          if (notesWindow) notesWindow.style.display = 'none';
+        }
+      });
+    });
+
+    // Restore visibility when page loads (only on homepage)
+    window.addEventListener('load', () => {
+      const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
+      const notesVisible = sessionStorage.getItem('notesWindowVisible');
+      
+      // If states exist, restore them, otherwise show by default
+      if (aboutWindow) {
+        aboutWindow.style.display = aboutVisible === 'false' ? 'none' : 'block';
+      }
+      if (notesWindow) {
+        notesWindow.style.display = notesVisible === 'false' ? 'none' : 'block';
+      }
     });
   </script>
   

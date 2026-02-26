@@ -86,6 +86,12 @@ function openGlobeViewModal() {
   const modal = document.getElementById('globe-view-modal');
   const content = document.getElementById('globe-view-content');
   
+  // Hide me.txt and content.txt windows
+  const aboutWindow = document.getElementById('aboutWindow');
+  const notesWindow = document.getElementById('notesWindow');
+  if (aboutWindow) aboutWindow.style.display = 'none';
+  if (notesWindow) notesWindow.style.display = 'none';
+  
   if (!modal || !content) return;
   
   if (globeEntries.length === 0) {
@@ -167,6 +173,19 @@ function closeGlobeViewModal() {
   if (modal) {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+  }
+  
+  // Restore windows visibility
+  const aboutWindow = document.getElementById('aboutWindow');
+  const notesWindow = document.getElementById('notesWindow');
+  const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
+  const notesVisible = sessionStorage.getItem('notesWindowVisible');
+  
+  if (aboutWindow && aboutVisible !== 'false') {
+    aboutWindow.style.display = 'block';
+  }
+  if (notesWindow && notesVisible !== 'false') {
+    notesWindow.style.display = 'block';
   }
 }
 
@@ -265,6 +284,19 @@ function closeGlobeViewModal() {
   if (modal) {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+  }
+  
+  // Restore windows visibility
+  const aboutWindow = document.getElementById('aboutWindow');
+  const notesWindow = document.getElementById('notesWindow');
+  const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
+  const notesVisible = sessionStorage.getItem('notesWindowVisible');
+  
+  if (aboutWindow && aboutVisible !== 'false') {
+    aboutWindow.style.display = 'block';
+  }
+  if (notesWindow && notesVisible !== 'false') {
+    notesWindow.style.display = 'block';
   }
 }
 
