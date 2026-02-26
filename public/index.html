@@ -36,6 +36,26 @@
           <a class="glass-btn" href="/archive.html">Explore my Archive</a>
         </div>
       </div>
+      
+      <!-- Right side interactive elements -->
+      <div class="hero-right">
+        <!-- Recycle Bin -->
+        <div class="recycle-bin" id="recycleBin" title="Recycle Bin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+          <span class="recycle-label">Bin</span>
+        </div>
+        
+        <!-- Interactive Globe -->
+        <div class="globe-container" id="globeContainer">
+          <div class="globe" id="globe">
+            <div class="globe-prompt">Share your week</div>
+          </div>
+          <button class="globe-add-btn" id="globeAddBtn" title="Add your thoughts">+</button>
+        </div>
+      </div>
     </section>
 
     <section class="weekly-section">
@@ -71,6 +91,49 @@
     </div>
   </div>
 
+  <!-- Globe Submission Modal -->
+  <div id="globe-modal" class="category-modal">
+    <div class="category-modal-content">
+      <div class="category-modal-header">
+        <h2>Share Your Week</h2>
+        <button class="category-modal-close" onclick="closeGlobeModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <form id="globe-form">
+          <div class="form-group">
+            <label for="weekFeeling">What did you like or dislike about your week?</label>
+            <textarea id="weekFeeling" required placeholder="Share your thoughts..." rows="4"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="userAge">Your age (optional)</label>
+            <input type="number" id="userAge" placeholder="Age" min="1" max="120" />
+          </div>
+          
+          <div class="form-group">
+            <label for="userPhoto">Add a photo (optional)</label>
+            <input type="file" id="userPhoto" accept="image/*" />
+          </div>
+          
+          <button type="submit" class="btn primary">Submit to Globe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Globe Expanded View Modal -->
+  <div id="globe-view-modal" class="category-modal">
+    <div class="category-modal-content">
+      <div class="category-modal-header">
+        <h2>Community Thoughts</h2>
+        <button class="category-modal-close" onclick="closeGlobeViewModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body" id="globe-view-content">
+        <!-- Content populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <p>© 2025 Kenechi Obiozor.</p>
   </footer>
@@ -87,7 +150,7 @@
       <pre class="about-text">hi im Kenechi, but i did name this <span class="tooltip-word">kumachi<span class="tooltip-popup">"bartholemew kuma" (kumachi) is a fictional character from "one piece" who is a priest focused on his community/church, who is known for his resilience, patience, empathy and determination</span></span>.
 
 <span class="tooltip-word">kumachi's korner<span class="tooltip-popup">A korner for me and mine who may relate or wish to see, like kumachi.I preach to myself and all who listen.</span></span> is a digital congregation in which im working on blending all of my interests <br>
-in its diverse forms, in order to create a page that shows my <span class="tooltip-word">Undertow<span class="tooltip-popup">A quiet internal current that shapes ones decisions or mood</span></span>.
+In its diverse forms, in order to create a page that shows my <span class="tooltip-word">Undertow<span class="tooltip-popup">A quiet internal current that shapes ones decisions or mood</span></span>.
 
 </pre>
     </div>
@@ -101,7 +164,7 @@ in its diverse forms, in order to create a page that shows my <span class="toolt
       <span class="window-title">content.txt</span>
     </div>
     <div class="window-body">
-      <pre class="about-text">media, entertainment, art, music, films, writing whatever 
+      <pre class="about-text">Media, entertainment, art, music, films, writing whatever 
 im <span class="tooltip-word">infatuated<span class="tooltip-popup">strong emotional pull<br>usually temporary<br>idealizes the other person<br>feels urgent or consuming</span></span> with/ what's inspiring me at the moment.
 
 Will be adding to it as much as i can, hoping to make this a digital library</pre>
@@ -111,6 +174,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   <script src="/js/search-index.js"></script>
   <script src="/js/site-search.js"></script>
   <script src="/js/weekly.js"></script>
+  <script src="/js/globe.js"></script>
   <script>
     // Window and sticky note drag functionality
     function makeDraggable(element) {

@@ -89,8 +89,39 @@ body {
 /* =========================================
    HERO SECTION
 ========================================= */
-.hero { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 80px auto; padding: 0 40px; min-height: 60vh; }
+.hero { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 80px auto; padding: 0 40px; min-height: 60vh; gap: 60px; }
 .hero-content { flex: 1; max-width: 600px; }
+.hero-right { display: flex; flex-direction: column; gap: 30px; align-items: center; }
+
+/* Recycle Bin */
+.recycle-bin { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s var(--ease-out-expo); }
+.recycle-bin:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-3px); }
+.recycle-bin svg { width: 48px; height: 48px; color: var(--text-muted); }
+.recycle-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+
+/* Interactive Globe */
+.globe-container { position: relative; width: 280px; height: 280px; }
+.globe { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(109, 40, 217, 0.15)); border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.4s var(--ease-out-expo); animation: globeRotate 20s linear infinite; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2), inset 0 0 30px rgba(139, 92, 246, 0.1); }
+.globe:hover { transform: scale(1.05); border-color: var(--accent-gaming); box-shadow: 0 12px 40px rgba(139, 92, 246, 0.4), inset 0 0 40px rgba(139, 92, 246, 0.2); }
+.globe-prompt { font-size: 1rem; color: var(--text-primary); text-align: center; padding: 20px; font-weight: 600; }
+@keyframes globeRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.globe-add-btn { position: absolute; bottom: -10px; right: -10px; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-gaming); border: none; color: #fff; font-size: 2rem; cursor: pointer; transition: all 0.3s var(--ease-out-expo); box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4); display: flex; align-items: center; justify-content: center; }
+.globe-add-btn:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 6px 24px rgba(139, 92, 246, 0.6); }
+
+/* Globe Content Display */
+.globe-entry { padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 16px; }
+.globe-entry-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+.globe-entry-text { color: var(--text-primary); line-height: 1.6; margin-bottom: 12px; }
+.globe-entry-photo { width: 100%; max-width: 400px; border-radius: 8px; margin-top: 12px; }
+
+/* Form Styling */
+.form-group { margin-bottom: 24px; }
+.form-group label { display: block; color: var(--text-primary); margin-bottom: 8px; font-weight: 500; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); font-family: var(--font-sans); font-size: 0.95rem; transition: all 0.3s; }
+.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-gaming); background: rgba(255,255,255,0.08); box-shadow: 0 0 12px rgba(139, 92, 246, 0.2); }
+.form-group textarea { resize: vertical; min-height: 100px; }
+
 .eyebrow { color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 20px; }
 .hero h1 { font-family: var(--font-sans); font-size: clamp(3rem, 5vw, 4.5rem); line-height: 1.1; margin-bottom: 24px; font-weight: 300;}
 .italic-art { font-family: var(--font-serif); font-style: italic; color: var(--text-muted); }
@@ -604,6 +635,10 @@ main.container .link { color: var(--text-primary); }
 }
 
 @media (max-width: 768px) {
+  .hero { flex-direction: column; gap: 40px; }
+  .hero-right { width: 100%; }
+  .globe-container { width: 240px; height: 240px; }
+  
   .contact-content {
     flex-direction: column;
     gap: 30px;
