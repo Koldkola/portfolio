@@ -1,27 +1,4 @@
-import { Redis } from '@upstash/redis';
-
-let redis;
 let fallbackMemory = [];
-let useRedis = false;
-
-// Initialize Upstash Redis (on Vercel) - wrap in try/catch
-try {
-  const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (redisUrl && redisToken) {
-    redis = new Redis({
-      url: redisUrl,
-      token: redisToken,
-    });
-    useRedis = true;
-    console.log('✓ Redis initialized');
-  } else {
-    console.warn('⚠ Redis env vars missing');
-  }
-} catch (err) {
-  console.error('⚠ Redis init failed:', err.message);
-}
 
 // Sanitization functions
 function sanitizeInput(input) {
@@ -33,8 +10,70 @@ function sanitizePhotoData(photo) {
   if (!photo) return null;
   if (typeof photo !== 'string') return null;
   if (!photo.startsWith('data:image/')) return null;
-  if (photo.length > 5 * 1024 * 1024) return null; // 5MB limit
+  if (photo.length > 5 * 1024 * 1024) return null;
   return photo;
+}
+
+// Use HTTP REST API for Upstash instead of SDK
+async function getRedisEntries() {
+  try {
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    
+    if (!url || !token) {
+      console.log('Redis credentials missing');
+      return fallbackMemory;
+    }
+
+    const response = await fetch(`${url}/get/board:entries`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Redis GET failed:', response.status);
+      return fallbackMemory;
+    }
+
+    const data = await response.json();
+    return data.result ? JSON.parse(data.result) : [];
+  } catch (err) {
+    console.error('Redis GET error:', err.message);
+    return fallbackMemory;
+  }
+}
+
+async function setRedisEntries(entries) {
+  try {
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    
+    if (!url || !token) {
+      console.log('Redis credentials missing');
+      return false;
+    }
+
+    const response = await fetch(`${url}/set/board:entries`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(entries)
+    });
+
+    if (!response.ok) {
+      console.error('Redis SET failed:', response.status);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Redis SET error:', err.message);
+    return false;
+  }
 }
 
 export default async function handler(req, res) {
@@ -48,23 +87,15 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
-      if (useRedis && redis) {
-        try {
-          const entries = await redis.get('board:entries');
-          return res.status(200).json(Array.isArray(entries) ? entries : []);
-        } catch (e) {
-          console.error('Redis GET error:', e.message);
-          return res.status(200).json(fallbackMemory);
-        }
-      }
-      return res.status(200).json(fallbackMemory);
+      const entries = await getRedisEntries();
+      return res.status(200).json(entries);
     }
 
     if (req.method === 'POST') {
       const { name, text, age, bgColor, textColor, photo, timestamp } = req.body || {};
 
       if (!name || !text || !timestamp) {
-        return res.status(400).json({ error: 'Missing fields' });
+        return res.status(400).json({ error: 'Missing required fields' });
       }
 
       const newEntry = {
@@ -79,26 +110,29 @@ export default async function handler(req, res) {
         created_at: new Date().toISOString()
       };
 
-      if (useRedis && redis) {
-        try {
-          const entries = (await redis.get('board:entries')) || [];
-          entries.unshift(newEntry);
-          await redis.set('board:entries', entries);
-          return res.status(201).json({ id: newEntry.id, message: 'Saved' });
-        } catch (e) {
-          console.error('Redis POST error:', e.message);
-          fallbackMemory.unshift(newEntry);
-          return res.status(201).json({ id: newEntry.id, message: 'Saved (backup)' });
-        }
+      // Try Redis first
+      let entries = await getRedisEntries();
+      entries.unshift(newEntry);
+      const saved = await setRedisEntries(entries);
+
+      if (!saved) {
+        // Fallback to memory
+        console.log('Using fallback memory');
+        fallbackMemory.unshift(newEntry);
       }
 
-      fallbackMemory.unshift(newEntry);
-      return res.status(201).json({ id: newEntry.id, message: 'Saved' });
+      return res.status(201).json({ 
+        id: newEntry.id, 
+        message: 'Entry saved'
+      });
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('Handler error:', error);
-    return res.status(500).json({ error: 'Server error', details: error.message });
+    return res.status(500).json({ 
+      error: 'Server error',
+      message: error.message 
+    });
   }
 }
