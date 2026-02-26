@@ -346,8 +346,8 @@ function renderWeek(index) {
         <p style="color: #4d4d4d;">${item.description}</p>
       `;
       
-      // Add click handler to open modal
-      descCard.addEventListener('click', () => openCategoryModal(item));
+      // Add click handler to open modal with color
+      descCard.addEventListener('click', () => openCategoryModal(item, bgColor));
       
       gridElement.appendChild(descCard);
     });
@@ -358,7 +358,7 @@ function renderWeek(index) {
 }
 
 // Modal functionality
-function openCategoryModal(item) {
+function openCategoryModal(item, bgColor) {
   // Hide me.txt and content.txt windows
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
@@ -366,6 +366,7 @@ function openCategoryModal(item) {
   if (notesWindow) notesWindow.style.display = 'none';
   
   const modal = document.getElementById('category-modal');
+  const modalContent = modal.querySelector('.category-modal-content');
   const modalTitle = document.getElementById('modal-title');
   const modalCategory = document.getElementById('modal-category');
   const modalWeek = document.getElementById('modal-week');
@@ -373,6 +374,25 @@ function openCategoryModal(item) {
   const modalHighlights = document.getElementById('modal-highlights');
   const modalInspiration = document.getElementById('modal-inspiration');
   const modalTools = document.getElementById('modal-tools');
+  
+  // Apply sticky note styling to modal
+  if (modalContent && bgColor) {
+    modalContent.style.background = bgColor;
+    modalContent.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2)';
+    modalContent.style.position = 'relative';
+    
+    // Apply dark text colors for readability on pastel backgrounds
+    modalTitle.style.color = '#2d2d2d';
+    modalCategory.style.color = 'rgba(0,0,0,0.7)';
+    modalWeek.style.color = 'rgba(0,0,0,0.6)';
+    modalIntro.style.color = '#3d3d3d';
+    
+    // Style all content in modal body
+    const modalBody = modal.querySelector('.category-modal-body');
+    if (modalBody) {
+      modalBody.style.color = '#3d3d3d';
+    }
+  }
   
   // Populate modal content
   modalTitle.textContent = item.title;
@@ -385,12 +405,12 @@ function openCategoryModal(item) {
     modalIntro.textContent = item.detailedContent.intro;
     
     // Create highlights list
-    modalHighlights.innerHTML = '<h3>Key Highlights</h3><ul>' + 
+    modalHighlights.innerHTML = '<h3 style="color: #2d2d2d;">Key Highlights</h3><ul>' + 
       item.detailedContent.highlights.map(h => `<li>${h}</li>`).join('') + 
       '</ul>';
     
-    modalInspiration.innerHTML = `<h3>Inspiration</h3><p>${item.detailedContent.inspiration}</p>`;
-    modalTools.innerHTML = `<h3>Tools & Resources</h3><p>${item.detailedContent.tools}</p>`;
+    modalInspiration.innerHTML = `<h3 style="color: #2d2d2d;">Inspiration</h3><p>${item.detailedContent.inspiration}</p>`;
+    modalTools.innerHTML = `<h3 style="color: #2d2d2d;">Tools & Resources</h3><p>${item.detailedContent.tools}</p>`;
   }
   
   modal.classList.add('active');
