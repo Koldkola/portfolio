@@ -39,15 +39,6 @@
       
       <!-- Right side interactive elements -->
       <div class="hero-right">
-        <!-- Recycle Bin -->
-        <div class="recycle-bin" id="recycleBin" title="Recycle Bin">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/>
-            <path d="M10 11v6M14 11v6"/>
-          </svg>
-          <span class="recycle-label">Bin</span>
-        </div>
-        
         <!-- Interactive Globe -->
         <div class="globe-container" id="globeContainer">
           <div class="globe" id="globe">
@@ -101,6 +92,11 @@
       <div class="category-modal-body">
         <form id="globe-form">
           <div class="form-group">
+            <label for="userName">Your name or initials</label>
+            <input type="text" id="userName" required placeholder="Enter your name or initials" maxlength="30" />
+          </div>
+          
+          <div class="form-group">
             <label for="weekFeeling">What did you like or dislike about your week?</label>
             <textarea id="weekFeeling" required placeholder="Share your thoughts..." rows="4"></textarea>
           </div>
@@ -115,21 +111,73 @@
             <input type="file" id="userPhoto" accept="image/*" />
           </div>
           
-          <button type="submit" class="btn primary">Submit to Globe</button>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="textColor">Text Color</label>
+              <input type="color" id="textColor" value="#ffffff" />
+            </div>
+            
+            <div class="form-group">
+              <label for="bgColor">Background Color</label>
+              <input type="color" id="bgColor" value="#ffd97d" />
+            </div>
+          </div>
+          
+          <button type="submit" class="btn primary">Add to Board</button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Globe Expanded View Modal -->
-  <div id="globe-view-modal" class="category-modal">
-    <div class="category-modal-content">
+  <!-- Globe Board View Modal -->
+  <div id="globe-view-modal" class="board-modal">
+    <div class="board-modal-content">
       <div class="category-modal-header">
-        <h2>Community Thoughts</h2>
-        <button class="category-modal-close" onclick="closeGlobeViewModal()" aria-label="Close modal">&times;</button>
+        <h2>Community Board</h2>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="board-delete-btn" id="boardDeleteBtn" title="Admin: Manage entries" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+              <path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/>
+              <path d="M10 11v6M14 11v6"/>
+            </svg>
+          </button>
+          <button class="board-admin-btn" id="boardAdminBtn" title="Admin mode">
+            🔒
+          </button>
+          <button class="category-modal-close" onclick="closeGlobeViewModal()" aria-label="Close modal">&times;</button>
+        </div>
       </div>
-      <div class="category-modal-body" id="globe-view-content">
+      <div id="board-admin-controls" style="display: none; margin-bottom: 20px; padding: 16px; background: rgba(139, 92, 246, 0.1); border: 1px solid var(--accent-gaming); border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="color: var(--text-primary);">Admin Mode Active</span>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn secondary" id="selectAllBtn" style="padding: 8px 16px; font-size: 0.85rem;">Select All</button>
+            <button class="btn primary" id="deleteSelectedBtn" style="padding: 8px 16px; font-size: 0.85rem;">Delete Selected</button>
+          </div>
+        </div>
+      </div>
+      <div class="board-container" id="globe-view-content">
         <!-- Content populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Password Modal -->
+  <div id="admin-password-modal" class="category-modal">
+    <div class="category-modal-content" style="max-width: 500px;">
+      <div class="category-modal-header">
+        <h2>Admin Access</h2>
+        <button class="category-modal-close" onclick="closeAdminPasswordModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <form id="admin-password-form">
+          <div class="form-group">
+            <label for="adminPassword">Enter admin password</label>
+            <input type="password" id="adminPassword" required placeholder="Password" />
+            <div id="admin-password-error" style="color: #ff4444; font-size: 0.85rem; margin-top: 8px; display: none;">Incorrect password</div>
+          </div>
+          <button type="submit" class="btn primary">Unlock Admin Mode</button>
+        </form>
       </div>
     </div>
   </div>
