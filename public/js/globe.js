@@ -9,7 +9,7 @@ const ADMIN_PASSWORD_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e
 const ADMIN_PASSWORD_SALT = "archive-v1";
 
 // API endpoint for board entries
-const API_URL = '/api/board';
+const API_URL = '/api/board/entries';
 
 // Load entries from backend server
 async function loadEntries() {
