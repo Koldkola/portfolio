@@ -323,7 +323,7 @@ function selectAllEntries() {
 }
 
 // Delete selected entries
-function deleteSelectedEntries() {
+async function deleteSelectedEntries() {
   if (selectedEntries.size === 0) {
     showNotification('No entries selected');
     return;
@@ -331,18 +331,44 @@ function deleteSelectedEntries() {
   
   const count = selectedEntries.size;
   if (confirm(`Delete ${count} selected ${count === 1 ? 'entry' : 'entries'}? This cannot be undone.`)) {
-    // Sort indices in descending order to delete from end to start
+    // Get the IDs of entries to delete
     const indicesToDelete = Array.from(selectedEntries).sort((a, b) => b - a);
+    const idsToDelete = indicesToDelete.map(index => globeEntries[index]?.id).filter(Boolean);
+    
+    // Delete from local array
     indicesToDelete.forEach(index => {
       globeEntries.splice(index, 1);
     });
     
     selectedEntries.clear();
-    saveEntries();
     currentEntryIndex = 0;
     updateGlobeDisplay();
+    
+    // Sync deletion to backend
+    try {
+      const response = await fetch(API_URL, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: idsToDelete })
+      });
+      
+      if (response.ok) {
+        showNotification(`Deleted ${count} ${count === 1 ? 'entry' : 'entries'}`);
+      } else {
+        showNotification('Deleted locally, but failed to sync to server');
+        // Reload to get server state
+        await loadEntries();
+      }
+    } catch (error) {
+      console.error('Error syncing deletions:', error);
+      showNotification('Deleted locally, but failed to sync to server');
+      // Reload to get server state
+      await loadEntries();
+    }
+    
     openGlobeViewModal(); // Refresh view
-    showNotification(`Deleted ${count} ${count === 1 ? 'entry' : 'entries'}`);
   }
 }
 

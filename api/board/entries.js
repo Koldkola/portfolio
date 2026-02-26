@@ -78,7 +78,7 @@ async function setRedisEntries(entries) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
@@ -124,6 +124,36 @@ export default async function handler(req, res) {
       return res.status(201).json({ 
         id: newEntry.id, 
         message: 'Entry saved'
+      });
+    }
+
+    if (req.method === 'DELETE') {
+      const { ids } = req.body || {};
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ error: 'No IDs provided' });
+      }
+
+      // Get current entries
+      let entries = await getRedisEntries();
+      
+      // Filter out entries with matching IDs
+      const before = entries.length;
+      entries = entries.filter(entry => !ids.includes(entry.id));
+      const after = entries.length;
+      const deleted = before - after;
+
+      // Save back to Redis
+      const saved = await setRedisEntries(entries);
+
+      if (!saved) {
+        // Update fallback memory too
+        fallbackMemory = fallbackMemory.filter(entry => !ids.includes(entry.id));
+      }
+
+      return res.status(200).json({ 
+        message: `Deleted ${deleted} entries`,
+        deleted: deleted
       });
     }
 
