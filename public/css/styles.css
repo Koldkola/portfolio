@@ -371,6 +371,8 @@ main.container .link { color: var(--text-primary); }
   transition: all 0.3s ease;
   position: relative;
   margin-bottom: -2px;
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .tab-btn:hover {
@@ -470,6 +472,8 @@ main.container .link { color: var(--text-primary); }
   transition: all 0.3s ease;
   flex-shrink: 0;
   box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .carousel-nav:hover {
