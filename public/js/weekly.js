@@ -412,6 +412,11 @@ function openCategoryModal(item, bgColor) {
     modalInspiration.innerHTML = `<h3 style="color: #000;">Inspiration</h3><p>${item.detailedContent.inspiration}</p>`;
     modalTools.innerHTML = `<h3 style="color: #000;">Tools & Resources</h3><p>${item.detailedContent.tools}</p>`;
   }
+
+  const modalTextNodes = modal.querySelectorAll('.category-modal-body p, .category-modal-body li');
+  modalTextNodes.forEach(node => {
+    node.style.color = '#000';
+  });
   
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
