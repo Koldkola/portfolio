@@ -460,13 +460,33 @@ function openCategoryModal(item, bgColor) {
       ? highlightsRaw
       : String(highlightsRaw).split('\n').filter(Boolean);
     
-    // Create highlights list
-    modalHighlights.innerHTML = '<h3 style="color: #000;">Key Highlights</h3><ul>' + 
-      highlights.map(h => `<li>${h}</li>`).join('') + 
-      '</ul>';
+    // Create highlights list - only show if not empty
+    if (highlights.length > 0) {
+      modalHighlights.innerHTML = '<h3 style="color: #000;">Key Highlights</h3><ul>' + 
+        highlights.map(h => `<li>${h}</li>`).join('') + 
+        '</ul>';
+      modalHighlights.style.display = 'block';
+    } else {
+      modalHighlights.style.display = 'none';
+    }
     
-    modalInspiration.innerHTML = `<h3 style="color: #000;">Inspiration</h3><p>${item.detailedContent.inspiration || ''}</p>`;
-    modalTools.innerHTML = `<h3 style="color: #000;">Tools & Resources</h3><p>${item.detailedContent.tools || ''}</p>`;
+    // Show inspiration only if not empty
+    const inspiration = item.detailedContent.inspiration || '';
+    if (inspiration.trim()) {
+      modalInspiration.innerHTML = `<h3 style="color: #000;">Inspiration</h3><p>${inspiration}</p>`;
+      modalInspiration.style.display = 'block';
+    } else {
+      modalInspiration.style.display = 'none';
+    }
+    
+    // Show tools only if not empty
+    const toolsText = item.detailedContent.tools || '';
+    if (toolsText.trim()) {
+      modalTools.innerHTML = `<h3 style="color: #000;">Tools & Resources</h3><p>${toolsText}</p>`;
+      modalTools.style.display = 'block';
+    } else {
+      modalTools.style.display = 'none';
+    }
   }
 
   const modalTextNodes = modal.querySelectorAll('.category-modal-body p, .category-modal-body li');
@@ -549,6 +569,7 @@ function openWeeklyEditor(weekIndex = currentWeekIndex, itemIndex = null) {
   document.getElementById('weeklyTitle').value = item?.title || '';
   document.getElementById('weeklyDescription').value = item?.description || '';
   document.getElementById('weeklyImage').value = item?.img || '';
+  document.getElementById('weeklyPhoto').value = '';
   document.getElementById('weeklyIntro').value = item?.detailedContent?.intro || '';
   document.getElementById('weeklyHighlights').value = Array.isArray(item?.detailedContent?.highlights)
     ? item.detailedContent.highlights.join('\n')
@@ -601,43 +622,79 @@ function addWeeklyWeek(dateString) {
 
 function saveWeeklyItem() {
   const weekIndex = parseInt(document.getElementById('weeklyWeekSelect').value, 10);
-  const category = document.getElementById('weeklyCategory').value.trim();
-  const title = document.getElementById('weeklyTitle').value.trim();
-  const description = document.getElementById('weeklyDescription').value.trim();
-  const img = document.getElementById('weeklyImage').value.trim();
-  const intro = document.getElementById('weeklyIntro').value.trim();
+  
+  // Sanitize all inputs to prevent XSS
+  const category = sanitizeInput(document.getElementById('weeklyCategory').value.trim());
+  const title = sanitizeInput(document.getElementById('weeklyTitle').value.trim());
+  const description = sanitizeInput(document.getElementById('weeklyDescription').value.trim());
+  let img = document.getElementById('weeklyImage').value.trim();
+  
+  // Validate image URL
+  if (img && !isValidURL(img)) {
+    alert('Invalid image URL');
+    return;
+  }
+  
+  const photoInput = document.getElementById('weeklyPhoto');
+  const intro = sanitizeHTML(document.getElementById('weeklyIntro').value.trim());
   const highlights = document.getElementById('weeklyHighlights').value
     .split('\n')
-    .map(line => line.trim())
+    .map(line => sanitizeHTML(line.trim()))
     .filter(Boolean);
-  const inspiration = document.getElementById('weeklyInspiration').value.trim();
-  const tools = document.getElementById('weeklyTools').value.trim();
+  const inspiration = sanitizeHTML(document.getElementById('weeklyInspiration').value.trim());
+  const tools = sanitizeHTML(document.getElementById('weeklyTools').value.trim());
 
   if (!weeklyData[weekIndex]) return;
 
-  const newItem = {
-    category,
-    title,
-    description,
-    img,
-    detailedContent: {
-      intro,
-      highlights,
-      inspiration,
-      tools
+  // Handle photo upload - convert to base64
+  if (photoInput && photoInput.files && photoInput.files[0]) {
+    const file = photoInput.files[0];
+    
+    // Validate file
+    const validation = validateFileUpload(file);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
     }
-  };
-
-  if (editingItemIndex !== null) {
-    weeklyData[weekIndex].items[editingItemIndex] = newItem;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      img = e.target.result; // Use base64 as image source
+      saveItem();
+    };
+    reader.onerror = function() {
+      alert('Failed to read file');
+    };
+    reader.readAsDataURL(file);
   } else {
-    weeklyData[weekIndex].items.push(newItem);
+    saveItem();
   }
 
-  saveWeeklyOverrides();
-  currentWeekIndex = weekIndex;
-  renderWeek(currentWeekIndex);
-  closeWeeklyEditor();
+  function saveItem() {
+    const newItem = {
+      category,
+      title,
+      description,
+      img,
+      detailedContent: {
+        intro,
+        highlights,
+        inspiration,
+        tools
+      }
+    };
+
+    if (editingItemIndex !== null) {
+      weeklyData[weekIndex].items[editingItemIndex] = newItem;
+    } else {
+      weeklyData[weekIndex].items.push(newItem);
+    }
+
+    saveWeeklyOverrides();
+    currentWeekIndex = weekIndex;
+    renderWeek(currentWeekIndex);
+    closeWeeklyEditor();
+  }
 }
 
 function deleteWeeklyItem() {
@@ -702,18 +759,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (weeklyAdminForm) {
     weeklyAdminForm.addEventListener('submit', async (event) => {
       event.preventDefault();
+      
+      // Check rate limiting
+      if (isPasswordRateLimited('weekly_admin')) {
+        alert('Too many failed attempts. Please wait 15 minutes before trying again.');
+        return;
+      }
+      
       const input = document.getElementById('weeklyAdminPassword');
       const error = document.getElementById('weekly-admin-error');
       if (!input) return;
+      
       const hash = await hashWeeklyPassword(input.value, WEEKLY_ADMIN_SALT);
       if (hash === WEEKLY_ADMIN_HASH) {
         isWeeklyAdminMode = true;
         updateWeeklyAdminButton();
         renderWeek(currentWeekIndex);
         closeWeeklyAdminModal();
+        resetPasswordAttempts('weekly_admin');
         openWeeklyEditor(currentWeekIndex, null);
-      } else if (error) {
-        error.style.display = 'block';
+      } else {
+        trackPasswordAttempt('weekly_admin');
+        if (error) {
+          error.style.display = 'block';
+        }
       }
     });
   }

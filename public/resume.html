@@ -22,7 +22,8 @@
     <h1>Resume </h1>
 
     <div class="resume-actions">
-      <a class="btn" href="/assets/resume.pdf" target="_blank" rel="noopener">View / Download PDF (place file at /public/assets/resume.pdf)</a>
+      <button class="btn" id="viewResumeBtn" onclick="viewResume()">View PDF (Phone blurred)</button>
+      <button class="btn" id="downloadResumeBtn" onclick="downloadResume()">Download PDF (Phone blurred)</button>
       <a class="btn ghost" href="/contact.html">Contact</a>
       <a class="contact-btn" href="https://github.com/Koldkola" target="_blank" rel="noopener">GitHub</a>
       <a class="contact-btn" href="https://www.linkedin.com/in/kenechi-obiozor-3ba523228/" target="_blank" rel="noopener">LinkedIn</a>
@@ -148,5 +149,22 @@
   <footer class="site-footer">
     <p>Back to <a href="/">Home</a></p>
   </footer>
+
+  <script>
+    function viewResume() {
+      // Open the blurred resume in a new window for viewing
+      window.open('/api/resume/view', '_blank');
+    }
+
+    function downloadResume() {
+      // Download the blurred resume
+      const link = document.createElement('a');
+      link.href = '/api/resume/download';
+      link.download = 'resume.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
 </body>
 </html>

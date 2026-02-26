@@ -24,7 +24,11 @@
     "axios": "^1.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "pdf-lib": "^1.17.1",
+    "pako": "^2.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

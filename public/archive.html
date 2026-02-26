@@ -103,6 +103,10 @@
           <input type="url" id="archiveImage" placeholder="https://" />
         </div>
         <div class="form-group">
+          <label for="archivePhoto">Photo Upload (optional)</label>
+          <input type="file" id="archivePhoto" accept="image/*" />
+        </div>
+        <div class="form-group">
           <label for="archiveDescription">Description (HTML allowed for links/images)</label>
           <textarea id="archiveDescription" rows="4" placeholder="Description"></textarea>
         </div>
@@ -115,6 +119,23 @@
           <button type="button" class="btn secondary" onclick="closeArchiveEditor()">Cancel</button>
           <button type="button" class="btn primary" id="archiveSaveBtn">Save</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archive Detail Modal -->
+  <div id="archive-detail-modal" class="category-modal">
+    <div class="category-modal-content">
+      <div class="sticky-tape" style="position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 60px; height: 8px; background: rgba(0,0,0,0.2); border-radius: 3px; z-index: 10;"></div>
+      <div class="category-modal-header">
+        <h2 id="archive-detail-title"></h2>
+        <button class="category-modal-close" onclick="closeArchiveDetail()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-meta">
+        <span id="archive-detail-tag"></span>
+      </div>
+      <div class="category-modal-body">
+        <div id="archive-detail-content"></div>
       </div>
     </div>
   </div>
@@ -198,6 +219,7 @@
 
   <script src="/js/search-index.js"></script>
   <script src="/js/site-search.js"></script>
+  <script src="/js/security.js"></script>
   <script>
     const ARCHIVE_LOCK_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e3d4fd29fb2838";
     const ARCHIVE_LOCK_SALT = "archive-v1";
@@ -264,14 +286,10 @@
       if (!archiveGrid) return;
       archiveGrid.innerHTML = '';
       archiveEntries.forEach((entry, index) => {
-        const wrapper = document.createElement(entry.link ? 'a' : 'article');
+        const wrapper = document.createElement('article');
         wrapper.className = `art-card ${entry.size || ''}`.trim();
-        if (entry.link) {
-          wrapper.href = entry.link;
-          wrapper.target = '_blank';
-          wrapper.rel = 'noopener noreferrer';
-        }
         wrapper.style.backgroundImage = `url('${entry.image || ''}')`;
+        wrapper.style.cursor = 'pointer';
         wrapper.innerHTML = `
           ${isArchiveAdminMode ? '<button class="archive-edit-btn" type="button">Edit</button>' : ''}
           <div class="card-content">
@@ -280,6 +298,14 @@
             <p>${entry.description || ''}</p>
           </div>
         `;
+        
+        // Click handler to open detail modal
+        wrapper.addEventListener('click', (event) => {
+          if (!event.target.classList.contains('archive-edit-btn')) {
+            openArchiveDetail(index);
+          }
+        });
+        
         if (isArchiveAdminMode) {
           const editBtn = wrapper.querySelector('.archive-edit-btn');
           if (editBtn) {
@@ -292,6 +318,60 @@
         }
         archiveGrid.appendChild(wrapper);
       });
+    }
+
+    function updateArchiveAdminButton() {
+      if (archiveAdminBtn) {
+        archiveAdminBtn.textContent = isArchiveAdminMode ? '🔓' : '🔒';
+      }
+    }
+
+    function openArchiveDetail(index) {
+      const entry = archiveEntries[index];
+      const modal = document.getElementById('archive-detail-modal');
+      const title = document.getElementById('archive-detail-title');
+      const tag = document.getElementById('archive-detail-tag');
+      const content = document.getElementById('archive-detail-content');
+      
+      title.textContent = entry.title || '';
+      tag.textContent = entry.tag || '';
+      
+      // Build content with image and description
+      let contentHtml = '';
+      if (entry.image) {
+        contentHtml += `<img src="${entry.image}" alt="${entry.title}" style="width: 100%; border-radius: 12px; margin-bottom: 16px;" />`;
+      }
+      if (entry.description) {
+        contentHtml += `<p style="color: #000;">${entry.description}</p>`;
+      }
+      if (entry.link) {
+        contentHtml += `<p style="margin-top: 16px;"><a href="${entry.link}" target="_blank" rel="noopener noreferrer" style="color: #5656d7; text-decoration: underline;">Learn more →</a></p>`;
+      }
+      
+      content.innerHTML = contentHtml;
+      
+      // Style modal
+      const modalContent = modal.querySelector('.category-modal-content');
+      if (modalContent) {
+        modalContent.style.background = '#f5f5f5';
+      }
+      
+      // Make all text dark
+      const textNodes = modal.querySelectorAll('.category-modal-body p, .category-modal-body li, .category-modal-body a');
+      textNodes.forEach(node => {
+        node.style.color = '#000';
+      });
+      
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeArchiveDetail() {
+      const modal = document.getElementById('archive-detail-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
     }
 
     function updateArchiveAdminButton() {
@@ -327,6 +407,7 @@
       document.getElementById('archiveTag').value = entry?.tag || '';
       document.getElementById('archiveTagClass').value = entry?.tagClass || 'tag-horror';
       document.getElementById('archiveImage').value = entry?.image || '';
+      document.getElementById('archivePhoto').value = '';
       document.getElementById('archiveDescription').value = entry?.description || '';
       document.getElementById('archiveLink').value = entry?.link || '';
       const deleteBtn = document.getElementById('archiveDeleteBtn');
@@ -427,6 +508,13 @@
     if (archiveAdminForm) {
       archiveAdminForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+        
+        // Check rate limiting
+        if (isPasswordRateLimited('archive_admin')) {
+          alert('Too many failed attempts. Please wait 15 minutes before trying again.');
+          return;
+        }
+        
         const input = document.getElementById('archiveAdminPassword');
         const error = document.getElementById('archive-admin-error');
         if (!input) return;
@@ -436,9 +524,13 @@
           updateArchiveAdminButton();
           closeArchiveAdminModal();
           renderArchiveEntries();
+          resetPasswordAttempts('archive_admin');
           openArchiveEditor(null);
-        } else if (error) {
-          error.style.display = 'block';
+        } else {
+          trackPasswordAttempt('archive_admin');
+          if (error) {
+            error.style.display = 'block';
+          }
         }
       });
     }
@@ -446,16 +538,59 @@
     const archiveSaveBtn = document.getElementById('archiveSaveBtn');
     if (archiveSaveBtn) {
       archiveSaveBtn.addEventListener('click', () => {
+        let image = document.getElementById('archiveImage').value.trim();
+        
+        // Validate image URL
+        if (image && !isValidURL(image)) {
+          alert('Invalid image URL');
+          return;
+        }
+        
+        const photoInput = document.getElementById('archivePhoto');
+        
+        // Sanitize all inputs
         const entry = {
-          title: document.getElementById('archiveTitle').value.trim(),
-          tag: document.getElementById('archiveTag').value.trim(),
+          title: sanitizeInput(document.getElementById('archiveTitle').value.trim()),
+          tag: sanitizeInput(document.getElementById('archiveTag').value.trim()),
           tagClass: document.getElementById('archiveTagClass').value,
-          image: document.getElementById('archiveImage').value.trim(),
-          description: document.getElementById('archiveDescription').value.trim(),
+          description: sanitizeHTML(document.getElementById('archiveDescription').value.trim()),
           link: document.getElementById('archiveLink').value.trim(),
           size: ''
         };
+        
+        // Validate link if provided
+        if (entry.link && !isValidURL(entry.link)) {
+          alert('Invalid link URL');
+          return;
+        }
 
+        // Handle photo upload
+        if (photoInput && photoInput.files && photoInput.files[0]) {
+          const file = photoInput.files[0];
+          
+          // Validate file
+          const validation = validateFileUpload(file);
+          if (!validation.valid) {
+            alert(validation.error);
+            return;
+          }
+          
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            entry.image = e.target.result; // Use base64
+            saveArchiveEntry(entry);
+          };
+          reader.onerror = function() {
+            alert('Failed to read file');
+          };
+          reader.readAsDataURL(file);
+        } else {
+          entry.image = image;
+          saveArchiveEntry(entry);
+        }
+      });
+
+      function saveArchiveEntry(entry) {
         if (editingArchiveIndex !== null) {
           archiveEntries[editingArchiveIndex] = { ...archiveEntries[editingArchiveIndex], ...entry };
         } else {
@@ -464,7 +599,7 @@
         saveArchiveEntries();
         renderArchiveEntries();
         closeArchiveEditor();
-      });
+      }
     }
 
     const archiveDeleteBtn = document.getElementById('archiveDeleteBtn');
@@ -491,6 +626,20 @@
         if (event.target === archiveEditorModal) closeArchiveEditor();
       });
     }
+
+    const archiveDetailModal = document.getElementById('archive-detail-modal');
+    if (archiveDetailModal) {
+      archiveDetailModal.addEventListener('click', (event) => {
+        if (event.target === archiveDetailModal) closeArchiveDetail();
+      });
+    }
+
+    // Close detail modal on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeArchiveDetail();
+      }
+    });
 
     updateArchiveAdminButton();
     renderArchiveEntries();
