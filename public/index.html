@@ -317,13 +317,11 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       cursor: help;
       color: var(--accent, #8b5cf6);
       font-weight: 600;
+      display: inline-block;
     }
     
     .tooltip-popup {
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-12px);
+      position: fixed;
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.98), rgba(109, 40, 217, 0.98));
       color: #ffffff;
       padding: 20px 24px;
@@ -343,38 +341,86 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       line-height: 1.5;
       letter-spacing: 0.3px;
       backdrop-filter: blur(10px);
+      transform: translateY(-10px);
     }
     
     .tooltip-popup::after {
       content: '';
       position: absolute;
+      border: 8px solid transparent;
+    }
+    
+    /* Arrow pointing down (tooltip above) */
+    .tooltip-popup.above::after {
       top: 100%;
       left: 50%;
       transform: translateX(-50%);
-      border: 8px solid transparent;
       border-top-color: rgba(109, 40, 217, 0.98);
+    }
+    
+    /* Arrow pointing up (tooltip below) */
+    .tooltip-popup.below::after {
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-color: rgba(109, 40, 217, 0.98);
     }
     
     .tooltip-word:hover .tooltip-popup {
       opacity: 1;
       visibility: visible;
-      transform: translateX(-50%) translateY(-20px);
-      animation: tooltipBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-    
-    @keyframes tooltipBounce {
-      0% {
-        transform: translateX(-50%) translateY(-8px) scale(0.8);
-        opacity: 0;
-      }
-      50% {
-        transform: translateX(-50%) translateY(-28px) scale(1.08);
-      }
-      100% {
-        transform: translateX(-50%) translateY(-20px) scale(1);
-        opacity: 1;
-      }
     }
   </style>
+  
+  <script>
+    // Smart tooltip positioning
+    document.addEventListener('DOMContentLoaded', () => {
+      const tooltipWords = document.querySelectorAll('.tooltip-word');
+      
+      tooltipWords.forEach(word => {
+        word.addEventListener('mouseenter', function(e) {
+          const tooltip = this.querySelector('.tooltip-popup');
+          if (!tooltip) return;
+          
+          const rect = this.getBoundingClientRect();
+          const tooltipRect = tooltip.getBoundingClientRect();
+          const viewportHeight = window.innerHeight;
+          const viewportWidth = window.innerWidth;
+          
+          // Calculate space above and below
+          const spaceAbove = rect.top;
+          const spaceBelow = viewportHeight - rect.bottom;
+          
+          // Determine if tooltip should be above or below
+          const showAbove = spaceAbove > spaceBelow || spaceAbove > 200;
+          
+          // Position horizontally centered on the word
+          let left = rect.left + (rect.width / 2);
+          
+          // Adjust if tooltip would go off screen horizontally
+          const tooltipWidth = tooltipRect.width || 360; // fallback width
+          if (left - tooltipWidth / 2 < 10) {
+            left = tooltipWidth / 2 + 10;
+          } else if (left + tooltipWidth / 2 > viewportWidth - 10) {
+            left = viewportWidth - tooltipWidth / 2 - 10;
+          }
+          
+          tooltip.style.left = left + 'px';
+          
+          if (showAbove) {
+            tooltip.style.top = (rect.top - 20) + 'px';
+            tooltip.style.transform = 'translate(-50%, -100%)';
+            tooltip.classList.add('above');
+            tooltip.classList.remove('below');
+          } else {
+            tooltip.style.top = (rect.bottom + 20) + 'px';
+            tooltip.style.transform = 'translate(-50%, 0)';
+            tooltip.classList.add('below');
+            tooltip.classList.remove('above');
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
