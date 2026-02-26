@@ -42,7 +42,7 @@ app.use(helmet.contentSecurityPolicy({
     scriptSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
     styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
     imgSrc: ["'self'", "data:", "https:"],
-    connectSrc: ["'self'", "https://api.openai.com"],
+    connectSrc: ["'self'", "https://api.openai.com", "https://vitals.vercel-insights.com"],
     fontSrc: ["'self'", "https://fonts.gstatic.com"],
     objectSrc: ["'none'"],
     mediaSrc: ["'self'"],
