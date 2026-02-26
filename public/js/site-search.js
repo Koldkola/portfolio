@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     results.innerHTML = items.map(item => (
-      `<a href="${item.url}" role="option">${item.title}</a>`
+      `<a href="${item.url}" class="site-search-results-item" role="option">${item.title}</a>`
     )).join('');
     results.classList.add('active');
   };
