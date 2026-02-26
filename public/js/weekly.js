@@ -775,9 +775,14 @@ document.addEventListener('DOMContentLoaded', () => {
         isWeeklyAdminMode = true;
         updateWeeklyAdminButton();
         renderWeek(currentWeekIndex);
-        closeWeeklyAdminModal();
+        
+        // Show label settings panel
+        const settingsPanel = document.getElementById('weekly-label-settings');
+        if (settingsPanel) {
+          settingsPanel.style.display = 'block';
+        }
+        
         resetPasswordAttempts('weekly_admin');
-        openWeeklyEditor(currentWeekIndex, null);
       } else {
         trackPasswordAttempt('weekly_admin');
         if (error) {
@@ -819,4 +824,86 @@ document.addEventListener('DOMContentLoaded', () => {
       if (event.target === weeklyEditorModal) closeWeeklyEditor();
     });
   }
+  
+  // Load custom labels on page load
+  loadWeeklyLabels();
 });
+
+// =========================================
+// CUSTOM LABEL MANAGEMENT
+// =========================================
+
+const DEFAULT_WEEKLY_LABELS = {
+  intro: 'Intro',
+  highlights: 'Key Highlights',
+  inspiration: 'Inspiration',
+  tools: 'Tools & Resources'
+};
+
+function getWeeklyLabels() {
+  const stored = localStorage.getItem('weeklyCustomLabels');
+  return stored ? JSON.parse(stored) : { ...DEFAULT_WEEKLY_LABELS };
+}
+
+function saveWeeklyLabels() {
+  const labels = {
+    intro: document.getElementById('labelIntro').value.trim() || DEFAULT_WEEKLY_LABELS.intro,
+    highlights: document.getElementById('labelHighlights').value.trim() || DEFAULT_WEEKLY_LABELS.highlights,
+    inspiration: document.getElementById('labelInspiration').value.trim() || DEFAULT_WEEKLY_LABELS.inspiration,
+    tools: document.getElementById('labelTools').value.trim() || DEFAULT_WEEKLY_LABELS.tools
+  };
+  
+  localStorage.setItem('weeklyCustomLabels', JSON.stringify(labels));
+  applyWeeklyLabels(labels);
+  alert('Labels saved successfully!');
+}
+
+function resetWeeklyLabels() {
+  localStorage.removeItem('weeklyCustomLabels');
+  const labels = { ...DEFAULT_WEEKLY_LABELS };
+  
+  document.getElementById('labelIntro').value = labels.intro;
+  document.getElementById('labelHighlights').value = labels.highlights;
+  document.getElementById('labelInspiration').value = labels.inspiration;
+  document.getElementById('labelTools').value = labels.tools;
+  
+  applyWeeklyLabels(labels);
+  alert('Labels reset to defaults!');
+}
+
+function loadWeeklyLabels() {
+  const labels = getWeeklyLabels();
+  
+  // Set input values
+  const labelIntro = document.getElementById('labelIntro');
+  const labelHighlights = document.getElementById('labelHighlights');
+  const labelInspiration = document.getElementById('labelInspiration');
+  const labelTools = document.getElementById('labelTools');
+  
+  if (labelIntro) labelIntro.value = labels.intro;
+  if (labelHighlights) labelHighlights.value = labels.highlights;
+  if (labelInspiration) labelInspiration.value = labels.inspiration;
+  if (labelTools) labelTools.value = labels.tools;
+  
+  applyWeeklyLabels(labels);
+}
+
+function applyWeeklyLabels(labels) {
+  // Update editor labels
+  const editorLabels = {
+    weeklyIntro: labels.intro,
+    weeklyHighlights: labels.highlights,
+    weeklyInspiration: labels.inspiration,
+    weeklyTools: labels.tools
+  };
+  
+  Object.entries(editorLabels).forEach(([id, text]) => {
+    const textarea = document.getElementById(id);
+    if (textarea) {
+      const label = textarea.closest('.form-group')?.querySelector('label');
+      if (label) {
+        label.childNodes[0].nodeValue = text + ' ';
+      }
+    }
+  });
+}

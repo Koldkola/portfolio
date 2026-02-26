@@ -103,6 +103,33 @@
           </div>
           <button type="submit" class="btn primary">Unlock Weekly Admin</button>
         </form>
+        
+        <div id="weekly-label-settings" style="display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--glass-border);">
+          <h3 style="margin-bottom: 16px; color: var(--text-primary);">Customize Field Labels</h3>
+          
+          <div class="form-group">
+            <label for="labelIntro">Intro Label</label>
+            <input type="text" id="labelIntro" placeholder="Intro" />
+          </div>
+          
+          <div class="form-group">
+            <label for="labelHighlights">Highlights Label</label>
+            <input type="text" id="labelHighlights" placeholder="Key Highlights" />
+          </div>
+          
+          <div class="form-group">
+            <label for="labelInspiration">Inspiration Label</label>
+            <input type="text" id="labelInspiration" placeholder="Inspiration" />
+          </div>
+          
+          <div class="form-group">
+            <label for="labelTools">Tools/Resources Label</label>
+            <input type="text" id="labelTools" placeholder="Tools & Resources" />
+          </div>
+          
+          <button type="button" class="btn primary" onclick="saveWeeklyLabels()">Save Labels</button>
+          <button type="button" class="btn secondary" onclick="resetWeeklyLabels()">Reset to Default</button>
+        </div>
       </div>
     </div>
   </div>
@@ -157,22 +184,34 @@
 
         <div class="form-group">
           <label for="weeklyIntro">Intro (HTML allowed)</label>
-          <textarea id="weeklyIntro" rows="3" placeholder="Intro text"></textarea>
+          <div class="textarea-wrapper">
+            <textarea id="weeklyIntro" rows="3" placeholder="Intro text"></textarea>
+            <button type="button" class="emoji-btn" data-target="weeklyIntro" title="Add emoji">😊</button>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="weeklyHighlights">Key Highlights (one per line, HTML allowed)</label>
-          <textarea id="weeklyHighlights" rows="4" placeholder="Highlight 1\nHighlight 2"></textarea>
+          <div class="textarea-wrapper">
+            <textarea id="weeklyHighlights" rows="4" placeholder="Highlight 1\nHighlight 2"></textarea>
+            <button type="button" class="emoji-btn" data-target="weeklyHighlights" title="Add emoji">😊</button>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="weeklyInspiration">Inspiration (HTML allowed)</label>
-          <textarea id="weeklyInspiration" rows="3" placeholder="Inspiration"></textarea>
+          <div class="textarea-wrapper">
+            <textarea id="weeklyInspiration" rows="3" placeholder="Inspiration"></textarea>
+            <button type="button" class="emoji-btn" data-target="weeklyInspiration" title="Add emoji">😊</button>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="weeklyTools">Tools & Resources (HTML allowed)</label>
-          <textarea id="weeklyTools" rows="3" placeholder="Tools"></textarea>
+          <div class="textarea-wrapper">
+            <textarea id="weeklyTools" rows="3" placeholder="Tools"></textarea>
+            <button type="button" class="emoji-btn" data-target="weeklyTools" title="Add emoji">😊</button>
+          </div>
         </div>
 
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
@@ -200,7 +239,10 @@
           
           <div class="form-group">
             <label for="weekFeeling">What did you like or dislike about your week?</label>
-            <textarea id="weekFeeling" required placeholder="Share your thoughts..." rows="4"></textarea>
+            <div class="textarea-wrapper">
+              <textarea id="weekFeeling" required placeholder="Share your thoughts..." rows="4"></textarea>
+              <button type="button" class="emoji-btn" data-target="weekFeeling" title="Add emoji">😊</button>
+            </div>
           </div>
           
           <div class="form-group">
@@ -569,5 +611,28 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       });
     });
   </script>
+
+  <!-- Emoji Picker Modal -->
+  <div id="emoji-picker-modal" class="emoji-picker-modal">
+    <div class="emoji-picker-content">
+      <div class="emoji-picker-header">
+        <h3>Select Emoji</h3>
+        <button class="emoji-close-btn" onclick="closeEmojiPicker()">&times;</button>
+      </div>
+      <div class="emoji-categories">
+        <button class="emoji-cat-btn active" data-category="smileys">😊</button>
+        <button class="emoji-cat-btn" data-category="hearts">❤️</button>
+        <button class="emoji-cat-btn" data-category="hands">👍</button>
+        <button class="emoji-cat-btn" data-category="activities">⚽</button>
+        <button class="emoji-cat-btn" data-category="objects">💡</button>
+        <button class="emoji-cat-btn" data-category="symbols">✨</button>
+        <button class="emoji-cat-btn" data-category="nature">🌸</button>
+        <button class="emoji-cat-btn" data-category="food">🍕</button>
+      </div>
+      <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+  </div>
+
+  <script src="/js/emoji-picker.js"></script>
 </body>
 </html>

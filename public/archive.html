@@ -66,6 +66,28 @@
           </div>
           <button type="submit" class="btn primary">Unlock Archive Admin</button>
         </form>
+        
+        <div id="archive-label-settings" style="display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--glass-border);">
+          <h3 style="margin-bottom: 16px; color: var(--text-primary);">Customize Field Labels</h3>
+          
+          <div class="form-group">
+            <label for="labelArchiveTitle">Title Label</label>
+            <input type="text" id="labelArchiveTitle" placeholder="Title" />
+          </div>
+          
+          <div class="form-group">
+            <label for="labelArchiveTag">Tag Label</label>
+            <input type="text" id="labelArchiveTag" placeholder="Tag" />
+          </div>
+          
+          <div class="form-group">
+            <label for="labelArchiveDescription">Description Label</label>
+            <input type="text" id="labelArchiveDescription" placeholder="Description" />
+          </div>
+          
+          <button type="button" class="btn primary" onclick="saveArchiveLabels()">Save Labels</button>
+          <button type="button" class="btn secondary" onclick="resetArchiveLabels()">Reset to Default</button>
+        </div>
       </div>
     </div>
   </div>
@@ -108,7 +130,10 @@
         </div>
         <div class="form-group">
           <label for="archiveDescription">Description (HTML allowed for links/images)</label>
-          <textarea id="archiveDescription" rows="4" placeholder="Description"></textarea>
+          <div class="textarea-wrapper">
+            <textarea id="archiveDescription" rows="4" placeholder="Description"></textarea>
+            <button type="button" class="emoji-btn" data-target="archiveDescription" title="Add emoji">😊</button>
+          </div>
         </div>
         <div class="form-group">
           <label for="archiveLink">Optional Link (card click)</label>
@@ -522,10 +547,15 @@
         if (attemptHash === ARCHIVE_LOCK_HASH) {
           isArchiveAdminMode = true;
           updateArchiveAdminButton();
-          closeArchiveAdminModal();
+          
+          // Show label settings panel
+          const settingsPanel = document.getElementById('archive-label-settings');
+          if (settingsPanel) {
+            settingsPanel.style.display = 'block';
+          }
+          
           renderArchiveEntries();
           resetPasswordAttempts('archive_admin');
-          openArchiveEditor(null);
         } else {
           trackPasswordAttempt('archive_admin');
           if (error) {
@@ -644,6 +674,104 @@
     updateArchiveAdminButton();
     renderArchiveEntries();
     initLock();
+    loadArchiveLabels();
+    
+    // =========================================
+    // CUSTOM LABEL MANAGEMENT FOR ARCHIVE
+    // =========================================
+    
+    const DEFAULT_ARCHIVE_LABELS = {
+      title: 'Title',
+      tag: 'Tag',
+      description: 'Description'
+    };
+    
+    function getArchiveLabels() {
+      const stored = localStorage.getItem('archiveCustomLabels');
+      return stored ? JSON.parse(stored) : { ...DEFAULT_ARCHIVE_LABELS };
+    }
+    
+    window.saveArchiveLabels = function() {
+      const labels = {
+        title: document.getElementById('labelArchiveTitle').value.trim() || DEFAULT_ARCHIVE_LABELS.title,
+        tag: document.getElementById('labelArchiveTag').value.trim() || DEFAULT_ARCHIVE_LABELS.tag,
+        description: document.getElementById('labelArchiveDescription').value.trim() || DEFAULT_ARCHIVE_LABELS.description
+      };
+      
+      localStorage.setItem('archiveCustomLabels', JSON.stringify(labels));
+      applyArchiveLabels(labels);
+      alert('Labels saved successfully!');
+    };
+    
+    window.resetArchiveLabels = function() {
+      localStorage.removeItem('archiveCustomLabels');
+      const labels = { ...DEFAULT_ARCHIVE_LABELS };
+      
+      document.getElementById('labelArchiveTitle').value = labels.title;
+      document.getElementById('labelArchiveTag').value = labels.tag;
+      document.getElementById('labelArchiveDescription').value = labels.description;
+      
+      applyArchiveLabels(labels);
+      alert('Labels reset to defaults!');
+    };
+    
+    function loadArchiveLabels() {
+      const labels = getArchiveLabels();
+      
+      const labelTitle = document.getElementById('labelArchiveTitle');
+      const labelTag = document.getElementById('labelArchiveTag');
+      const labelDescription = document.getElementById('labelArchiveDescription');
+      
+      if (labelTitle) labelTitle.value = labels.title;
+      if (labelTag) labelTag.value = labels.tag;
+      if (labelDescription) labelDescription.value = labels.description;
+      
+      applyArchiveLabels(labels);
+    }
+    
+    function applyArchiveLabels(labels) {
+      // Update editor labels
+      const titleInput = document.getElementById('archiveTitle');
+      if (titleInput) {
+        const label = titleInput.closest('.form-group')?.querySelector('label');
+        if (label) label.childNodes[0].nodeValue = labels.title + ' ';
+      }
+      
+      const tagInput = document.getElementById('archiveTag');
+      if (tagInput) {
+        const label = tagInput.closest('.form-group')?.querySelector('label');
+        if (label) label.childNodes[0].nodeValue = labels.tag + ' ';
+      }
+      
+      const descTextarea = document.getElementById('archiveDescription');
+      if (descTextarea) {
+        const label = descTextarea.closest('.form-group')?.querySelector('label');
+        if (label) label.childNodes[0].nodeValue = labels.description + ' ';
+      }
+    }
   </script>
+
+  <!-- Emoji Picker Modal -->
+  <div id="emoji-picker-modal" class="emoji-picker-modal">
+    <div class="emoji-picker-content">
+      <div class="emoji-picker-header">
+        <h3>Select Emoji</h3>
+        <button class="emoji-close-btn" onclick="closeEmojiPicker()">&times;</button>
+      </div>
+      <div class="emoji-categories">
+        <button class="emoji-cat-btn active" data-category="smileys">😊</button>
+        <button class="emoji-cat-btn" data-category="hearts">❤️</button>
+        <button class="emoji-cat-btn" data-category="hands">👍</button>
+        <button class="emoji-cat-btn" data-category="activities">⚽</button>
+        <button class="emoji-cat-btn" data-category="objects">💡</button>
+        <button class="emoji-cat-btn" data-category="symbols">✨</button>
+        <button class="emoji-cat-btn" data-category="nature">🌸</button>
+        <button class="emoji-cat-btn" data-category="food">🍕</button>
+      </div>
+      <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+  </div>
+
+  <script src="/js/emoji-picker.js"></script>
 </body>
 </html>
