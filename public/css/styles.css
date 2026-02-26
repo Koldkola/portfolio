@@ -1574,35 +1574,22 @@ main.container .link { color: var(--text-primary); }
   top: 2px;
 }
 
-/* Apply to contact and resume buttons - Randomized distribution */
-.contact-links .contact-btn:nth-child(1) {
-  @extend .btn-2;
+/* Contact and Resume Buttons - Applied via JavaScript randomizer */
+.contact-links .contact-btn.custom-btn,
+.resume-actions .btn.custom-btn,
+.resume-actions .contact-btn.custom-btn,
+.form-actions button.custom-btn {
+  width: auto;
+  height: auto;
+  padding: 10px 25px;
+  margin: 20px;
 }
 
-.contact-links .contact-btn:nth-child(2) {
-  @extend .btn-9;
-}
-
-.contact-links .contact-btn:nth-child(3) {
-  @extend .btn-13;
-}
-
-.form-actions button {
-  @extend .btn-15;
-}
-
-.resume-actions .btn:nth-child(1) {
-  @extend .btn-4;
-}
-
-.resume-actions .btn:nth-child(2) {
-  @extend .btn-8;
-}
-
-.resume-actions .contact-btn:nth-child(3) {
-  @extend .btn-2;
-}
-
-.resume-actions .contact-btn:nth-child(4) {
-  @extend .btn-13;
+/* Ensure contact-btn styling doesn't interfere with custom button classes */
+.contact-btn.custom-btn {
+  background: transparent !important;
+  border: none;
+  box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5),
+    7px 7px 20px 0px rgba(0,0,0,.1),
+    4px 4px 5px 0px rgba(0,0,0,.1);
 }
