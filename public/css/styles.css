@@ -345,6 +345,107 @@ main.container .link { color: var(--text-primary); }
 
 /* Projects Grid */
 .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 40px 0; }
+
+/* =========================================
+   CAROUSEL STYLES - Projects Navigation
+========================================= */
+.carousel-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0;
+  position: relative;
+}
+
+.carousel-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding: 8px 0;
+  flex: 1;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep functionality */
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.carousel-container .project-card {
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  min-width: calc(33.333% - 16px);
+}
+
+@media (max-width: 1024px) {
+  .carousel-container .project-card {
+    min-width: calc(50% - 12px);
+  }
+}
+
+@media (max-width: 640px) {
+  .carousel-container .project-card {
+    min-width: calc(100% - 8px);
+  }
+}
+
+.carousel-nav {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+}
+
+.carousel-nav:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #0891b2 100%);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+}
+
+.carousel-nav:active {
+  transform: scale(0.95);
+}
+
+.carousel-prev {
+  order: -1;
+}
+
+.carousel-next {
+  order: 1;
+}
+
+@media (max-width: 640px) {
+  .carousel-section {
+    gap: 8px;
+  }
+  
+  .carousel-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
 .project-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 24px; transition: all 0.4s var(--ease-out-expo); cursor: pointer; }
 .project-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 .project-card h3 { font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 12px; color: #fff; }
@@ -929,4 +1030,320 @@ main.container .link { color: var(--text-primary); }
   .nav-links { display: none; }
   .interactive-header { flex-direction: column; align-items: flex-start; gap: 15px; }
   .sticky-note { width: 180px; min-height: 180px; padding: 15px; }
+}
+
+/* =========================================
+   CUSTOM BUTTON STYLES - Purple & Turquoise Spectrum
+========================================= */
+
+.custom-btn {
+  width: 130px;
+  height: 40px;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5),
+    7px 7px 20px 0px rgba(0,0,0,.1),
+    4px 4px 5px 0px rgba(0,0,0,.1);
+  outline: none;
+}
+
+/* btn-2: Purple gradient */
+.btn-2 {
+  background: rgb(139, 92, 246);
+  background: linear-gradient(0deg, rgba(139, 92, 246, 1) 0%, rgba(168, 85, 247, 1) 100%);
+  border: none;
+}
+.btn-2:before {
+  height: 0%;
+  width: 2px;
+}
+.btn-2:hover {
+  box-shadow: 4px 4px 6px 0 rgba(255,255,255,.5),
+    -4px -4px 6px 0 rgba(116, 125, 136, .5), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
+  background: rgb(168, 85, 247);
+  background: linear-gradient(0deg, rgba(168, 85, 247, 1) 0%, rgba(196, 181, 253, 1) 100%);
+}
+
+/* btn-4: Turquoise gradient */
+.btn-4 {
+  background-color: #14b8a6;
+  background-image: linear-gradient(315deg, #14b8a6 0%, #06b6d4 74%);
+  line-height: 42px;
+  padding: 0;
+  border: none;
+}
+.btn-4:hover{
+  background-color: #0d9488;
+  background-image: linear-gradient(315deg, #0d9488 0%, #0891b2 74%);
+}
+.btn-4 span {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.btn-4:before,
+.btn-4:after {
+  position: absolute;
+  content: "";
+  right: 0;
+  top: 0;
+  box-shadow: 4px 4px 6px 0 rgba(255,255,255,.9),
+    -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.9),
+    inset 4px 4px 6px 0 rgba(116, 125, 136, .3);
+  transition: all 0.3s ease;
+}
+.btn-4:before {
+  height: 0%;
+  width: .1px;
+}
+.btn-4:after {
+  width: 0%;
+  height: .1px;
+}
+.btn-4:hover:before {
+  height: 100%;
+}
+.btn-4:hover:after {
+  width: 100%;
+}
+.btn-4 span:before,
+.btn-4 span:after {
+  position: absolute;
+  content: "";
+  left: 0;
+  bottom: 0;
+  box-shadow: 4px 4px 6px 0 rgba(255,255,255,.9),
+    -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.9),
+    inset 4px 4px 6px 0 rgba(116, 125, 136, .3);
+  transition: all 0.3s ease;
+}
+.btn-4 span:before {
+  width: .1px;
+  height: 0%;
+}
+.btn-4 span:after {
+  width: 0%;
+  height: .1px;
+}
+.btn-4 span:hover:before {
+  height: 100%;
+}
+.btn-4 span:hover:after {
+  width: 100%;
+}
+
+/* btn-8: Purple/Lavender */
+.btn-8 {
+  background-color: #ede9fe;
+  background-image: linear-gradient(315deg, #ede9fe 0%, #c4b5fd 74%);
+  line-height: 42px;
+  padding: 0;
+  border: none;
+  color: #7c3aed;
+}
+.btn-8 span {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.btn-8:before,
+.btn-8:after {
+  position: absolute;
+  content: "";
+  right: 0;
+  bottom: 0;
+  background: #7c3aed;
+  transition: all 0.3s ease;
+}
+.btn-8:before{
+  height: 0%;
+  width: 2px;
+}
+.btn-8:after {
+  width: 0%;
+  height: 2px;
+}
+.btn-8:hover:before {
+  height: 100%;
+}
+.btn-8:hover:after {
+  width: 100%;
+}
+.btn-8:hover{
+  background: transparent;
+  color: #7c3aed;
+}
+.btn-8 span:hover{
+  color: #7c3aed;
+}
+.btn-8 span:before,
+.btn-8 span:after {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 0;
+  background: #7c3aed;
+  transition: all 0.3s ease;
+}
+.btn-8 span:before {
+  width: 2px;
+  height: 0%;
+}
+.btn-8 span:after {
+  height: 2px;
+  width: 0%;
+}
+.btn-8 span:hover:before {
+  height: 100%;
+}
+.btn-8 span:hover:after {
+  width: 100%;
+}
+
+/* btn-9: Purple to Cyan gradient with scale effect */
+.btn-9 {
+  border: none;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
+  color: #fff;
+}
+.btn-9:after {
+  position: absolute;
+  content: " ";
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #7c3aed;
+  background-image: linear-gradient(315deg, #7c3aed 0%, #0891b2 74%);
+  transition: all 0.3s ease;
+}
+.btn-9:hover {
+  background: transparent;
+  box-shadow: 4px 4px 6px 0 rgba(255,255,255,.5),
+    -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.5),
+    inset 4px 4px 6px 0 rgba(116, 125, 136, .3);
+  color: #fff;
+}
+.btn-9:hover:after {
+  -webkit-transform: scale(2) rotate(180deg);
+  transform: scale(2) rotate(180deg);
+}
+
+/* btn-13: Teal to Turquoise */
+.btn-13 {
+  background-color: #14b8a6;
+  background-image: linear-gradient(315deg, #14b8a6 0%, #06b6d4 74%);
+  border: none;
+  z-index: 1;
+}
+.btn-13:after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 5px;
+  background-color: #0d9488;
+  background-image: linear-gradient(315deg, #0d9488 0%, #0891b2 74%);
+  box-shadow: -7px -7px 20px 0px #fff9,
+    -4px -4px 5px 0px #fff9,
+    7px 7px 20px 0px #0002,
+    4px 4px 5px 0px #0001;
+  transition: all 0.3s ease;
+}
+.btn-13:hover {
+  color: #fff;
+}
+.btn-13:hover:after {
+  top: 0;
+  height: 100%;
+}
+.btn-13:active {
+  top: 2px;
+}
+
+/* btn-15: Purple expanding */
+.btn-15 {
+  background: #a855f7;
+  border: none;
+  z-index: 1;
+  color: #fff;
+}
+.btn-15:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  background-color: #7c3aed;
+  border-radius: 5px;
+  box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5),
+    7px 7px 20px 0px rgba(0,0,0,.1),
+    4px 4px 5px 0px rgba(0,0,0,.1);
+  transition: all 0.3s ease;
+}
+.btn-15:hover {
+  color: #fff;
+}
+.btn-15:hover:after {
+  left: 0;
+  width: 100%;
+}
+.btn-15:active {
+  top: 2px;
+}
+
+/* Apply to contact and resume buttons - Randomized distribution */
+.contact-links .contact-btn:nth-child(1) {
+  @extend .btn-2;
+}
+
+.contact-links .contact-btn:nth-child(2) {
+  @extend .btn-9;
+}
+
+.contact-links .contact-btn:nth-child(3) {
+  @extend .btn-13;
+}
+
+.form-actions button {
+  @extend .btn-15;
+}
+
+.resume-actions .btn:nth-child(1) {
+  @extend .btn-4;
+}
+
+.resume-actions .btn:nth-child(2) {
+  @extend .btn-8;
+}
+
+.resume-actions .contact-btn:nth-child(3) {
+  @extend .btn-2;
+}
+
+.resume-actions .contact-btn:nth-child(4) {
+  @extend .btn-13;
 }

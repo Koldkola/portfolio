@@ -34,7 +34,9 @@
       <input id="projectSearch" type="search" placeholder="Search projects..." aria-label="Search projects" />
     </div>
 
-  <div id="projects-grid" class="projects-grid">
+    <div class="carousel-section">
+      <button class="carousel-nav carousel-prev" id="prevBtn" aria-label="Previous projects">←</button>
+      <div id="projects-grid" class="projects-grid carousel-container">
       <article class="project-card">
         <div class="project-info">
           <h3>AI4ALL — Water & Sanitation Forecasts</h3>
@@ -96,9 +98,13 @@
         </div>
       </article>
     </div>
+      <button class="carousel-nav carousel-next" id="nextBtn" aria-label="Next projects">→</button>
+    </div>
 
     <h2 style="margin-top: 36px;">Class Projects</h2>
-    <div class="projects-grid">
+    <div class="carousel-section">
+      <button class="carousel-nav carousel-prev" id="classPrevBtn" aria-label="Previous class projects">←</button>
+      <div id="class-projects-grid" class="projects-grid carousel-container">
       <article class="project-card">
         <div class="project-info">
           <h3>Snake.io Game</h3>
@@ -141,6 +147,8 @@
           <a class="link" href="https://labyrinthgame-e3xnf6i0d-koldkolas-projects.vercel.app/" target="_blank" rel="noopener">Open →</a>
         </div>
       </article>
+    </div>
+      <button class="carousel-nav carousel-next" id="classNextBtn" aria-label="Next class projects">→</button>
     </div>
       <script>
         const searchInput = document.getElementById('projectSearch');

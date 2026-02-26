@@ -3,9 +3,6 @@ const cors = require('cors');
 const axios = require('axios');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const fs = require('fs');
-const path = require('path');
-const { PDFDocument, rgb } = require('pdf-lib');
 require('dotenv').config();
 
 const app = express();
@@ -107,107 +104,6 @@ async function handleChat(req, res) {
 }
 
 app.post('/api/chat', handleChat);
-
-// PDF Resume with blurred phone number
-app.get('/api/resume/download', async (req, res) => {
-  try {
-    const resumePath = path.join(__dirname, 'public', 'assets', 'resume.pdf');
-    
-    // Check if file exists
-    if (!fs.existsSync(resumePath)) {
-      return res.status(404).json({ error: 'Resume not found' });
-    }
-    
-    // Read the original PDF
-    const pdfBuffer = fs.readFileSync(resumePath);
-    const pdfDoc = await PDFDocument.load(pdfBuffer);
-    
-    // Get first page
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
-    const { width, height } = firstPage.getSize();
-    
-    // Draw a white blur box at the top of the page (where phone number typically is)
-    // Position: top 80px area (phone/contact info typically here)
-    firstPage.drawRectangle({
-      x: 0,
-      y: height - 80, // Start from top
-      width: width,
-      height: 80,
-      color: rgb(1, 1, 1), // White
-      opacity: 1
-    });
-    
-    // Optional: Add "Contact: Kenechi596@gmail.com" or "Email only" in the blurred area
-    firstPage.drawText('Contact: Kenechi596@gmail.com', {
-      x: 20,
-      y: height - 50,
-      size: 10,
-      color: rgb(0, 0, 0)
-    });
-    
-    // Save modified PDF
-    const modifiedPdf = await pdfDoc.save();
-    
-    // Send as download
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="resume.pdf"');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.send(Buffer.from(modifiedPdf));
-    
-  } catch (err) {
-    console.error('Resume PDF error:', err.message || err);
-    res.status(500).json({ error: 'Failed to process resume' });
-  }
-});
-
-// View resume with blur (inline view)
-app.get('/api/resume/view', async (req, res) => {
-  try {
-    const resumePath = path.join(__dirname, 'public', 'assets', 'resume.pdf');
-    
-    if (!fs.existsSync(resumePath)) {
-      return res.status(404).json({ error: 'Resume not found' });
-    }
-    
-    const pdfBuffer = fs.readFileSync(resumePath);
-    const pdfDoc = await PDFDocument.load(pdfBuffer);
-    
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
-    const { width, height } = firstPage.getSize();
-    
-    // Draw white box to blur phone number
-    firstPage.drawRectangle({
-      x: 0,
-      y: height - 80,
-      width: width,
-      height: 80,
-      color: rgb(1, 1, 1),
-      opacity: 1
-    });
-    
-    // Add contact text
-    firstPage.drawText('Contact: Kenechi596@gmail.com', {
-      x: 20,
-      y: height - 50,
-      size: 10,
-      color: rgb(0, 0, 0)
-    });
-    
-    const modifiedPdf = await pdfDoc.save();
-    
-    // Send as inline view
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline; filename="resume.pdf"');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.send(Buffer.from(modifiedPdf));
-    
-  } catch (err) {
-    console.error('Resume view error:', err.message || err);
-    res.status(500).json({ error: 'Failed to process resume' });
-  }
-});
 
 function simpleBotReply(msg) {
   const lower = (msg || '').toLowerCase();
