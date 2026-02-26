@@ -9,6 +9,12 @@ node_modules/
 tmp/
 *.tmp
 
+# Database files
+data/
+*.db
+*.db-shm
+*.db-wal
+
 # OS-specific files
 .DS_Store
 Thumbs.db

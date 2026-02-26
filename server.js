@@ -3,10 +3,34 @@ const cors = require('cors');
 const axios = require('axios');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const Database = require('better-sqlite3');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Initialize SQLite database
+const dbPath = path.join(__dirname, 'data', 'portfolio.db');
+const db = new Database(dbPath);
+db.pragma('journal_mode = WAL'); // Enable WAL mode for better concurrency
+
+// Create tables if they don't exist
+db.exec(`
+  CREATE TABLE IF NOT EXISTS board_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    text TEXT NOT NULL,
+    age INTEGER,
+    bgColor TEXT,
+    textColor TEXT,
+    photo TEXT,
+    timestamp TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+  
+  CREATE INDEX IF NOT EXISTS idx_timestamp ON board_entries(timestamp);
+`);
 
 // Security middleware
 app.use(helmet());
@@ -105,15 +129,18 @@ async function handleChat(req, res) {
 
 app.post('/api/chat', handleChat);
 
-// In-memory storage for board entries (persists during server runtime)
-let boardEntries = [];
-
-// Get all board entries
+// Get all board entries from database
 app.get('/api/board/entries', (req, res) => {
-  res.json({ entries: boardEntries });
+  try {
+    const entries = db.prepare('SELECT * FROM board_entries ORDER BY timestamp DESC').all();
+    res.json({ entries: entries });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Failed to retrieve entries' });
+  }
 });
 
-// Add new board entry
+// Add new board entry to database
 app.post('/api/board/entries', (req, res) => {
   const { name, text, age, bgColor, textColor, photo, timestamp } = req.body;
   
@@ -122,25 +149,50 @@ app.post('/api/board/entries', (req, res) => {
     return res.status(400).json({ error: 'Name and text are required' });
   }
   
-  // Sanitize input
-  const entry = {
-    name: sanitizeInput(name),
-    text: sanitizeInput(text),
-    age: age ? parseInt(age) : null,
-    bgColor: bgColor || '#ffd97d',
-    textColor: textColor || '#333',
-    photo: photo ? sanitizePhotoData(photo) : null,
-    timestamp: timestamp || new Date().toISOString()
-  };
-  
-  // Add entry to array
-  boardEntries.push(entry);
-  
-  res.status(201).json({ 
-    success: true, 
-    entry: entry,
-    totalEntries: boardEntries.length 
-  });
+  try {
+    // Sanitize input
+    const sanitizedEntry = {
+      name: sanitizeInput(name),
+      text: sanitizeInput(text),
+      age: age ? parseInt(age) : null,
+      bgColor: bgColor || '#ffd97d',
+      textColor: textColor || '#333',
+      photo: photo ? sanitizePhotoData(photo) : null,
+      timestamp: timestamp || new Date().toISOString()
+    };
+    
+    // Insert into database
+    const stmt = db.prepare(`
+      INSERT INTO board_entries (name, text, age, bgColor, textColor, photo, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    const result = stmt.run(
+      sanitizedEntry.name,
+      sanitizedEntry.text,
+      sanitizedEntry.age,
+      sanitizedEntry.bgColor,
+      sanitizedEntry.textColor,
+      sanitizedEntry.photo,
+      sanitizedEntry.timestamp
+    );
+    
+    res.status(201).json({ 
+      success: true, 
+      entry: sanitizedEntry,
+      id: result.lastInsertRowid
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Failed to save entry' });
+  }
+});
+
+// Delete board entry (admin only - requires password)
+app.delete('/api/board/entries/:id', (req, res) => {
+  // This endpoint requires admin authentication
+  // For now, we're not implementing delete functionality
+  res.status(403).json({ error: 'Unauthorized' });
 });
 
 // Sanitize text input
@@ -172,9 +224,20 @@ function simpleBotReply(msg) {
 // Export handler for serverless platforms that `require()` this file (optional)
 module.exports = {
   app,
-  handleChat
+  handleChat,
+  db
 };
 
 if (require.main === module) {
-  app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+  const server = app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+  
+  // Graceful shutdown
+  process.on('SIGINT', () => {
+    console.log('\nShutting down gracefully...');
+    server.close(() => {
+      db.close();
+      console.log('Database connection closed');
+      process.exit(0);
+    });
+  });
 }
