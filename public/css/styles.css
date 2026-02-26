@@ -1578,19 +1578,21 @@ main.container .link { color: var(--text-primary); }
 .contact-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   justify-content: center;
   margin: 24px 0;
+  row-gap: 8px;
 }
 
 .resume-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   justify-content: center;
   margin: 24px 0;
+  row-gap: 8px;
 }
 
 .form-actions {
@@ -1600,6 +1602,7 @@ main.container .link { color: var(--text-primary); }
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 20px;
+  row-gap: 12px;
 }
 
 .contact-links .contact-btn.custom-btn,
@@ -1608,9 +1611,14 @@ main.container .link { color: var(--text-primary); }
 .form-actions button.custom-btn {
   width: auto;
   height: auto;
-  padding: 10px 25px;
+  padding: 12px 24px;
   margin: 0;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  flex-shrink: 0;
 }
 
 /* Ensure contact-btn styling doesn't interfere with custom button classes */
@@ -1618,6 +1626,35 @@ main.container .link { color: var(--text-primary); }
   background: transparent !important;
   border: none;
   box-shadow: inset 2px 2px 2px 0px rgba(255,255,255,.5),
+    7px 7px 20px 0px rgba(0,0,0,.1),
+    4px 4px 5px 0px rgba(0,0,0,.1);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .contact-links,
+  .resume-actions {
+    gap: 8px;
+    row-gap: 6px;
+  }
+  
+  .contact-links .contact-btn.custom-btn,
+  .resume-actions .btn.custom-btn,
+  .resume-actions .contact-btn.custom-btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+  
+  .form-actions {
+    gap: 12px;
+    row-gap: 10px;
+  }
+  
+  .form-actions button.custom-btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+}
     7px 7px 20px 0px rgba(0,0,0,.1),
     4px 4px 5px 0px rgba(0,0,0,.1);
 }
