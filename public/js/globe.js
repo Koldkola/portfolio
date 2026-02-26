@@ -49,11 +49,14 @@ async function addEntry(entry) {
     
     if (response.ok) {
       const data = await response.json();
-      globeEntries.push(data.entry);
-      updateGlobeDisplay();
+      if (data.entry) {
+        globeEntries.push(data.entry);
+        updateGlobeDisplay();
+      }
       return true;
     } else {
-      console.error('Failed to save entry:', response.status);
+      const errorData = await response.json();
+      console.error('Failed to save entry:', response.status, errorData);
       return false;
     }
   } catch (error) {
@@ -386,7 +389,10 @@ function handleFormSubmit(e) {
   const bgColor = document.getElementById('bgColor').value;
   const photoInput = document.getElementById('userPhoto');
   
-  if (!name || !text) return;
+  if (!name || !text) {
+    showNotification('Please enter a name and message', 'error');
+    return;
+  }
   
   // Disable submit button during processing
   const submitBtn = document.querySelector('.globe-form button[type="submit"]');
@@ -422,6 +428,7 @@ async function saveNewEntry(name, text, age, textColor, bgColor, photo, submitBt
   
   if (success) {
     closeGlobeModal();
+    document.getElementById('globe-form').reset();
     showNotification('Your entry has been added to the board!');
   } else {
     showNotification('Failed to save entry. Please try again.', 'error');

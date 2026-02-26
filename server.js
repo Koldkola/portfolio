@@ -179,12 +179,17 @@ app.post('/api/board/entries', (req, res) => {
     
     res.status(201).json({ 
       success: true, 
-      entry: sanitizedEntry,
-      id: result.lastInsertRowid
+      entry: {
+        ...sanitizedEntry,
+        id: result.lastInsertRowid
+      }
     });
   } catch (error) {
-    console.error('Database error:', error);
-    res.status(500).json({ error: 'Failed to save entry' });
+    console.error('Database error:', error.message || error);
+    res.status(500).json({ 
+      error: 'Failed to save entry',
+      details: error.message 
+    });
   }
 });
 
