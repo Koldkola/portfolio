@@ -1,7 +1,7 @@
 // Database of weekly curations
 const WEEKLY_ADMIN_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e3d4fd29fb2838";
 const WEEKLY_ADMIN_SALT = "archive-v1";
-const API_URL = '/api/weekly/highlights';
+const WEEKLY_STORAGE_KEY = "weeklyDataOverrides";
 let weeklyData = [
   {
     startDate: new Date(2026, 1, 14), // February 14, 2026 (Saturday)
@@ -287,39 +287,23 @@ function normalizeWeeklyData(rawData) {
   }));
 }
 
-async function loadWeeklyOverrides() {
+function loadWeeklyOverrides() {
+  const stored = localStorage.getItem(WEEKLY_STORAGE_KEY);
+  if (!stored) return;
   try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
-    
-    if (data.highlights && data.highlights.length > 0) {
-      weeklyData = normalizeWeeklyData(data.highlights);
-    }
+    const parsed = JSON.parse(stored);
+    weeklyData = normalizeWeeklyData(parsed);
   } catch (error) {
-    console.error('Failed to load weekly highlights from server', error);
+    console.error('Failed to load weekly overrides', error);
   }
 }
 
-async function saveWeeklyOverrides() {
+function saveWeeklyOverrides() {
   const serializable = weeklyData.map(week => ({
     ...week,
     startDate: new Date(week.startDate).toISOString()
   }));
-  
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ highlights: serializable })
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to save highlights');
-    }
-  } catch (error) {
-    console.error('Failed to save weekly highlights to server', error);
-    alert('Failed to save changes. Please try again.');
-  }
+  localStorage.setItem(WEEKLY_STORAGE_KEY, JSON.stringify(serializable));
 }
 
 const gridElement = document.getElementById('weekly-grid');
@@ -644,14 +628,14 @@ function populateWeekSelect() {
   });
 }
 
-async function addWeeklyWeek(dateString) {
+function addWeeklyWeek(dateString) {
   if (!dateString) return;
   weeklyData.push({
     startDate: new Date(dateString),
     items: []
   });
   weeklyData.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-  await saveWeeklyOverrides();
+  saveWeeklyOverrides();
   populateWeekSelect();
 }
 
@@ -725,17 +709,17 @@ function saveWeeklyItem() {
       weeklyData[weekIndex].items.push(newItem);
     }
 
-    await saveWeeklyOverrides();
+    saveWeeklyOverrides();
     currentWeekIndex = weekIndex;
     renderWeek(currentWeekIndex);
     closeWeeklyEditor();
   }
 }
 
-async function deleteWeeklyItem() {
+function deleteWeeklyItem() {
   if (editingItemIndex === null || editingWeekIndex === null) return;
   weeklyData[editingWeekIndex].items.splice(editingItemIndex, 1);
-  await saveWeeklyOverrides();
+  saveWeeklyOverrides();
   renderWeek(currentWeekIndex);
   closeWeeklyEditor();
 }
@@ -756,8 +740,8 @@ nextBtn.addEventListener('click', () => {
 });
 
 // Initialize with current week on load
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadWeeklyOverrides();
+document.addEventListener('DOMContentLoaded', () => {
+  loadWeeklyOverrides();
   currentWeekIndex = getCurrentWeekIndex();
   renderWeek(currentWeekIndex);
   updateWeeklyAdminButton();
