@@ -383,14 +383,14 @@ function openCategoryModal(item, bgColor) {
     
     // Apply dark text colors for readability on pastel backgrounds
     modalTitle.style.color = '#2d2d2d';
-    modalCategory.style.color = 'rgba(0,0,0,0.7)';
-    modalWeek.style.color = 'rgba(0,0,0,0.6)';
-    modalIntro.style.color = '#3d3d3d';
+    modalCategory.style.color = '#2d2d2d';
+    modalWeek.style.color = '#2d2d2d';
+    modalIntro.style.color = '#2d2d2d';
     
     // Style all content in modal body
     const modalBody = modal.querySelector('.category-modal-body');
     if (modalBody) {
-      modalBody.style.color = '#3d3d3d';
+      modalBody.style.color = '#2d2d2d';
     }
   }
   
