@@ -59,6 +59,7 @@
           <button class="ctrl-btn" id="prev-btn" aria-label="Previous week">←</button>
           <span id="week-label"></span>
           <button class="ctrl-btn" id="next-btn" aria-label="Next week">→</button>
+          <button class="board-admin-btn" id="weeklyAdminBtn" title="Weekly admin mode" type="button">🔒</button>
         </div>
       </div>
       <div id="weekly-grid" class="weekly-grid"></div>
@@ -82,6 +83,98 @@
         <div id="modal-highlights"></div>
         <div id="modal-inspiration"></div>
         <div id="modal-tools"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly Admin Password Modal -->
+  <div id="weekly-admin-modal" class="category-modal">
+    <div class="category-modal-content" style="max-width: 520px;">
+      <div class="category-modal-header">
+        <h2>Weekly Admin Access</h2>
+        <button class="category-modal-close" onclick="closeWeeklyAdminModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <form id="weekly-admin-form">
+          <div class="form-group">
+            <label for="weeklyAdminPassword">Enter admin password</label>
+            <input type="password" id="weeklyAdminPassword" required placeholder="Password" />
+            <div id="weekly-admin-error" style="color: #ff4444; font-size: 0.85rem; margin-top: 8px; display: none;">Incorrect password</div>
+          </div>
+          <button type="submit" class="btn primary">Unlock Weekly Admin</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly Editor Modal -->
+  <div id="weekly-editor-modal" class="category-modal">
+    <div class="category-modal-content" style="max-width: 900px;">
+      <div class="category-modal-header">
+        <h2>Weekly Highlights Editor</h2>
+        <button class="category-modal-close" onclick="closeWeeklyEditor()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="weeklyWeekSelect">Week</label>
+            <select id="weeklyWeekSelect"></select>
+          </div>
+          <div class="form-group">
+            <label for="weeklyWeekDate">Add new week (start date)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="date" id="weeklyWeekDate" />
+              <button type="button" class="btn secondary" id="addWeekBtn">Add Week</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="weeklyCategory">Category</label>
+            <input type="text" id="weeklyCategory" placeholder="Music / Art / Fashion" />
+          </div>
+          <div class="form-group">
+            <label for="weeklyTitle">Title</label>
+            <input type="text" id="weeklyTitle" placeholder="Title" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyDescription">Description (HTML allowed for links/images)</label>
+          <textarea id="weeklyDescription" rows="3" placeholder="Short description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyImage">Image URL (optional)</label>
+          <input type="url" id="weeklyImage" placeholder="https://" />
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyIntro">Intro (HTML allowed)</label>
+          <textarea id="weeklyIntro" rows="3" placeholder="Intro text"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyHighlights">Key Highlights (one per line, HTML allowed)</label>
+          <textarea id="weeklyHighlights" rows="4" placeholder="Highlight 1\nHighlight 2"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyInspiration">Inspiration (HTML allowed)</label>
+          <textarea id="weeklyInspiration" rows="3" placeholder="Inspiration"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyTools">Tools & Resources (HTML allowed)</label>
+          <textarea id="weeklyTools" rows="3" placeholder="Tools"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" class="btn secondary" id="weeklyDeleteBtn" style="display: none;">Delete</button>
+          <button type="button" class="btn secondary" onclick="closeWeeklyEditor()">Cancel</button>
+          <button type="button" class="btn primary" id="weeklySaveBtn">Save</button>
+        </div>
       </div>
     </div>
   </div>

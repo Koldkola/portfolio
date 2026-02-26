@@ -1,5 +1,8 @@
 // Database of weekly curations
-const weeklyData = [
+const WEEKLY_ADMIN_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e3d4fd29fb2838";
+const WEEKLY_ADMIN_SALT = "archive-v1";
+const WEEKLY_STORAGE_KEY = "weeklyDataOverrides";
+let weeklyData = [
   {
     startDate: new Date(2026, 1, 14), // February 14, 2026 (Saturday)
     items: [
@@ -272,6 +275,37 @@ const weeklyData = [
   }
 ];
 
+let isWeeklyAdminMode = false;
+let editingWeekIndex = null;
+let editingItemIndex = null;
+
+function normalizeWeeklyData(rawData) {
+  return rawData.map(week => ({
+    ...week,
+    startDate: week.startDate instanceof Date ? week.startDate : new Date(week.startDate),
+    items: Array.isArray(week.items) ? week.items : []
+  }));
+}
+
+function loadWeeklyOverrides() {
+  const stored = localStorage.getItem(WEEKLY_STORAGE_KEY);
+  if (!stored) return;
+  try {
+    const parsed = JSON.parse(stored);
+    weeklyData = normalizeWeeklyData(parsed);
+  } catch (error) {
+    console.error('Failed to load weekly overrides', error);
+  }
+}
+
+function saveWeeklyOverrides() {
+  const serializable = weeklyData.map(week => ({
+    ...week,
+    startDate: new Date(week.startDate).toISOString()
+  }));
+  localStorage.setItem(WEEKLY_STORAGE_KEY, JSON.stringify(serializable));
+}
+
 const gridElement = document.getElementById('weekly-grid');
 const weekLabel = document.getElementById('week-label');
 const prevBtn = document.getElementById('prev-btn');
@@ -339,8 +373,13 @@ function renderWeek(index) {
       descCard.style.background = bgColor;
       descCard.style.transform = `rotate(${rotation}deg)`;
       
+      const editButton = isWeeklyAdminMode
+        ? '<button class="weekly-edit-btn" type="button" aria-label="Edit weekly highlight">Edit</button>'
+        : '';
+
       descCard.innerHTML = `
         <div class="sticky-tape"></div>
+        ${editButton}
         <span class="curation-tag" style="color: #000; font-style: italic;">${item.category}</span>
         <h4 style="color: #000;">${item.title}</h4>
         <p style="color: #000;">${item.description}</p>
@@ -348,6 +387,16 @@ function renderWeek(index) {
       
       // Add click handler to open modal with color
       descCard.addEventListener('click', () => openCategoryModal(item, bgColor));
+
+      if (isWeeklyAdminMode) {
+        const editBtn = descCard.querySelector('.weekly-edit-btn');
+        if (editBtn) {
+          editBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            openWeeklyEditor(currentWeekIndex, itemIndex);
+          });
+        }
+      }
       
       gridElement.appendChild(descCard);
     });
@@ -402,15 +451,22 @@ function openCategoryModal(item, bgColor) {
   modalWeek.textContent = dateDisplay;
   
   if (item.detailedContent) {
-    modalIntro.textContent = item.detailedContent.intro;
+    const introHtml = item.detailedContent.intro || '';
+    const imageHtml = item.img ? `<img src="${item.img}" alt="${item.title}" style="width: 100%; border-radius: 12px; margin-bottom: 16px;" />` : '';
+    modalIntro.innerHTML = `${imageHtml}${introHtml}`;
+    
+    const highlightsRaw = item.detailedContent.highlights || [];
+    const highlights = Array.isArray(highlightsRaw)
+      ? highlightsRaw
+      : String(highlightsRaw).split('\n').filter(Boolean);
     
     // Create highlights list
     modalHighlights.innerHTML = '<h3 style="color: #000;">Key Highlights</h3><ul>' + 
-      item.detailedContent.highlights.map(h => `<li>${h}</li>`).join('') + 
+      highlights.map(h => `<li>${h}</li>`).join('') + 
       '</ul>';
     
-    modalInspiration.innerHTML = `<h3 style="color: #000;">Inspiration</h3><p>${item.detailedContent.inspiration}</p>`;
-    modalTools.innerHTML = `<h3 style="color: #000;">Tools & Resources</h3><p>${item.detailedContent.tools}</p>`;
+    modalInspiration.innerHTML = `<h3 style="color: #000;">Inspiration</h3><p>${item.detailedContent.inspiration || ''}</p>`;
+    modalTools.innerHTML = `<h3 style="color: #000;">Tools & Resources</h3><p>${item.detailedContent.tools || ''}</p>`;
   }
 
   const modalTextNodes = modal.querySelectorAll('.category-modal-body p, .category-modal-body li');
@@ -441,6 +497,157 @@ function closeCategoryModal() {
   }
 }
 
+async function hashWeeklyPassword(password, salt) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${salt}:${password}`);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function updateWeeklyAdminButton() {
+  const adminBtn = document.getElementById('weeklyAdminBtn');
+  if (adminBtn) {
+    adminBtn.textContent = isWeeklyAdminMode ? '🔓' : '🔒';
+  }
+}
+
+function openWeeklyAdminModal() {
+  const modal = document.getElementById('weekly-admin-modal');
+  const input = document.getElementById('weeklyAdminPassword');
+  const error = document.getElementById('weekly-admin-error');
+  if (error) error.style.display = 'none';
+  if (input) input.value = '';
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeWeeklyAdminModal() {
+  const modal = document.getElementById('weekly-admin-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+function openWeeklyEditor(weekIndex = currentWeekIndex, itemIndex = null) {
+  const modal = document.getElementById('weekly-editor-modal');
+  const weekSelect = document.getElementById('weeklyWeekSelect');
+  const deleteBtn = document.getElementById('weeklyDeleteBtn');
+
+  editingWeekIndex = weekIndex;
+  editingItemIndex = itemIndex;
+
+  populateWeekSelect();
+  if (weekSelect) weekSelect.value = String(weekIndex);
+
+  const item = itemIndex !== null ? weeklyData[weekIndex].items[itemIndex] : null;
+
+  document.getElementById('weeklyCategory').value = item?.category || '';
+  document.getElementById('weeklyTitle').value = item?.title || '';
+  document.getElementById('weeklyDescription').value = item?.description || '';
+  document.getElementById('weeklyImage').value = item?.img || '';
+  document.getElementById('weeklyIntro').value = item?.detailedContent?.intro || '';
+  document.getElementById('weeklyHighlights').value = Array.isArray(item?.detailedContent?.highlights)
+    ? item.detailedContent.highlights.join('\n')
+    : (item?.detailedContent?.highlights || '');
+  document.getElementById('weeklyInspiration').value = item?.detailedContent?.inspiration || '';
+  document.getElementById('weeklyTools').value = item?.detailedContent?.tools || '';
+
+  if (deleteBtn) {
+    deleteBtn.style.display = itemIndex !== null ? 'inline-flex' : 'none';
+  }
+
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeWeeklyEditor() {
+  const modal = document.getElementById('weekly-editor-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  editingWeekIndex = null;
+  editingItemIndex = null;
+}
+
+function populateWeekSelect() {
+  const weekSelect = document.getElementById('weeklyWeekSelect');
+  if (!weekSelect) return;
+  weekSelect.innerHTML = '';
+  weeklyData.forEach((week, index) => {
+    const option = document.createElement('option');
+    option.value = String(index);
+    option.textContent = getDateDisplay(week.startDate);
+    weekSelect.appendChild(option);
+  });
+}
+
+function addWeeklyWeek(dateString) {
+  if (!dateString) return;
+  weeklyData.push({
+    startDate: new Date(dateString),
+    items: []
+  });
+  weeklyData.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  saveWeeklyOverrides();
+  populateWeekSelect();
+}
+
+function saveWeeklyItem() {
+  const weekIndex = parseInt(document.getElementById('weeklyWeekSelect').value, 10);
+  const category = document.getElementById('weeklyCategory').value.trim();
+  const title = document.getElementById('weeklyTitle').value.trim();
+  const description = document.getElementById('weeklyDescription').value.trim();
+  const img = document.getElementById('weeklyImage').value.trim();
+  const intro = document.getElementById('weeklyIntro').value.trim();
+  const highlights = document.getElementById('weeklyHighlights').value
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+  const inspiration = document.getElementById('weeklyInspiration').value.trim();
+  const tools = document.getElementById('weeklyTools').value.trim();
+
+  if (!weeklyData[weekIndex]) return;
+
+  const newItem = {
+    category,
+    title,
+    description,
+    img,
+    detailedContent: {
+      intro,
+      highlights,
+      inspiration,
+      tools
+    }
+  };
+
+  if (editingItemIndex !== null) {
+    weeklyData[weekIndex].items[editingItemIndex] = newItem;
+  } else {
+    weeklyData[weekIndex].items.push(newItem);
+  }
+
+  saveWeeklyOverrides();
+  currentWeekIndex = weekIndex;
+  renderWeek(currentWeekIndex);
+  closeWeeklyEditor();
+}
+
+function deleteWeeklyItem() {
+  if (editingItemIndex === null || editingWeekIndex === null) return;
+  weeklyData[editingWeekIndex].items.splice(editingItemIndex, 1);
+  saveWeeklyOverrides();
+  renderWeek(currentWeekIndex);
+  closeWeeklyEditor();
+}
+
 // Event Listeners
 prevBtn.addEventListener('click', () => {
   if (currentWeekIndex > 0) {
@@ -458,8 +665,10 @@ nextBtn.addEventListener('click', () => {
 
 // Initialize with current week on load
 document.addEventListener('DOMContentLoaded', () => {
+  loadWeeklyOverrides();
   currentWeekIndex = getCurrentWeekIndex();
   renderWeek(currentWeekIndex);
+  updateWeeklyAdminButton();
   
   // Close modal when clicking on backdrop
   const modal = document.getElementById('category-modal');
@@ -475,4 +684,70 @@ document.addEventListener('DOMContentLoaded', () => {
       closeCategoryModal();
     }
   });
+
+  // Weekly admin button
+  const weeklyAdminBtn = document.getElementById('weeklyAdminBtn');
+  if (weeklyAdminBtn) {
+    weeklyAdminBtn.addEventListener('click', () => {
+      if (isWeeklyAdminMode) {
+        openWeeklyEditor(currentWeekIndex, null);
+      } else {
+        openWeeklyAdminModal();
+      }
+    });
+  }
+
+  // Weekly admin password form
+  const weeklyAdminForm = document.getElementById('weekly-admin-form');
+  if (weeklyAdminForm) {
+    weeklyAdminForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const input = document.getElementById('weeklyAdminPassword');
+      const error = document.getElementById('weekly-admin-error');
+      if (!input) return;
+      const hash = await hashWeeklyPassword(input.value, WEEKLY_ADMIN_SALT);
+      if (hash === WEEKLY_ADMIN_HASH) {
+        isWeeklyAdminMode = true;
+        updateWeeklyAdminButton();
+        renderWeek(currentWeekIndex);
+        closeWeeklyAdminModal();
+        openWeeklyEditor(currentWeekIndex, null);
+      } else if (error) {
+        error.style.display = 'block';
+      }
+    });
+  }
+
+  // Weekly editor controls
+  const saveBtn = document.getElementById('weeklySaveBtn');
+  if (saveBtn) saveBtn.addEventListener('click', saveWeeklyItem);
+
+  const deleteBtn = document.getElementById('weeklyDeleteBtn');
+  if (deleteBtn) deleteBtn.addEventListener('click', deleteWeeklyItem);
+
+  const addWeekBtn = document.getElementById('addWeekBtn');
+  if (addWeekBtn) {
+    addWeekBtn.addEventListener('click', () => {
+      const dateInput = document.getElementById('weeklyWeekDate');
+      if (!dateInput) return;
+      addWeeklyWeek(dateInput.value);
+      dateInput.value = '';
+    });
+  }
+
+  // Close weekly admin modal on backdrop
+  const weeklyAdminModal = document.getElementById('weekly-admin-modal');
+  if (weeklyAdminModal) {
+    weeklyAdminModal.addEventListener('click', (event) => {
+      if (event.target === weeklyAdminModal) closeWeeklyAdminModal();
+    });
+  }
+
+  // Close weekly editor modal on backdrop
+  const weeklyEditorModal = document.getElementById('weekly-editor-modal');
+  if (weeklyEditorModal) {
+    weeklyEditorModal.addEventListener('click', (event) => {
+      if (event.target === weeklyEditorModal) closeWeeklyEditor();
+    });
+  }
 });

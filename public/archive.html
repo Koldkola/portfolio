@@ -32,6 +32,7 @@
         <li><a href="/resume.html">Resume</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
+      <button id="archiveAdminBtn" class="board-admin-btn" type="button" title="Archive admin mode">🔒</button>
       <button id="archive-lock-toggle" class="btn secondary archive-lock-toggle" type="button">Lock Archive</button>
     </nav>
     <div class="site-search">
@@ -46,32 +47,77 @@
       <p>My Thoughts on film, Music, fashion, games and all around entertainment media.</p>
     </div>
 
-    <div class="masonry-grid">
-      <article class="art-card tall" style="background-image: url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=800');">
-        <div class="card-content">
-          <span class="tag tag-horror">Horror & Film</span>
-          <h3>The Anatomy of Suspense</h3>
-          <p>Analyzing the ambient sound design in modern psychological horror...</p>
-        </div>
-      </article>
-
-      <article class="art-card" style="background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800');">
-        <div class="card-content">
-          <span class="tag tag-fashion">Fashion</span>
-          <h3>Silhouettes & Shadows</h3>
-          <p>How abstract geometry is reshaping modern streetwear.</p>
-        </div>
-      </article>
-
-      <article class="art-card wide" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800');">
-        <div class="card-content">
-          <span class="tag tag-gaming">Gaming</span>
-          <h3>Atmosphere as a Mechanic</h3>
-          <p>Why the best video games rely on environmental storytelling over dialogue.</p>
-        </div>
-      </article>
-    </div>
+    <div id="archive-grid" class="masonry-grid"></div>
   </main>
+
+  <!-- Archive Admin Password Modal -->
+  <div id="archive-admin-modal" class="category-modal">
+    <div class="category-modal-content" style="max-width: 520px;">
+      <div class="category-modal-header">
+        <h2>Archive Admin Access</h2>
+        <button class="category-modal-close" onclick="closeArchiveAdminModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <form id="archive-admin-form">
+          <div class="form-group">
+            <label for="archiveAdminPassword">Enter admin password</label>
+            <input type="password" id="archiveAdminPassword" required placeholder="Password" />
+            <div id="archive-admin-error" style="color: #ff4444; font-size: 0.85rem; margin-top: 8px; display: none;">Incorrect password</div>
+          </div>
+          <button type="submit" class="btn primary">Unlock Archive Admin</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archive Editor Modal -->
+  <div id="archive-editor-modal" class="category-modal">
+    <div class="category-modal-content" style="max-width: 900px;">
+      <div class="category-modal-header">
+        <h2>Archive Editor</h2>
+        <button class="category-modal-close" onclick="closeArchiveEditor()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <div class="form-group">
+          <label for="archiveTitle">Title</label>
+          <input type="text" id="archiveTitle" placeholder="Title" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="archiveTag">Tag Text</label>
+            <input type="text" id="archiveTag" placeholder="Tag" />
+          </div>
+          <div class="form-group">
+            <label for="archiveTagClass">Tag Style</label>
+            <select id="archiveTagClass">
+              <option value="tag-horror">Horror & Film</option>
+              <option value="tag-fashion">Fashion</option>
+              <option value="tag-gaming">Gaming</option>
+              <option value="tag-art">Art</option>
+              <option value="tag-music">Music</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="archiveImage">Image URL</label>
+          <input type="url" id="archiveImage" placeholder="https://" />
+        </div>
+        <div class="form-group">
+          <label for="archiveDescription">Description (HTML allowed for links/images)</label>
+          <textarea id="archiveDescription" rows="4" placeholder="Description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="archiveLink">Optional Link (card click)</label>
+          <input type="url" id="archiveLink" placeholder="https://" />
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" class="btn secondary" id="archiveDeleteBtn" style="display: none;">Delete</button>
+          <button type="button" class="btn secondary" onclick="closeArchiveEditor()">Cancel</button>
+          <button type="button" class="btn primary" id="archiveSaveBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <p>© 2025 Kenechi Obiozor.</p>
@@ -161,6 +207,146 @@
     const archiveError = document.getElementById('archive-lock-error');
     const lockToggle = document.getElementById('archive-lock-toggle');
     const archiveKey = 'archiveUnlockedHash';
+    const ARCHIVE_STORAGE_KEY = 'archiveEntries';
+    const archiveGrid = document.getElementById('archive-grid');
+    const archiveAdminBtn = document.getElementById('archiveAdminBtn');
+    let isArchiveAdminMode = false;
+    let editingArchiveIndex = null;
+
+    const defaultArchiveEntries = [
+      {
+        title: 'The Anatomy of Suspense',
+        tag: 'Horror & Film',
+        tagClass: 'tag-horror',
+        description: 'Analyzing the ambient sound design in modern psychological horror...',
+        image: 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=800',
+        size: 'tall',
+        link: ''
+      },
+      {
+        title: 'Silhouettes & Shadows',
+        tag: 'Fashion',
+        tagClass: 'tag-fashion',
+        description: 'How abstract geometry is reshaping modern streetwear.',
+        image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800',
+        size: '',
+        link: ''
+      },
+      {
+        title: 'Atmosphere as a Mechanic',
+        tag: 'Gaming',
+        tagClass: 'tag-gaming',
+        description: 'Why the best video games rely on environmental storytelling over dialogue.',
+        image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800',
+        size: 'wide',
+        link: ''
+      }
+    ];
+
+    function loadArchiveEntries() {
+      const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+      if (!stored) return defaultArchiveEntries;
+      try {
+        return JSON.parse(stored);
+      } catch (error) {
+        console.error('Failed to load archive entries', error);
+        return defaultArchiveEntries;
+      }
+    }
+
+    let archiveEntries = loadArchiveEntries();
+
+    function saveArchiveEntries() {
+      localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archiveEntries));
+    }
+
+    function renderArchiveEntries() {
+      if (!archiveGrid) return;
+      archiveGrid.innerHTML = '';
+      archiveEntries.forEach((entry, index) => {
+        const wrapper = document.createElement(entry.link ? 'a' : 'article');
+        wrapper.className = `art-card ${entry.size || ''}`.trim();
+        if (entry.link) {
+          wrapper.href = entry.link;
+          wrapper.target = '_blank';
+          wrapper.rel = 'noopener noreferrer';
+        }
+        wrapper.style.backgroundImage = `url('${entry.image || ''}')`;
+        wrapper.innerHTML = `
+          ${isArchiveAdminMode ? '<button class="archive-edit-btn" type="button">Edit</button>' : ''}
+          <div class="card-content">
+            <span class="tag ${entry.tagClass || ''}">${entry.tag || ''}</span>
+            <h3>${entry.title || ''}</h3>
+            <p>${entry.description || ''}</p>
+          </div>
+        `;
+        if (isArchiveAdminMode) {
+          const editBtn = wrapper.querySelector('.archive-edit-btn');
+          if (editBtn) {
+            editBtn.addEventListener('click', (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              openArchiveEditor(index);
+            });
+          }
+        }
+        archiveGrid.appendChild(wrapper);
+      });
+    }
+
+    function updateArchiveAdminButton() {
+      if (archiveAdminBtn) {
+        archiveAdminBtn.textContent = isArchiveAdminMode ? '🔓' : '🔒';
+      }
+    }
+
+    function openArchiveAdminModal() {
+      const modal = document.getElementById('archive-admin-modal');
+      const input = document.getElementById('archiveAdminPassword');
+      const error = document.getElementById('archive-admin-error');
+      if (error) error.style.display = 'none';
+      if (input) input.value = '';
+      if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeArchiveAdminModal() {
+      const modal = document.getElementById('archive-admin-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function openArchiveEditor(index = null) {
+      editingArchiveIndex = index;
+      const entry = index !== null ? archiveEntries[index] : null;
+      document.getElementById('archiveTitle').value = entry?.title || '';
+      document.getElementById('archiveTag').value = entry?.tag || '';
+      document.getElementById('archiveTagClass').value = entry?.tagClass || 'tag-horror';
+      document.getElementById('archiveImage').value = entry?.image || '';
+      document.getElementById('archiveDescription').value = entry?.description || '';
+      document.getElementById('archiveLink').value = entry?.link || '';
+      const deleteBtn = document.getElementById('archiveDeleteBtn');
+      if (deleteBtn) deleteBtn.style.display = index !== null ? 'inline-flex' : 'none';
+
+      const modal = document.getElementById('archive-editor-modal');
+      if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeArchiveEditor() {
+      const modal = document.getElementById('archive-editor-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      editingArchiveIndex = null;
+    }
     let isLocked = true;
 
     function setLocked(lockedState) {
@@ -227,6 +413,87 @@
       }
     });
 
+    if (archiveAdminBtn) {
+      archiveAdminBtn.addEventListener('click', () => {
+        if (isArchiveAdminMode) {
+          openArchiveEditor(null);
+        } else {
+          openArchiveAdminModal();
+        }
+      });
+    }
+
+    const archiveAdminForm = document.getElementById('archive-admin-form');
+    if (archiveAdminForm) {
+      archiveAdminForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const input = document.getElementById('archiveAdminPassword');
+        const error = document.getElementById('archive-admin-error');
+        if (!input) return;
+        const attemptHash = await sha256(`${ARCHIVE_LOCK_SALT}:${input.value}`);
+        if (attemptHash === ARCHIVE_LOCK_HASH) {
+          isArchiveAdminMode = true;
+          updateArchiveAdminButton();
+          closeArchiveAdminModal();
+          renderArchiveEntries();
+          openArchiveEditor(null);
+        } else if (error) {
+          error.style.display = 'block';
+        }
+      });
+    }
+
+    const archiveSaveBtn = document.getElementById('archiveSaveBtn');
+    if (archiveSaveBtn) {
+      archiveSaveBtn.addEventListener('click', () => {
+        const entry = {
+          title: document.getElementById('archiveTitle').value.trim(),
+          tag: document.getElementById('archiveTag').value.trim(),
+          tagClass: document.getElementById('archiveTagClass').value,
+          image: document.getElementById('archiveImage').value.trim(),
+          description: document.getElementById('archiveDescription').value.trim(),
+          link: document.getElementById('archiveLink').value.trim(),
+          size: ''
+        };
+
+        if (editingArchiveIndex !== null) {
+          archiveEntries[editingArchiveIndex] = { ...archiveEntries[editingArchiveIndex], ...entry };
+        } else {
+          archiveEntries.push(entry);
+        }
+        saveArchiveEntries();
+        renderArchiveEntries();
+        closeArchiveEditor();
+      });
+    }
+
+    const archiveDeleteBtn = document.getElementById('archiveDeleteBtn');
+    if (archiveDeleteBtn) {
+      archiveDeleteBtn.addEventListener('click', () => {
+        if (editingArchiveIndex === null) return;
+        archiveEntries.splice(editingArchiveIndex, 1);
+        saveArchiveEntries();
+        renderArchiveEntries();
+        closeArchiveEditor();
+      });
+    }
+
+    const archiveAdminModal = document.getElementById('archive-admin-modal');
+    if (archiveAdminModal) {
+      archiveAdminModal.addEventListener('click', (event) => {
+        if (event.target === archiveAdminModal) closeArchiveAdminModal();
+      });
+    }
+
+    const archiveEditorModal = document.getElementById('archive-editor-modal');
+    if (archiveEditorModal) {
+      archiveEditorModal.addEventListener('click', (event) => {
+        if (event.target === archiveEditorModal) closeArchiveEditor();
+      });
+    }
+
+    updateArchiveAdminButton();
+    renderArchiveEntries();
     initLock();
   </script>
 </body>
