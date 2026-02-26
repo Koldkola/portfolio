@@ -1,9 +1,18 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
 let db;
+let redis;
+
+// Initialize Upstash Redis (on Vercel)
+if (process.env.UPSTASH_REDIS_REST_URL) {
+  redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+}
 
 // Only use better-sqlite3 in development (local/Node.js environment)
-if (process.env.VERCEL !== '1') {
+if (process.env.VERCEL !== '1' && !redis) {
   const Database = require('better-sqlite3');
   const path = require('path');
   
@@ -58,10 +67,16 @@ export default async function handler(req, res) {
         // Development: Use SQLite
         const allEntries = db.prepare('SELECT * FROM board_entries ORDER BY timestamp DESC').all();
         return res.status(200).json(allEntries);
+      } else if (redis) {
+        // Vercel: Use Upstash Redis
+        const entries = await redis.get('board:entries');
+        const data = entries || [];
+        return res.status(200).json(data);
       } else {
-        // Vercel: Use Vercel KV (Redis)
-        const entries = await kv.get('board:entries') || [];
-        return res.status(200).json(entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
+        return res.status(500).json({ 
+          error: 'Database not configured',
+          details: 'Neither SQLite nor Redis is available'
+        });
       }
     } catch (error) {
       console.error('Database error:', error);
@@ -110,9 +125,9 @@ export default async function handler(req, res) {
           id: result.lastInsertRowid,
           message: 'Entry saved successfully'
         });
-      } else {
-        // Vercel: Use Vercel KV (Redis)
-        const entries = await kv.get('board:entries') || [];
+      } else if (redis) {
+        // Vercel: Use Upstash Redis
+        const entries = (await redis.get('board:entries')) || [];
         const id = Date.now();
         const newEntry = {
           id,
@@ -127,11 +142,16 @@ export default async function handler(req, res) {
         };
         
         entries.unshift(newEntry); // Add to beginning (newest first)
-        await kv.set('board:entries', entries);
+        await redis.set('board:entries', entries);
 
         return res.status(201).json({ 
           id,
           message: 'Entry saved successfully'
+        });
+      } else {
+        return res.status(500).json({ 
+          error: 'Database not configured',
+          details: 'Neither SQLite nor Redis is available'
         });
       }
     } catch (error) {
