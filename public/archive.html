@@ -10,15 +10,28 @@
 <body>
   <div class="ambient-bg"></div>
 
+  <div id="archive-lock" class="page-lock" aria-hidden="true">
+    <div class="page-lock-card" role="dialog" aria-labelledby="archive-lock-title" aria-modal="true">
+      <h2 id="archive-lock-title">Archive Locked</h2>
+      <p>Enter the password to view this page.</p>
+      <form id="archive-lock-form">
+        <input id="archive-lock-input" type="password" placeholder="Password" autocomplete="current-password" required />
+        <button type="submit" class="btn primary">Unlock</button>
+      </form>
+      <p id="archive-lock-error" class="page-lock-error" aria-live="polite"></p>
+    </div>
+  </div>
+
   <header class="site-header">
     <nav class="nav">
-      <a class="logo" href="/">Kenechi.</a>
+      <a class="logo" href="/">Kumachi.</a>
       <ul class="nav-links">
-        <li><a href="/projects.html">The Lab </a></li>
+        <li><a href="/projects.html">Projects </a></li>
         <li><a href="/archive.html">Archive </a></li>
         <li><a href="/resume.html">Resume</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
+      <button id="archive-lock-toggle" class="btn secondary archive-lock-toggle" type="button">Lock Archive</button>
     </nav>
     <div class="site-search">
       <input id="siteSearch" type="search" placeholder="Search the portfolio..." aria-label="Search the portfolio" />
@@ -29,7 +42,7 @@
   <main class="creative-section">
     <div class="section-header">
       <h2>The Archive</h2>
-      <p>Musings on film, Music, fashion, games and all around entertainment media.</p>
+      <p>My Thoughts on film, Music, fashion, games and all around entertainment media.</p>
     </div>
 
     <div class="masonry-grid">
@@ -63,7 +76,157 @@
     <p>© 2025 Kenechi Obiozor.</p>
   </footer>
 
+  <style>
+    .page-lock {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 5, 0.9);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .page-lock.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .page-lock-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 28px;
+      width: min(420px, 92vw);
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .page-lock-card h2 {
+      font-family: var(--font-serif);
+      margin-bottom: 8px;
+    }
+
+    .page-lock-card p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    #archive-lock-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    #archive-lock-input {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+
+    .page-lock-error {
+      min-height: 20px;
+      color: #f87171;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    .archive-lock-toggle {
+      padding: 10px 18px;
+      font-size: 0.8rem;
+      margin-left: 12px;
+      white-space: nowrap;
+    }
+
+    body.locked {
+      overflow: hidden;
+    }
+  </style>
+
   <script src="/js/search-index.js"></script>
   <script src="/js/site-search.js"></script>
+  <script>
+    const ARCHIVE_LOCK_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e3d4fd29fb2838";
+    const ARCHIVE_LOCK_SALT = "archive-v1";
+    const archiveLock = document.getElementById('archive-lock');
+    const archiveForm = document.getElementById('archive-lock-form');
+    const archiveInput = document.getElementById('archive-lock-input');
+    const archiveError = document.getElementById('archive-lock-error');
+    const lockToggle = document.getElementById('archive-lock-toggle');
+    const archiveKey = 'archiveUnlockedHash';
+    let isLocked = true;
+
+    function setLocked(lockedState) {
+      isLocked = lockedState;
+      lockToggle.textContent = isLocked ? 'Unlock Archive' : 'Lock Archive';
+
+      if (isLocked) {
+        document.body.classList.add('locked');
+        archiveLock.classList.add('active');
+        archiveLock.setAttribute('aria-hidden', 'false');
+        setTimeout(() => archiveInput.focus(), 50);
+      } else {
+        document.body.classList.remove('locked');
+        archiveLock.classList.remove('active');
+        archiveLock.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    async function sha256(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function initLock() {
+      if (!ARCHIVE_LOCK_HASH || ARCHIVE_LOCK_HASH === 'REPLACE_WITH_SHA256_HASH') {
+        archiveError.textContent = 'Lock not configured yet.';
+        setLocked(true);
+        return;
+      }
+
+      const unlocked = localStorage.getItem(archiveKey) === ARCHIVE_LOCK_HASH;
+      setLocked(!unlocked);
+    }
+
+    archiveForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      archiveError.textContent = '';
+
+      const password = archiveInput.value.trim();
+      if (!password) {
+        archiveError.textContent = 'Please enter a password.';
+        return;
+      }
+
+      const attemptHash = await sha256(`${ARCHIVE_LOCK_SALT}:${password}`);
+      if (attemptHash === ARCHIVE_LOCK_HASH) {
+        localStorage.setItem(archiveKey, ARCHIVE_LOCK_HASH);
+        archiveInput.value = '';
+        setLocked(false);
+      } else {
+        archiveError.textContent = 'Incorrect password.';
+      }
+    });
+
+    lockToggle.addEventListener('click', () => {
+      if (isLocked) {
+        setLocked(true);
+      } else {
+        localStorage.removeItem(archiveKey);
+        setLocked(true);
+      }
+    });
+
+    initLock();
+  </script>
 </body>
 </html>

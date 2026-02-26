@@ -177,9 +177,9 @@ main.container .link { color: var(--text-primary); }
 .abstract-portrait:hover .headshot { filter: grayscale(0%); }
 
 /* =========================================
-   WEEKLY WONDER SLIDESHOW
+  WEEKLY WONDER SLIDESHOW
 ========================================= */
-.weekly-section { max-width: 1200px; margin: 100px auto; padding: 0 40px; }
+.weekly-section { max-width: 1200px; margin: 100px auto; padding: 0 20px; }
 .interactive-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;}
 .interactive-header h2 { font-family: var(--font-serif); font-size: 2.5rem; font-style: italic; }
 .week-controls { display: flex; align-items: center; gap: 15px; padding: 8px 15px; border-radius: 30px; }
@@ -187,11 +187,11 @@ main.container .link { color: var(--text-primary); }
 .ctrl-btn:hover { transform: scale(1.2); text-shadow: 0 0 10px #fff; }
 #week-label { font-family: var(--font-sans); font-weight: 500; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;}
 
-.weekly-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; transition: opacity 0.4s var(--ease-out-expo); }
+.weekly-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; transition: opacity 0.4s var(--ease-out-expo); }
 .weekly-grid.fade-out { opacity: 0; transform: translateY(10px); }
 
 /* Weekly Descriptions Grid */
-.weekly-descriptions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; margin-top: 32px; width: 100%; padding: 0 20px; box-sizing: border-box; max-width: 1400px; margin-left: auto; margin-right: auto; }
+.weekly-descriptions-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; margin-top: 32px; width: 100%; padding: 0; box-sizing: border-box; max-width: 1200px; margin-left: auto; margin-right: auto; }
 .weekly-desc-card { padding: 28px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; transition: all 0.3s var(--ease-out-expo); min-height: 250px; aspect-ratio: 1 / 1; display: flex; flex-direction: column; }
 .weekly-desc-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-3px); }
 .weekly-desc-card .curation-tag { display: block; margin-bottom: 8px; }
