@@ -90,7 +90,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '5mb' })); // Limit JSON payload size
-app.use(express.static('public'));
+
+// API routes MUST be defined before static file serving
+// This ensures /api/* routes are not caught by the static middleware
 
 // Simple proxy to OpenAI Chat completions. Expects {message: '...'} in body.
 async function handleChat(req, res) {
@@ -225,6 +227,9 @@ function simpleBotReply(msg) {
   if (lower.includes('contact')) return "Use the Contact page or email me at: Kenechi596@gmail.com";
   return "Nice question! I don't have an OpenAI key configured, so I'm replying with a canned response. Provide OPENAI_API_KEY to enable full AI chat.";
 }
+
+// Serve static files - MUST be after API routes
+app.use(express.static('public'));
 
 // Export handler for serverless platforms that `require()` this file (optional)
 module.exports = {
