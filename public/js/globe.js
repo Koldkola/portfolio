@@ -142,13 +142,11 @@ function openGlobeViewModal() {
       const checkboxHtml = isAdminMode ? `<input type="checkbox" class="board-item-checkbox" data-index="${index}" ${selectedEntries.has(index) ? 'checked' : ''} />` : '';
       const selectableClass = isAdminMode ? 'selectable' : '';
       const selectedClass = selectedEntries.has(index) ? 'selected' : '';
-      const rowSpan = getEntryRowSpan(entry);
-      const gridStyle = `grid-row-end: span ${rowSpan};`;
       
       if (entry.photo) {
         // Display as polaroid
         return `
-          <div class="board-polaroid ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffffff'}; ${gridStyle}" data-index="${index}">
+          <div class="board-polaroid ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffffff'};" data-index="${index}">
             ${checkboxHtml}
             <img src="${entry.photo}" class="board-polaroid-photo" alt="User photo" data-photo="${entry.photo}" onclick="openPhotoModal('${entry.photo}')" />
             <div class="board-polaroid-content">
@@ -163,7 +161,7 @@ function openGlobeViewModal() {
       } else {
         // Display as sticky note
         return `
-          <div class="board-sticky ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffd97d'}; color: ${entry.textColor || '#333'}; ${gridStyle}" data-index="${index}">
+          <div class="board-sticky ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffd97d'}; color: ${entry.textColor || '#333'};" data-index="${index}">
             ${checkboxHtml}
             <div class="board-sticky-name">${entry.name}</div>
             <div class="board-sticky-text">${entry.text}</div>
@@ -197,15 +195,6 @@ function openGlobeViewModal() {
   
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
-}
-
-function getEntryRowSpan(entry) {
-  const textLength = (entry.text || '').length;
-  const hasPhoto = !!entry.photo;
-  const base = hasPhoto ? 14 : 9;
-  const extra = Math.ceil(textLength / 160);
-  const span = base + extra * 2;
-  return Math.min(Math.max(span, hasPhoto ? 12 : 8), 26);
 }
 
 // Helper function to adjust color opacity
