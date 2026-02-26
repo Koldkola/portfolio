@@ -8,18 +8,58 @@ let selectedEntries = new Set();
 const ADMIN_PASSWORD_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e3d4fd29fb2838";
 const ADMIN_PASSWORD_SALT = "archive-v1";
 
-// Load entries from localStorage
-function loadEntries() {
-  const stored = localStorage.getItem('globeEntries');
-  if (stored) {
-    globeEntries = JSON.parse(stored);
+// API endpoint for board entries
+const API_URL = '/api/board/entries';
+
+// Load entries from backend server
+async function loadEntries() {
+  try {
+    const response = await fetch(API_URL);
+    if (response.ok) {
+      const data = await response.json();
+      globeEntries = data.entries || [];
+    } else {
+      console.error('Failed to load entries:', response.status);
+      globeEntries = [];
+    }
+  } catch (error) {
+    console.error('Error loading entries:', error);
+    globeEntries = [];
   }
   updateGlobeDisplay();
 }
 
-// Save entries to localStorage
-function saveEntries() {
-  localStorage.setItem('globeEntries', JSON.stringify(globeEntries));
+// Save entries to backend server
+async function saveEntries() {
+  // Entries are now saved via API on submission
+  // This function is kept for compatibility but no longer needed
+  return true;
+}
+
+// Add new entry to backend server
+async function addEntry(entry) {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(entry)
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      globeEntries.push(data.entry);
+      updateGlobeDisplay();
+      return true;
+    } else {
+      console.error('Failed to save entry:', response.status);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error saving entry:', error);
+    return false;
+  }
 }
 
 // Update globe display with current entry
@@ -348,20 +388,24 @@ function handleFormSubmit(e) {
   
   if (!name || !text) return;
   
+  // Disable submit button during processing
+  const submitBtn = document.querySelector('.globe-form button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+  
   // Handle photo if provided
   if (photoInput.files && photoInput.files[0]) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      addEntry(name, text, age, textColor, bgColor, e.target.result);
+    reader.onload = async function(e) {
+      await saveNewEntry(name, text, age, textColor, bgColor, e.target.result, submitBtn);
     };
     reader.readAsDataURL(photoInput.files[0]);
   } else {
-    addEntry(name, text, age, textColor, bgColor, null);
+    saveNewEntry(name, text, age, textColor, bgColor, null, submitBtn);
   }
 }
 
-// Add new entry
-function addEntry(name, text, age, textColor, bgColor, photo) {
+// Save new entry to backend
+async function saveNewEntry(name, text, age, textColor, bgColor, photo, submitBtn) {
   const entry = {
     name: name,
     text: text,
@@ -372,29 +416,34 @@ function addEntry(name, text, age, textColor, bgColor, photo) {
     timestamp: new Date().toISOString()
   };
   
-  globeEntries.push(entry);
-  saveEntries();
-  updateGlobeDisplay();
-  closeGlobeModal();
+  const success = await addEntry(entry);
   
-  // Show success message
-  showNotification('Your entry has been added to the board!');
+  if (submitBtn) submitBtn.disabled = false;
+  
+  if (success) {
+    closeGlobeModal();
+    showNotification('Your entry has been added to the board!');
+  } else {
+    showNotification('Failed to save entry. Please try again.', 'error');
+  }
 }
 
 // Show notification
-function showNotification(message) {
+function showNotification(message, type = 'success') {
   const notification = document.createElement('div');
+  const bgColor = type === 'error' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(139, 92, 246, 0.95)';
+  
   notification.style.cssText = `
     position: fixed;
     top: 100px;
     right: 40px;
-    background: rgba(139, 92, 246, 0.95);
+    background: ${bgColor};
     color: white;
     padding: 16px 24px;
     border-radius: 8px;
     z-index: 10001;
     animation: slideInRight 0.3s ease;
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 24px ${type === 'error' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(139, 92, 246, 0.4)'};
   `;
   notification.textContent = message;
   document.body.appendChild(notification);

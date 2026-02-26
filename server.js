@@ -105,6 +105,62 @@ async function handleChat(req, res) {
 
 app.post('/api/chat', handleChat);
 
+// In-memory storage for board entries (persists during server runtime)
+let boardEntries = [];
+
+// Get all board entries
+app.get('/api/board/entries', (req, res) => {
+  res.json({ entries: boardEntries });
+});
+
+// Add new board entry
+app.post('/api/board/entries', (req, res) => {
+  const { name, text, age, bgColor, textColor, photo, timestamp } = req.body;
+  
+  // Validate input
+  if (!name || !text) {
+    return res.status(400).json({ error: 'Name and text are required' });
+  }
+  
+  // Sanitize input
+  const entry = {
+    name: sanitizeInput(name),
+    text: sanitizeInput(text),
+    age: age ? parseInt(age) : null,
+    bgColor: bgColor || '#ffd97d',
+    textColor: textColor || '#333',
+    photo: photo ? sanitizePhotoData(photo) : null,
+    timestamp: timestamp || new Date().toISOString()
+  };
+  
+  // Add entry to array
+  boardEntries.push(entry);
+  
+  res.status(201).json({ 
+    success: true, 
+    entry: entry,
+    totalEntries: boardEntries.length 
+  });
+});
+
+// Sanitize text input
+function sanitizeInput(input) {
+  if (typeof input !== 'string') return '';
+  return input
+    .replace(/[<>]/g, '') // Remove angle brackets
+    .substring(0, 500) // Limit length
+    .trim();
+}
+
+// Sanitize photo data (base64 validation)
+function sanitizePhotoData(photo) {
+  if (typeof photo !== 'string') return null;
+  // Ensure it looks like valid base64 image data
+  if (!photo.startsWith('data:image/')) return null;
+  if (photo.length > 5000000) return null; // Limit to ~5MB
+  return photo;
+}
+
 function simpleBotReply(msg) {
   const lower = (msg || '').toLowerCase();
   if (lower.includes('hello') || lower.includes('hi')) return "Hi! I'm a local helper bot. Ask me about the site or your projects.";
