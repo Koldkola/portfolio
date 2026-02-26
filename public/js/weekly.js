@@ -307,14 +307,14 @@ function getDateDisplay(startDate) {
   return `Week of ${months[start.getMonth()]} ${start.getDate()}`;
 }
 
-// Color palettes for each week - full spectrum from purple through turquoise
+// Color palettes for each week - soft pastel spectrum from purple through turquoise
 const colorPalettes = [
-  // Week 1 - Purple to turquoise gradient
-  ['#d4b5ff', '#a8d5ff', '#7fd9d6', '#6bc9d9', '#5ec8c5'],
-  // Week 2 - Mixed spectrum
-  ['#c49fff', '#9db8ff', '#7fd9d6', '#5ec8c5', '#915dff'],
-  // Week 3 - Turquoise to purple gradient
-  ['#a0e7e5', '#8dcfe5', '#7ab7e5', '#a89fe5', '#b389ff']
+  // Week 1 - Soft purple to turquoise gradient
+  ['#e8d9ff', '#d4e8ff', '#c4f1f0', '#b8eae8', '#ace3e0'],
+  // Week 2 - Mixed soft pastels
+  ['#dcc9ff', '#cfdcff', '#c0e9f0', '#b0e3e8', '#d1c4ff'],
+  // Week 3 - Soft turquoise to purple gradient
+  ['#d2f4f3', '#cae4f2', '#c2d4f1', '#d0c8f0', '#ddc4f5']
 ];
 
 function renderWeek(index) {
