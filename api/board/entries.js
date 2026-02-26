@@ -2,39 +2,52 @@ import { Redis } from '@upstash/redis';
 
 let db;
 let redis;
+let fallbackMemory = [];
 
 // Initialize Upstash Redis (on Vercel)
-if (process.env.UPSTASH_REDIS_REST_URL) {
+// Use the variable names that Vercel provides
+const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+if (redisUrl && redisToken) {
   redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    url: redisUrl,
+    token: redisToken,
   });
+  console.log('Redis initialized with Upstash');
+} else {
+  console.log('Redis environment variables not found, using fallback. URL:', !!redisUrl, 'Token:', !!redisToken);
 }
 
 // Only use better-sqlite3 in development (local/Node.js environment)
 if (process.env.VERCEL !== '1' && !redis) {
-  const Database = require('better-sqlite3');
-  const path = require('path');
-  
-  const dbPath = path.join(process.cwd(), 'data', 'portfolio.db');
-  db = new Database(dbPath);
-  db.pragma('journal_mode = WAL');
-  
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS board_entries (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      text TEXT NOT NULL,
-      age INTEGER,
-      bgColor TEXT,
-      textColor TEXT,
-      photo TEXT,
-      timestamp TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+  try {
+    const Database = require('better-sqlite3');
+    const path = require('path');
     
-    CREATE INDEX IF NOT EXISTS idx_timestamp ON board_entries(timestamp);
-  `);
+    const dbPath = path.join(process.cwd(), 'data', 'portfolio.db');
+    db = new Database(dbPath);
+    db.pragma('journal_mode = WAL');
+    
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS board_entries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        text TEXT NOT NULL,
+        age INTEGER,
+        bgColor TEXT,
+        textColor TEXT,
+        photo TEXT,
+        timestamp TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      CREATE INDEX IF NOT EXISTS idx_timestamp ON board_entries(timestamp);
+    `);
+    console.log('SQLite database initialized');
+  } catch (err) {
+    console.error('Failed to initialize SQLite:', err);
+  }
 }
 
 // Sanitization functions
@@ -69,14 +82,18 @@ export default async function handler(req, res) {
         return res.status(200).json(allEntries);
       } else if (redis) {
         // Vercel: Use Upstash Redis
-        const entries = await redis.get('board:entries');
-        const data = entries || [];
-        return res.status(200).json(data);
+        try {
+          const entries = await redis.get('board:entries');
+          const data = entries || [];
+          return res.status(200).json(data);
+        } catch (redisErr) {
+          console.error('Redis error:', redisErr);
+          console.log('Falling back to memory');
+          return res.status(200).json(fallbackMemory);
+        }
       } else {
-        return res.status(500).json({ 
-          error: 'Database not configured',
-          details: 'Neither SQLite nor Redis is available'
-        });
+        // Fallback: Use in-memory
+        return res.status(200).json(fallbackMemory);
       }
     } catch (error) {
       console.error('Database error:', error);
@@ -104,6 +121,19 @@ export default async function handler(req, res) {
       const sanitizedText = sanitizeInput(text);
       const sanitizedPhoto = sanitizePhotoData(photo);
 
+      const id = Date.now();
+      const newEntry = {
+        id,
+        name: sanitizedName,
+        text: sanitizedText,
+        age: age || null,
+        bgColor: bgColor || null,
+        textColor: textColor || null,
+        photo: sanitizedPhoto,
+        timestamp,
+        created_at: new Date().toISOString()
+      };
+
       if (db) {
         // Development: Use SQLite
         const stmt = db.prepare(`
@@ -111,7 +141,7 @@ export default async function handler(req, res) {
           VALUES (?, ?, ?, ?, ?, ?, ?)
         `);
 
-        const result = stmt.run(
+        stmt.run(
           sanitizedName,
           sanitizedText,
           age || null,
@@ -122,40 +152,39 @@ export default async function handler(req, res) {
         );
 
         return res.status(201).json({ 
-          id: result.lastInsertRowid,
+          id,
           message: 'Entry saved successfully'
         });
       } else if (redis) {
         // Vercel: Use Upstash Redis
-        const entries = (await redis.get('board:entries')) || [];
-        const id = Date.now();
-        const newEntry = {
-          id,
-          name: sanitizedName,
-          text: sanitizedText,
-          age: age || null,
-          bgColor: bgColor || null,
-          textColor: textColor || null,
-          photo: sanitizedPhoto,
-          timestamp,
-          created_at: new Date().toISOString()
-        };
-        
-        entries.unshift(newEntry); // Add to beginning (newest first)
-        await redis.set('board:entries', entries);
-
+        try {
+          const entries = (await redis.get('board:entries')) || [];
+          entries.unshift(newEntry);
+          await redis.set('board:entries', entries);
+          
+          return res.status(201).json({ 
+            id,
+            message: 'Entry saved successfully'
+          });
+        } catch (redisErr) {
+          console.error('Redis save error:', redisErr);
+          // Fallback to memory
+          fallbackMemory.unshift(newEntry);
+          return res.status(201).json({ 
+            id,
+            message: 'Entry saved (fallback)'
+          });
+        }
+      } else {
+        // Fallback: Use in-memory
+        fallbackMemory.unshift(newEntry);
         return res.status(201).json({ 
           id,
-          message: 'Entry saved successfully'
-        });
-      } else {
-        return res.status(500).json({ 
-          error: 'Database not configured',
-          details: 'Neither SQLite nor Redis is available'
+          message: 'Entry saved (temporary)'
         });
       }
     } catch (error) {
-      console.error('Database error:', error);
+      console.error('POST error:', error);
       return res.status(500).json({ 
         error: 'Failed to save entry',
         details: error.message 
