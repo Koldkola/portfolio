@@ -307,8 +307,19 @@ function getDateDisplay(startDate) {
   return `Week of ${months[start.getMonth()]} ${start.getDate()}`;
 }
 
+// Color palettes for each week
+const colorPalettes = [
+  // Week 1 - Purple variations
+  ['#d4b5ff', '#c49fff', '#b389ff', '#a273ff', '#915dff'],
+  // Week 2 - Turquoise variations
+  ['#a0e7e5', '#7fd9d6', '#5ec8c5', '#3db8b4', '#1ca8a3'],
+  // Week 3 - Mixed purple and turquoise
+  ['#c49fff', '#7fd9d6', '#b389ff', '#5ec8c5', '#a273ff']
+];
+
 function renderWeek(index) {
   const data = weeklyData[index];
+  const colors = colorPalettes[index % colorPalettes.length];
   
   // Fade out animation
   gridElement.classList.add('fade-out');
@@ -318,14 +329,21 @@ function renderWeek(index) {
     weekLabel.innerHTML = `<span style="opacity: 0.5; font-weight: 300;">${dateDisplay}</span>`;
     gridElement.innerHTML = '';
     
-    data.items.forEach(item => {
+    data.items.forEach((item, itemIndex) => {
       const descCard = document.createElement('div');
-      descCard.className = 'weekly-desc-card';
+      descCard.className = 'weekly-sticky-card';
+      
+      const bgColor = colors[itemIndex % colors.length];
+      const rotation = itemIndex % 2 === 0 ? -2 : 2;
+      
+      descCard.style.background = bgColor;
+      descCard.style.transform = `rotate(${rotation}deg)`;
       
       descCard.innerHTML = `
-        <span class="curation-tag">${item.category}</span>
-        <h4>${item.title}</h4>
-        <p>${item.description}</p>
+        <div class="sticky-tape"></div>
+        <span class="curation-tag" style="color: rgba(0,0,0,0.7);">${item.category}</span>
+        <h4 style="color: #2d2d2d;">${item.title}</h4>
+        <p style="color: #4d4d4d;">${item.description}</p>
       `;
       
       // Add click handler to open modal
