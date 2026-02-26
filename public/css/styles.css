@@ -1575,6 +1575,33 @@ main.container .link { color: var(--text-primary); }
 }
 
 /* Contact and Resume Buttons - Applied via JavaScript randomizer */
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
 .contact-links .contact-btn.custom-btn,
 .resume-actions .btn.custom-btn,
 .resume-actions .contact-btn.custom-btn,
@@ -1582,7 +1609,8 @@ main.container .link { color: var(--text-primary); }
   width: auto;
   height: auto;
   padding: 10px 25px;
-  margin: 20px;
+  margin: 0;
+  display: inline-block;
 }
 
 /* Ensure contact-btn styling doesn't interfere with custom button classes */
