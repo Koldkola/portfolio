@@ -30,10 +30,16 @@
     <h1>Projects</h1>
     <p class="lead"> My Project overview.</p>
 
+    <div class="project-tabs">
+      <button class="tab-btn active" data-tab="projects">Projects</button>
+      <button class="tab-btn" data-tab="class-projects">Class Projects</button>
+    </div>
+
     <div class="project-search">
       <input id="projectSearch" type="search" placeholder="Search projects..." aria-label="Search projects" />
     </div>
 
+    <div class="tab-content active" id="projects-tab">
     <div class="carousel-section">
       <button class="carousel-nav carousel-prev" id="prevBtn" aria-label="Previous projects">←</button>
       <div id="projects-grid" class="projects-grid carousel-container">
@@ -100,8 +106,9 @@
     </div>
       <button class="carousel-nav carousel-next" id="nextBtn" aria-label="Next projects">→</button>
     </div>
+    </div>
 
-    <h2 style="margin-top: 36px;">Class Projects</h2>
+    <div class="tab-content" id="class-projects-tab">
     <div class="carousel-section">
       <button class="carousel-nav carousel-prev" id="classPrevBtn" aria-label="Previous class projects">←</button>
       <div id="class-projects-grid" class="projects-grid carousel-container">
@@ -150,6 +157,8 @@
     </div>
       <button class="carousel-nav carousel-next" id="classNextBtn" aria-label="Next class projects">→</button>
     </div>
+    </div>
+
       <script>
         const searchInput = document.getElementById('projectSearch');
         const cards = Array.from(document.querySelectorAll('.project-card'));

@@ -349,6 +349,61 @@ main.container .link { color: var(--text-primary); }
 /* =========================================
    CAROUSEL STYLES - Projects Navigation
 ========================================= */
+
+/* Project Tabs */
+.project-tabs {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.tab-btn.active {
+  color: #a855f7;
+  border-bottom-color: #a855f7;
+  background: rgba(168, 85, 247, 0.05);
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .carousel-section {
   display: flex;
   align-items: center;
