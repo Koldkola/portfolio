@@ -9,7 +9,7 @@ const ADMIN_PASSWORD_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e
 const ADMIN_PASSWORD_SALT = "archive-v1";
 
 // API endpoint for board entries
-const API_URL = '/api/board/entries';
+const API_URL = '/api/board';
 
 // Load entries from backend server
 async function loadEntries() {
@@ -17,7 +17,7 @@ async function loadEntries() {
     const response = await fetch(API_URL);
     if (response.ok) {
       const data = await response.json();
-      globeEntries = data.entries || [];
+      globeEntries = Array.isArray(data) ? data : (data.entries || []);
     } else {
       console.error('Failed to load entries:', response.status);
       globeEntries = [];
@@ -49,13 +49,11 @@ async function addEntry(entry) {
     
     if (response.ok) {
       const data = await response.json();
-      if (data.entry) {
-        globeEntries.push(data.entry);
-        updateGlobeDisplay();
-      }
+      globeEntries.push(entry);
+      updateGlobeDisplay();
       return true;
     } else {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => ({}));
       console.error('Failed to save entry:', response.status, errorData);
       return false;
     }
