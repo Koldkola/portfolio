@@ -331,7 +331,21 @@ let currentWeekIndex = 0;
 // Function to get current week index based on today's date
 function getCurrentWeekIndex() {
   const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
   
+  // Check if tomorrow is a Saturday (day 6 in JS where Sunday = 0)
+  // If so, show the week starting tomorrow
+  if (tomorrow.getDay() === 6) {
+    for (let i = 0; i < weeklyData.length; i++) {
+      const weekStart = new Date(weeklyData[i].startDate);
+      if (weekStart.getTime() === tomorrow.getTime()) {
+        return i;
+      }
+    }
+  }
+  
+  // Otherwise, find the week that contains today
   for (let i = weeklyData.length - 1; i >= 0; i--) {
     const weekStart = new Date(weeklyData[i].startDate);
     const weekEnd = new Date(weekStart);
