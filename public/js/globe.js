@@ -24,7 +24,7 @@ function startTitleFontAnimation() {
   // Clear interval if already running
   if (titleAnimationInterval) clearInterval(titleAnimationInterval);
   
-  // Animate every 1 second
+  // Animate every 3 seconds
   titleAnimationInterval = setInterval(() => {
     let html = '';
     for (let i = 0; i < titleText.length; i++) {
@@ -32,7 +32,7 @@ function startTitleFontAnimation() {
       html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${titleText[i]}</span>`;
     }
     titleElement.innerHTML = html;
-  }, 1000);
+  }, 3000);
 }
 
 function stopTitleFontAnimation() {
@@ -479,7 +479,8 @@ function closeGlobeViewModal() {
     renderBoardModal();
   }
   
-  // Restore floating windows (only if they haven't been auto-faded)\n  const aboutWindow = document.getElementById('aboutWindow');
+  // Restore floating windows (only if they haven't been auto-faded)
+  const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
   if (aboutWindow && !window.windowsFaded) {
     aboutWindow.style.display = 'block';

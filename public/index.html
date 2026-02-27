@@ -96,7 +96,10 @@
           </div>
 
           <div class="camera-shutter-wrapper">
-            <button id="webcam-toggle" class="webcam-toggle-btn" title="Start or stop webcam">START CAMERA</button>
+            <div class="camera-toggle-row">
+              <button id="webcam-toggle" class="webcam-toggle-btn" title="Start or stop webcam">START CAMERA</button>
+              <button id="flip-camera-btn" class="flip-camera-btn" title="Flip camera" style="display: none;">🔄</button>
+            </div>
             <div class="capture-row">
               <button id="capture-btn" class="shutter-btn" title="Capture Archive"></button>
               <button id="record-btn" class="record-btn" title="Record Clip">REC</button>
@@ -633,6 +636,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       const recordBtn = document.getElementById('record-btn');
       const recordTimer = document.getElementById('record-timer');
       const webcamToggleBtn = document.getElementById('webcam-toggle');
+      const flipCameraBtn = document.getElementById('flip-camera-btn');
+      
+      let currentFacingMode = 'user'; // 'user' for front, 'environment' for back
       
       // Simple notification system
       function showNotification(message, type = 'info') {
@@ -710,7 +716,13 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
       // Start Webcam Function
       function startWebcam() {
-        navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
+        navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            width: 640, 
+            height: 480,
+            facingMode: currentFacingMode
+          } 
+        })
           .then(stream => {
             webcamStream = stream;
             video.srcObject = stream;
@@ -718,6 +730,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             tracking.track('#webcam', eyeTracker);
             if (!animationFrameId) requestAnimationFrame(processFrame);
             webcamToggleBtn.textContent = 'STOP WEBCAM';
+            flipCameraBtn.style.display = 'block'; // Show flip button when camera is on
           })
           .catch(err => console.error("Camera access denied.", err));
       }
@@ -740,6 +753,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.textAlign = 'center';
         ctx.fillText('Camera is off', canvas.width / 2, canvas.height / 2);
         webcamToggleBtn.textContent = 'START WEBCAM';
+        flipCameraBtn.style.display = 'none'; // Hide flip button when camera is off
       }
 
       webcamToggleBtn.addEventListener('click', () => {
@@ -747,6 +761,35 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           stopWebcam();
         } else {
           startWebcam();
+        }
+      });
+
+      // Flip Camera Button Listener
+      flipCameraBtn.addEventListener('click', () => {
+        if (webcamStream) {
+          // Toggle between front and back camera
+          currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+          
+          // Stop current stream and restart with new facing mode
+          webcamStream.getTracks().forEach(track => track.stop());
+          webcamStream = null;
+          
+          // Restart webcam with new facing mode
+          navigator.mediaDevices.getUserMedia({ 
+            video: { 
+              width: 640, 
+              height: 480,
+              facingMode: currentFacingMode
+            } 
+          })
+            .then(stream => {
+              webcamStream = stream;
+              video.srcObject = stream;
+              video.play();
+              tracking.track('#webcam', eyeTracker);
+              if (!animationFrameId) requestAnimationFrame(processFrame);
+            })
+            .catch(err => console.error("Camera flip failed.", err));
         }
       });
 
@@ -2110,14 +2153,19 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const aboutWindow = document.getElementById('aboutWindow');
         const notesWindow = document.getElementById('notesWindow');
         
+        console.log('Fade timeout fired', aboutWindow, notesWindow);
         window.windowsFaded = true;
         
         if (aboutWindow) {
+          console.log('Adding faded class to aboutWindow');
           aboutWindow.classList.add('faded');
+          console.log('Classes:', aboutWindow.className);
         }
         
         if (notesWindow) {
+          console.log('Adding faded class to notesWindow');
           notesWindow.classList.add('faded');
+          console.log('Classes:', notesWindow.className);
         }
       }, 20000);
     });

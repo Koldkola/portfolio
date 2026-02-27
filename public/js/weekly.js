@@ -539,11 +539,11 @@ function openCategoryModal(item, bgColor) {
     window.triggerKurrently();
   }
 
-  // Hide me.txt and content.txt windows
+  // Hide me.txt and content.txt windows (only if not already faded)
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
-  if (aboutWindow) aboutWindow.style.display = 'none';
-  if (notesWindow) notesWindow.style.display = 'none';
+  if (aboutWindow && !window.windowsFaded) aboutWindow.style.display = 'none';
+  if (notesWindow && !window.windowsFaded) notesWindow.style.display = 'none';
   
   const modal = document.getElementById('category-modal');
   const modalContent = modal.querySelector('.category-modal-content');
@@ -649,16 +649,16 @@ function closeCategoryModal() {
   modal.classList.remove('active');
   document.body.style.overflow = '';
   
-  // Restore windows visibility
+  // Restore windows visibility (only if not faded)
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
   const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
   const notesVisible = sessionStorage.getItem('notesWindowVisible');
   
-  if (aboutWindow && aboutVisible !== 'false') {
+  if (aboutWindow && aboutVisible !== 'false' && !window.windowsFaded) {
     aboutWindow.style.display = 'block';
   }
-  if (notesWindow && notesVisible !== 'false') {
+  if (notesWindow && notesVisible !== 'false' && !window.windowsFaded) {
     notesWindow.style.display = 'block';
   }
 }

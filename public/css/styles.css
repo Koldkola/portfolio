@@ -1160,6 +1160,38 @@ canvas#mirror-canvas {
   gap: 15px;
 }
 
+.camera-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.flip-camera-btn {
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 1rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-camera-btn:hover {
+  background: rgba(255,255,255,0.16);
+}
+
+.flip-camera-btn:active {
+  transform: scale(0.95);
+}
+
 .capture-row {
   display: flex;
   align-items: center;
@@ -1375,6 +1407,11 @@ canvas#mirror-canvas {
     width: auto;
     max-height: 50vh;
     border-radius: 12px;
+    z-index: 1001;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
   }
   
   .photobooth-header {
@@ -1382,6 +1419,7 @@ canvas#mirror-canvas {
     align-items: flex-start;
     gap: 10px;
     margin-bottom: 12px;
+    width: 100%;
   }
   
   .photobooth-header h3 {
@@ -1394,17 +1432,28 @@ canvas#mirror-canvas {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    z-index: 1001;
+    position: relative;
   }
   
   .photobooth-header .btn {
     width: 100%;
+    min-height: 44px;
     font-size: 0.75rem;
-    padding: 10px 12px;
+    padding: 12px 14px;
+    z-index: 1001;
+    position: relative;
+    pointer-events: auto;
+    cursor: pointer;
+    display: block;
+    box-sizing: border-box;
   }
   
   .photobooth-grid {
     grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
     gap: 6px;
+    flex-grow: 1;
+    overflow-y: auto;
   }
 }
 
@@ -1854,13 +1903,13 @@ canvas#mirror-canvas {
 }
 
 .window.faded {
-  opacity: 0;
-  pointer-events: none;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 .window.faded:hover {
-  opacity: 1;
-  pointer-events: auto;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 .window-header {
@@ -2022,7 +2071,8 @@ canvas#mirror-canvas {
   .contact-btn {
     flex: 1 1 calc(50% - 5px);
   }
-  
+}
+
 /* =========================================
    MOBILE CAMERA INTERFACE IMPROVEMENTS
 ========================================= */
@@ -2086,36 +2136,75 @@ canvas#mirror-canvas {
     z-index: 10;
   }
   
-  .shutter-btn {
-    width: 60px;
-    height: 60px;
+  .camera-toggle-row {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .flip-camera-btn {
+    min-width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    padding: 8px 12px;
     position: relative;
     z-index: 10;
     pointer-events: auto;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  
+  .shutter-btn {
+    width: 70px;
+    height: 70px;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  
+  .capture-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 10;
+    position: relative;
   }
   
   .record-btn {
     position: relative;
     z-index: 10;
     pointer-events: auto;
-    min-width: 60px;
+    min-width: 70px;
+    min-height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    touch-action: manipulation;
   }
   
   .webcam-toggle-btn {
     position: relative;
     z-index: 10;
     pointer-events: auto;
+    min-height: 44px;
+    touch-action: manipulation;
   }
   
   .snap-board-btn,
   .feature-btn {
     font-size: 0.7rem;
-    padding: 8px 12px;
+    padding: 12px 12px;
     position: relative;
     z-index: 10;
     pointer-events: auto;
+    min-height: 44px;
+    touch-action: manipulation;
   }
-}
 }
 
 /* =========================================
