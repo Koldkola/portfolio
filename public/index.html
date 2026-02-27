@@ -81,6 +81,7 @@
             <button class="ctrl-btn" data-mode="thermal">Thermal</button>
             <button class="ctrl-btn" data-mode="zeroday">Anonymizer</button>
             <button class="ctrl-btn" data-mode="temporal">CCTV Lag</button>
+            <button class="ctrl-btn" data-mode="textrain">Text Rain</button>
           </div>
 
           <div class="color-palette-section">
@@ -102,7 +103,27 @@
             <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
             <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner">📷 POST TO KORNER</button>
+            <button id="contact-sheet-btn" class="feature-btn" title="Auto-capture contact sheet every 5 seconds">📸 CONTACT SHEET</button>
+            <button id="split-screen-btn" class="feature-btn" title="Enable split-screen with visitor (requires signaling server)">👥 SPLIT SCREEN</button>
           </div>
+        </div>
+        
+        <!-- Contact Sheet Grid Display -->
+        <div id="contact-sheet-panel" class="contact-sheet-panel hidden">
+          <div class="contact-sheet-header">
+            <h3>Contact Sheet</h3>
+            <div>
+              <button id="download-contact-sheet" class="btn secondary" style="margin-right: 8px;">Download Grid</button>
+              <button id="clear-contact-sheet" class="btn secondary">Clear</button>
+            </div>
+          </div>
+          <div id="contact-sheet-grid" class="contact-sheet-grid"></div>
+        </div>
+
+        <!-- Split Screen Visitor Canvas -->
+        <div id="split-screen-container" class="split-screen-container hidden">
+          <video id="visitor-video" class="visitor-video" autoplay playsinline></video>
+          <div class="split-screen-label">Visitor's View</div>
         </div>
         
       </div>
@@ -580,6 +601,21 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       
       let webcamStream = null;
       
+      // Contact Sheet variables
+      let contactSheetActive = false;
+      let contactSheetFrames = [];
+      let contactSheetInterval = null;
+      const CONTACT_SHEET_DELAY = 5000; // 5 seconds
+      
+      // Split Screen variables
+      let splitScreenActive = false;
+      let peerConnection = null;
+      let visitorStream = null;
+      
+      // Text Rain variables
+      let textRainParticles = [];
+      const TEXT_RAIN_WORDS = ['Kumachi', 'Korner', 'Interface', 'Archive', 'Community', 'Art', 'Music', 'Film', 'Fashion', 'Tech', 'Nerd', 'Undertow', 'Congregation'];
+      
       // --- EYE TRACKING INITIALIZATION ---
       const eyeTracker = new tracking.ObjectTracker('eye');
       eyeTracker.setInitialScale(2);
@@ -740,6 +776,140 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           }
         }
       });
+
+      // Contact Sheet functionality
+      const contactSheetBtn = document.getElementById('contact-sheet-btn');
+      const contactSheetPanel = document.getElementById('contact-sheet-panel');
+      const contactSheetGrid = document.getElementById('contact-sheet-grid');
+      const downloadContactSheetBtn = document.getElementById('download-contact-sheet');
+      const clearContactSheetBtn = document.getElementById('clear-contact-sheet');
+
+      if (contactSheetBtn) {
+        contactSheetBtn.addEventListener('click', () => {
+          if (!webcamStream) {
+            showNotification('Please start your camera first!', 'error');
+            return;
+          }
+
+          contactSheetActive = !contactSheetActive;
+          contactSheetBtn.classList.toggle('active', contactSheetActive);
+          contactSheetPanel.classList.toggle('hidden', !contactSheetActive);
+
+          if (contactSheetActive) {
+            // Start auto-capturing frames
+            captureContactSheetFrame();
+            contactSheetInterval = setInterval(captureContactSheetFrame, CONTACT_SHEET_DELAY);
+            showNotification('Contact sheet started - capturing every 5 seconds');
+          } else {
+            // Stop auto-capturing
+            if (contactSheetInterval) {
+              clearInterval(contactSheetInterval);
+              contactSheetInterval = null;
+            }
+            showNotification('Contact sheet stopped');
+          }
+        });
+      }
+
+      function captureContactSheetFrame() {
+        const frameData = canvas.toDataURL('image/png');
+        const timestamp = new Date().toLocaleTimeString();
+        contactSheetFrames.push({ data: frameData, time: timestamp });
+
+        const frameDiv = document.createElement('div');
+        frameDiv.className = 'contact-sheet-frame';
+        frameDiv.innerHTML = `
+          <img src="${frameData}" alt="Frame ${contactSheetFrames.length}" />
+          <div class="contact-sheet-timestamp">${timestamp}</div>
+        `;
+        contactSheetGrid.appendChild(frameDiv);
+      }
+
+      if (downloadContactSheetBtn) {
+        downloadContactSheetBtn.addEventListener('click', () => {
+          if (contactSheetFrames.length === 0) {
+            showNotification('No frames captured yet', 'error');
+            return;
+          }
+
+          // Create a single canvas with all frames in a grid
+          const gridCanvas = document.createElement('canvas');
+          const gridCtx = gridCanvas.getContext('2d');
+          const cols = 3;
+          const rows = Math.ceil(contactSheetFrames.length / cols);
+          const frameWidth = 320;
+          const frameHeight = 240;
+          
+          gridCanvas.width = cols * frameWidth;
+          gridCanvas.height = rows * frameHeight;
+          gridCtx.fillStyle = '#000';
+          gridCtx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
+
+          contactSheetFrames.forEach((frame, idx) => {
+            const img = new Image();
+            img.onload = () => {
+              const col = idx % cols;
+              const row = Math.floor(idx / cols);
+              gridCtx.drawImage(img, col * frameWidth, row * frameHeight, frameWidth, frameHeight);
+              
+              // Add timestamp
+              gridCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+              gridCtx.fillRect(col * frameWidth, row * frameHeight + frameHeight - 20, frameWidth, 20);
+              gridCtx.fillStyle = '#fff';
+              gridCtx.font = '12px Arial';
+              gridCtx.textAlign = 'center';
+              gridCtx.fillText(frame.time, col * frameWidth + frameWidth / 2, row * frameHeight + frameHeight - 6);
+
+              // Download after last frame
+              if (idx === contactSheetFrames.length - 1) {
+                const link = document.createElement('a');
+                link.download = `contact_sheet_${Date.now()}.png`;
+                link.href = gridCanvas.toDataURL();
+                link.click();
+                showNotification('Contact sheet downloaded!');
+              }
+            };
+            img.src = frame.data;
+          });
+        });
+      }
+
+      if (clearContactSheetBtn) {
+        clearContactSheetBtn.addEventListener('click', () => {
+          contactSheetFrames = [];
+          contactSheetGrid.innerHTML = '';
+          showNotification('Contact sheet cleared');
+        });
+      }
+
+      // Split Screen functionality
+      const splitScreenBtn = document.getElementById('split-screen-btn');
+      const splitScreenContainer = document.getElementById('split-screen-container');
+      const visitorVideo = document.getElementById('visitor-video');
+
+      if (splitScreenBtn) {
+        splitScreenBtn.addEventListener('click', () => {
+          if (!webcamStream) {
+            showNotification('Please start your camera first!', 'error');
+            return;
+          }
+
+          splitScreenActive = !splitScreenActive;
+          splitScreenBtn.classList.toggle('active', splitScreenActive);
+          splitScreenContainer.classList.toggle('hidden', !splitScreenActive);
+
+          if (splitScreenActive) {
+            // Adjust canvas to half width
+            canvas.style.width = '50%';
+            showNotification('Split screen enabled - WebRTC signaling server needed for visitor connection', 'error');
+            // Note: Full WebRTC implementation requires signaling server
+            // This is UI framework only - backend needed for peer connection
+          } else {
+            canvas.style.width = '100%';
+            showNotification('Split screen disabled');
+          }
+        });
+      }
 
       // Snap to Board functionality
       const snapToBoardBtn = document.getElementById('snap-to-board-btn');
@@ -1012,6 +1182,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           case 'thermal': drawThermal(); break;
           case 'zeroday': drawZeroDay(); break;
           case 'temporal': drawTemporalGrid(); break;
+          case 'textrain': drawTextRain(); break;
         }
         
         // Extract and display dominant colors in real-time
@@ -1158,6 +1329,65 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
               ctx.stroke();
             }
           });
+        }
+      }
+
+      // --- TEXT RAIN ---
+      function drawTextRain() {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Initialize particles on first run or add new ones randomly
+        if (Math.random() < 0.3) {
+          textRainParticles.push({
+            text: TEXT_RAIN_WORDS[Math.floor(Math.random() * TEXT_RAIN_WORDS.length)],
+            x: Math.random() * canvas.width,
+            y: -20,
+            speed: 1 + Math.random() * 2,
+            opacity: 0.7 + Math.random() * 0.3
+          });
+        }
+        
+        // Sample brightness map from video for collision detection
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Update and draw particles
+        textRainParticles.forEach((particle, idx) => {
+          // Check brightness at particle position for "surface" detection
+          const px = Math.floor(particle.x);
+          const py = Math.floor(particle.y);
+          
+          if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
+            const pixelIndex = (py * canvas.width + px) * 4;
+            const brightness = (data[pixelIndex] + data[pixelIndex + 1] + data[pixelIndex + 2]) / 3;
+            
+            // Slow down significantly if hitting a bright surface (shoulders, desk, etc.)
+            if (brightness > 120 && particle.speed > 0.1) {
+              particle.speed *= 0.3; // Pile up effect
+            }
+          }
+          
+          // Move particle down
+          particle.y += particle.speed;
+          
+          // Draw particle
+          ctx.fillStyle = `rgba(168, 85, 247, ${particle.opacity})`;
+          ctx.font = 'bold 16px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.shadowColor = 'rgba(168, 85, 247, 0.8)';
+          ctx.shadowBlur = 10;
+          ctx.fillText(particle.text, particle.x, particle.y);
+          ctx.shadowBlur = 0;
+          
+          // Remove particles that fall off screen
+          if (particle.y > canvas.height + 50) {
+            textRainParticles.splice(idx, 1);
+          }
+        });
+        
+        // Limit particle count for performance
+        if (textRainParticles.length > 80) {
+          textRainParticles.shift();
         }
       }
 
