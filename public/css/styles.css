@@ -1358,10 +1358,53 @@ canvas#mirror-canvas {
   padding: 16px;
   z-index: 100;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .photobooth-panel.hidden {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .photobooth-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    top: auto;
+    width: auto;
+    max-height: 50vh;
+    border-radius: 12px;
+  }
+  
+  .photobooth-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .photobooth-header h3 {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  
+  .photobooth-header div {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .photobooth-header .btn {
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+  
+  .photobooth-grid {
+    grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
+    gap: 6px;
+  }
 }
 
 .photobooth-header {
@@ -1962,35 +2005,89 @@ canvas#mirror-canvas {
     flex: 1 1 calc(50% - 5px);
   }
   
-  /* The Interface Mobile Layout */
+/* =========================================
+   MOBILE CAMERA INTERFACE IMPROVEMENTS
+========================================= */
+@media (max-width: 768px) {
+  .mirror-section {
+    margin: 60px auto;
+    padding: 0 15px;
+  }
+  
   .mirror-container {
     flex-direction: column;
+    border-radius: 12px;
+  }
+  
+  .canvas-wrapper {
+    flex: 1;
+    min-height: 300px;
+  }
+  
+  #mirror-canvas {
+    max-width: 100%;
+    height: auto;
   }
   
   .mirror-side-controls {
     width: 100%;
     min-width: unset;
-    padding: 30px 20px;
+    padding: 20px 15px;
     border-left: none;
     border-top: 1px solid var(--glass-border);
+    max-height: calc(100vh - 350px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .mode-buttons-vertical {
     flex-direction: row;
-    justify-content: center;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 0 8px 0;
+    margin-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  .mode-buttons-vertical::-webkit-scrollbar {
+    height: 3px;
+  }
+  
+  .mode-buttons-vertical::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .mode-buttons-vertical::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.4);
+    border-radius: 2px;
   }
   
   .mode-buttons-vertical .ctrl-btn {
-    flex: 1;
-    padding: 10px 12px;
-    font-size: 0.75rem;
+    flex: 0 0 auto;
+    min-width: 80px;
+    padding: 8px 10px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+  
+  .camera-shutter-wrapper {
+    gap: 12px;
   }
   
   .shutter-btn {
     width: 60px;
     height: 60px;
   }
+  
+  .snap-board-btn,
+  .feature-btn {
+    font-size: 0.7rem;
+    padding: 8px 12px;
+  }
+}
 }
 
 /* =========================================

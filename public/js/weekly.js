@@ -534,6 +534,11 @@ function buildWeeklyVideoGrid(videos) {
 
 // Modal functionality
 function openCategoryModal(item, bgColor) {
+  // Trigger Kurrently window
+  if (window.triggerKurrently) {
+    window.triggerKurrently();
+  }
+
   // Hide me.txt and content.txt windows
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
