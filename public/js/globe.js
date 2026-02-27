@@ -29,7 +29,7 @@ function startTitleFontAnimation() {
     let html = '';
     for (let i = 0; i < titleText.length; i++) {
       const randomFont = AVAILABLE_FONTS[Math.floor(Math.random() * AVAILABLE_FONTS.length)];
-      html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${titleText[i]}</span>`;
+      html += `<span style="font-family: '${randomFont}', serif !important; display: inline-block;">${titleText[i]}</span>`;
     }
     titleElement.innerHTML = html;
   }, 3000);
