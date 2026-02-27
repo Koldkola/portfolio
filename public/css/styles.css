@@ -393,55 +393,87 @@ body {
 
 /* Polaroids */
 .board-polaroid {
-  /* --- THE LOCKDOWN --- */
-  flex: 0 0 160px;
+  /* --- KEEP WIDTH LOCKED --- */
+  flex: 0 0 160px; /* Stays compact horizontally */
   width: 160px;
   max-width: 160px;
-  height: 160px;
-  box-sizing: border-box; /* Crucial: stops the 12px padding from making the box bigger */
-  /* -------------------- */
+  /* ------------------------ */
 
-  background: white;
+  /* --- THE FIX: FREE THE HEIGHT --- */
+  height: auto; /* Grows vertically to fit text */
+  overflow: visible; /* Ensures text isn't cut off */
+  /* --------------------------------- */
+
   padding: 12px;
-  overflow: hidden;
   position: relative;
-
-  /* Stacks the photo and text on top of each other */
   display: flex;
-  flex-direction: column;
-  gap: 8px; /* Adds a little gap between the photo and the text */
+  flex-direction: column; /* Stacks photo, then content */
+  box-sizing: border-box;
 
+  /* Styling (kept from previous steps) */
+  background: white;
   border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2);
-  transform: rotate(-2deg);
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
   cursor: pointer;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth hover transition */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
+
+/* Pseudo-random rotations (re-applied) */
 .board-polaroid:nth-child(even) { transform: rotate(2deg); }
-.board-polaroid:hover { transform: scale(1.05) rotate(0deg); box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 10; }
+.board-polaroid:nth-child(odd) { transform: rotate(-1deg); }
+.board-polaroid:nth-child(3n) { transform: rotate(-3deg); }
+
+/* Straighten on hover */
+.board-polaroid:hover {
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+/* The Photo Thumbnail inside the Polaroid */
 .board-polaroid-photo {
   width: 100%;
   max-width: 100%;
 
-  /* Forces the image to take up exactly 70px of height */
-  flex: 0 0 70px;
-  height: 70px;
+  /* Locks the image to a consistent thumbnail height */
+  flex: 0 0 100px;
+  height: 100px;
 
-  object-fit: cover; /* Crops it into a perfect thumbnail without squishing */
+  object-fit: cover; /* Crops neatly */
   display: block;
-  background: #f5f5f5;
+  cursor: zoom-in;
   border-radius: 2px;
-  cursor: pointer; /* Keeps the pointer indicating it can be clicked/enlarged */
+  margin-bottom: 8px; /* Gap before text */
 }
+
+/* Text container - naturally flows and expands */
 .board-polaroid-content {
-  flex: 1; /* Tells the text container to fill the remaining space */
-  overflow: hidden; /* Hides any text that drops below the 160px height */
-  font-size: 11px; /* Shrinks the font slightly to fit the small square */
-  line-height: 1.3;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: 'Shadows Into Light', cursive; /* Optional handwriting font */
 }
-.board-polaroid-name { font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; color: #333; }
-.board-polaroid-text { font-size: 0.75rem; line-height: 1.3; margin-bottom: 6px; color: #555; word-wrap: break-word; }
-.board-polaroid-meta { font-size: 0.65rem; color: #888; }
+
+/* Styling the specific text elements from your HTML */
+.board-polaroid-name {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #333;
+}
+.board-polaroid-text {
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  color: #555;
+  white-space: normal; /* Ensures text wraps to the next line */
+}
+.board-polaroid-meta {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-top: auto; /* Pushes meta info to the very bottom of the card */
+  color: #888;
+}
 
 /* Photo Enlargement Modal */
 .photo-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 2000; display: none; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
