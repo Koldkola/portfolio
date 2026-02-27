@@ -40,7 +40,7 @@
     <section class="hero">
       <div class="hero-content">
         <p class="eyebrow">Creative Technologist / Wannabe Curator / Nerd of Sorts</p>
-                <p2 class="sub"> <h1> <span class="italic-art">Kumachi's Korner</span></h1></p2>
+                <p2 class="sub"> <h1 id="kumachi-title"> <span class="italic-art">Kumachi's Korner</span></h1></p2>
         <div class="hero-cta">
           <a class="glass-btn btn-15" href="/projects.html">View Tech Projects</a>
           <a class="glass-btn btn-9" href="/archive.html">Explore my Archive</a>
@@ -64,7 +64,7 @@
 
     <section id="interface" class="mirror-section">
       <div class="section-header interactive-header">
-        <h2>Kommunity Kamera</h2>
+        <h2 id="kommunity-kamera-title">Kommunity Kamera</h2>
         <p>Something to play around with.</p>
       </div>
       
@@ -2190,6 +2190,46 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       }
 
       startWindowsFadeLoop();
+
+      // Font randomization for titles (Kumachi and Kommunity Kamera)
+      const TITLE_FONTS = [
+        'Bad Unicorn', 'Bajareczka', 'Bajareczka Shadow', 'Bananas', 'Biloxi Script',
+        'Cookie Monster', 'Darlington', 'Feijoada', 'Flight of the Ocean', 'Halimun',
+        'Hello Ketta', 'Honeybee', 'Koenigsberg', 'Lovely Home', 'Oogie Boogie',
+        'Sweet Getaway', 'Tiki Tropic', 'Tiki Tropic Bold', 'Tiki Tropic Outline',
+        'Tomatoes', 'Wedding Day', 'Xiomara', 'Yokelvision'
+      ];
+
+      function startTitleFontRandomization() {
+        const kumachiTitle = document.getElementById('kumachi-title');
+        const kameraTitle = document.getElementById('kommunity-kamera-title');
+
+        function randomizeTitle(titleElement) {
+          if (!titleElement) return;
+          
+          const text = titleElement.textContent;
+          let html = '';
+          
+          for (let i = 0; i < text.length; i++) {
+            const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
+            html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${text[i]}</span>`;
+          }
+          
+          titleElement.innerHTML = html;
+        }
+
+        // Randomize every 4 seconds
+        setInterval(() => {
+          randomizeTitle(kumachiTitle);
+          randomizeTitle(kameraTitle);
+        }, 4000);
+
+        // Initial randomization
+        randomizeTitle(kumachiTitle);
+        randomizeTitle(kameraTitle);
+      }
+
+      startTitleFontRandomization();
     });
   </script>
   
