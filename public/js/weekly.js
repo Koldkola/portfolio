@@ -452,7 +452,7 @@ function openCategoryModal(item, bgColor) {
   
   if (item.detailedContent) {
     const introHtml = item.detailedContent.intro || '';
-    const imageHtml = item.img ? `<img src="${item.img}" alt="${item.title}" style="width: 100%; border-radius: 12px; margin-bottom: 16px; cursor: pointer;" onclick="openPhotoModal('${item.img}')" />` : '';
+    const imageHtml = item.img ? `<img src="${item.img}" alt="${item.title}" style="width: 100%; border-radius: 12px; margin-bottom: 16px;" />` : '';
     modalIntro.innerHTML = `${imageHtml}${introHtml}`;
     
     const highlightsRaw = item.detailedContent.highlights || [];

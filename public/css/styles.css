@@ -1652,7 +1652,6 @@ main.container .link { color: var(--text-primary); }
     bottom: auto;
     top: calc(100% + 12px);
     transform: translateX(-50%) translateY(8px);
-    max-width: min(400px, 85vw);
   }
   
   .tooltip-popup::after {
@@ -1663,66 +1662,6 @@ main.container .link { color: var(--text-primary); }
   
   .tooltip-word:hover .tooltip-popup {
     transform: translateX(-50%) translateY(16px);
-  }
-  
-  /* Make tabs visible and usable on mobile - position at top next to logo */
-  /* Mobile tabs - Scrollable pill-style buttons */
-  .project-tabs {
-    display: flex;
-    overflow-x: auto;
-    gap: 12px;
-    padding: 16px 20px;
-    margin: 20px 0;
-    scroll-behavior: smooth;
-    background: transparent;
-    border-bottom: none;
-    
-    /* Hides the scrollbar for a clean, app-like look */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
-  }
-  
-  /* Hides the scrollbar in Chrome, Safari, and iOS */
-  .project-tabs::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .tab-btn {
-    /* Prevents buttons from shrinking or wrapping text */
-    flex: 0 0 auto;
-    white-space: nowrap;
-    
-    /* Console-style aesthetics */
-    background: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-    
-    /* Smooth color transitions */
-    transition: all 0.3s ease;
-  }
-  
-  .tab-btn:hover {
-    background: rgba(45, 112, 254, 0.2);
-    color: #fff;
-    border-color: rgba(45, 112, 254, 0.5);
-    box-shadow: 0 0 10px rgba(45, 112, 254, 0.3);
-  }
-  
-  .tab-btn.active {
-    background: rgba(45, 112, 254, 0.2);
-    color: #fff;
-    border-color: rgba(45, 112, 254, 0.5);
-    box-shadow: 0 0 10px rgba(45, 112, 254, 0.3);
-  }
-  }
-  
-  /* Allow tooltips to overflow window bodies */
-  .window-body {
-    overflow: visible;
   }
   
   .hero { flex-direction: column; text-align: center; margin: 40px auto; }
