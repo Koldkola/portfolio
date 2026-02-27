@@ -1665,22 +1665,34 @@ main.container .link { color: var(--text-primary); }
     transform: translateX(-50%) translateY(16px);
   }
   
-  /* Make tabs visible and usable on mobile */
+  /* Make tabs visible and usable on mobile - position at top next to logo */
   .project-tabs {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    z-index: 99;
     overflow-x: auto;
     flex-wrap: nowrap;
     -webkit-overflow-scrolling: touch;
-    padding: 0 20px;
-    margin: 20px -20px;
-    background: rgba(255, 255, 255, 0.02);
+    padding: 12px 20px;
+    margin: 0;
+    background: rgba(5, 5, 5, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .tab-btn {
     white-space: nowrap;
     flex-shrink: 0;
     font-size: 15px;
-    padding: 14px 20px;
+    padding: 12px 20px;
     min-width: fit-content;
+  }
+  
+  /* Add padding to main content to account for fixed tabs */
+  main.container {
+    padding-top: 60px;
   }
   
   /* Allow tooltips to overflow window bodies */
