@@ -226,6 +226,35 @@ body {
   gap: 16px; 
   align-items: flex-start; /* Prevents notes from stretching vertically */
   align-content: flex-start; /* Packs the rows tightly to the top */
+
+  /* --- Custom Scrollbar for Firefox --- */
+  scrollbar-width: thin; /* Makes it slim */
+  scrollbar-color: rgba(255, 255, 255, 0.3) #1a1a1a; /* thumb color | track color */
+}
+
+/* --- Custom Scrollbar for WebKit (Chrome, Safari, Edge) --- */
+
+/* The total width of the scrollbar */
+.board-container::-webkit-scrollbar {
+  width: 10px; 
+}
+
+/* The background track of the scrollbar */
+.board-container::-webkit-scrollbar-track {
+  background: #1a1a1a; /* Matches your container's thick border */
+  border-radius: 8px;
+}
+
+/* The draggable thumb */
+.board-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3); /* Sleek, semi-transparent white */
+  border-radius: 8px;
+  border: 2px solid #1a1a1a; /* Creates a nice padded look inside the track */
+}
+
+/* The thumb when hovered */
+.board-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 112, 254, 0.8); /* A sharp, ambient neon blue accent */
 }
 
 /* Admin Controls */
