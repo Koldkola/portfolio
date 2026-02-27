@@ -523,11 +523,10 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           .then(stream => {
             webcamStream = stream;
             video.srcObject = stream;
-            binPreviewVid.srcObject = stream;
             video.play();
             tracking.track('#webcam', eyeTracker);
             if (!animationFrameId) requestAnimationFrame(processFrame);
-            webcamToggleBtn.textContent = 'STOP CAMERA';
+            webcamToggleBtn.textContent = 'STOP WEBCAM';
           })
           .catch(err => console.error("Camera access denied.", err));
       }
@@ -539,8 +538,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         }
         video.pause();
         video.srcObject = null;
-        binPreviewVid.pause();
-        binPreviewVid.srcObject = null;
         if (animationFrameId) {
           cancelAnimationFrame(animationFrameId);
           animationFrameId = null;
@@ -551,7 +548,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.font = '14px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('Camera is off', canvas.width / 2, canvas.height / 2);
-        webcamToggleBtn.textContent = 'START CAMERA';
+        webcamToggleBtn.textContent = 'START WEBCAM';
       }
 
       webcamToggleBtn.addEventListener('click', () => {
