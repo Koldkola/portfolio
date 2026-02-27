@@ -4,6 +4,44 @@ let currentEntryIndex = 0;
 let isAdminMode = false;
 let selectedEntries = new Set();
 
+// Font list for title animation
+const AVAILABLE_FONTS = [
+  'Bad Unicorn', 'Bajareczka', 'Bajareczka Shadow', 'Bananas', 'Biloxi Script',
+  'Cookie Monster', 'Darlington', 'Feijoada', 'Flight of the Ocean', 'Halimun',
+  'Hello Ketta', 'Honeybee', 'Koenigsberg', 'Lovely Home', 'Oogie Boogie',
+  'Sweet Getaway', 'Tiki Tropic', 'Tiki Tropic Bold', 'Tiki Tropic Outline',
+  'Tomatoes', 'Wedding Day', 'Xiomara', 'Yokelvision'
+];
+
+let titleAnimationInterval = null;
+
+function startTitleFontAnimation() {
+  const titleElement = document.getElementById('board-title');
+  if (!titleElement) return;
+
+  const titleText = titleElement.textContent;
+  
+  // Clear interval if already running
+  if (titleAnimationInterval) clearInterval(titleAnimationInterval);
+  
+  // Animate every 1 second
+  titleAnimationInterval = setInterval(() => {
+    let html = '';
+    for (let i = 0; i < titleText.length; i++) {
+      const randomFont = AVAILABLE_FONTS[Math.floor(Math.random() * AVAILABLE_FONTS.length)];
+      html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${titleText[i]}</span>`;
+    }
+    titleElement.innerHTML = html;
+  }, 1000);
+}
+
+function stopTitleFontAnimation() {
+  if (titleAnimationInterval) {
+    clearInterval(titleAnimationInterval);
+    titleAnimationInterval = null;
+  }
+}
+
 // Same password hash as archive (Error930!)
 const ADMIN_PASSWORD_HASH = "e464086987a59f5748054130383a2b9ddd7196fea110dd7da0e3d4fd29fb2838";
 const ADMIN_PASSWORD_SALT = "archive-v1";
@@ -109,16 +147,12 @@ function openGlobeModal() {
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
   
-  // Fade out floating windows
-  if (aboutWindow) {
-    aboutWindow.style.opacity = '0';
-    aboutWindow.style.pointerEvents = 'none';
-    aboutWindow.style.transition = 'opacity 0.3s ease';
+  // Hide floating windows (only if not already faded by timeout)
+  if (aboutWindow && !window.windowsFaded) {
+    aboutWindow.style.display = 'none';
   }
-  if (notesWindow) {
-    notesWindow.style.opacity = '0';
-    notesWindow.style.pointerEvents = 'none';
-    notesWindow.style.transition = 'opacity 0.3s ease';
+  if (notesWindow && !window.windowsFaded) {
+    notesWindow.style.display = 'none';
   }
   
   if (modal) {
@@ -135,12 +169,10 @@ function closeGlobeModal() {
   
   // Fade in floating windows (only if they haven't been auto-faded)
   if (aboutWindow && !window.windowsFaded) {
-    aboutWindow.style.opacity = '1';
-    aboutWindow.style.pointerEvents = 'auto';
+    aboutWindow.style.display = 'block';
   }
   if (notesWindow && !window.windowsFaded) {
-    notesWindow.style.opacity = '1';
-    notesWindow.style.pointerEvents = 'auto';
+    notesWindow.style.display = 'block';
   }
   
   if (modal) {
@@ -155,18 +187,14 @@ function openGlobeViewModal() {
   const modal = document.getElementById('globe-view-modal');
   const content = document.getElementById('globe-view-content');
   
-  // Fade out me.txt and context.txt windows
+  // Hide me.txt and context.txt windows (only if not already faded)
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
-  if (aboutWindow) {
-    aboutWindow.style.opacity = '0';
-    aboutWindow.style.pointerEvents = 'none';
-    aboutWindow.style.transition = 'opacity 0.3s ease';
+  if (aboutWindow && !window.windowsFaded) {
+    aboutWindow.style.display = 'none';
   }
-  if (notesWindow) {
-    notesWindow.style.opacity = '0';
-    notesWindow.style.pointerEvents = 'none';
-    notesWindow.style.transition = 'opacity 0.3s ease';
+  if (notesWindow && !window.windowsFaded) {
+    notesWindow.style.display = 'none';
   }
   
   if (!modal || !content) return;
@@ -252,6 +280,9 @@ function openGlobeViewModal() {
 
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
+  
+  // Start randomizing title fonts
+  startTitleFontAnimation();
 }
 
 // Helper function to adjust color opacity
@@ -291,6 +322,9 @@ function closeGlobeViewModal() {
     modal.classList.remove('active');
     document.body.style.overflow = '';
   }
+  
+  // Stop title font animation
+  stopTitleFontAnimation();
   
   // Auto-lock globe admin mode when board modal closes
   if (isAdminMode) {
@@ -445,16 +479,13 @@ function closeGlobeViewModal() {
     renderBoardModal();
   }
   
-  // Fade in floating windows (only if they haven't been auto-faded)
-  const aboutWindow = document.getElementById('aboutWindow');
+  // Restore floating windows (only if they haven't been auto-faded)\n  const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
   if (aboutWindow && !window.windowsFaded) {
-    aboutWindow.style.opacity = '1';
-    aboutWindow.style.pointerEvents = 'auto';
+    aboutWindow.style.display = 'block';
   }
   if (notesWindow && !window.windowsFaded) {
-    notesWindow.style.opacity = '1';
-    notesWindow.style.pointerEvents = 'auto';
+    notesWindow.style.display = 'block';
   }
 }
 
