@@ -2261,41 +2261,41 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       const pauseAtEnd = 2000; // ms pause before restart
 
       async function typeLines() {
-        let cycleCount = 0;
-        while (cycleCount < 2) {
-          contentDiv.textContent = '';
+        contentDiv.textContent = '';
+        
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+          const line = lines[lineIndex];
           
-          for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-            const line = lines[lineIndex];
-            
-            // Type each character
-            for (let charIndex = 0; charIndex < line.length; charIndex++) {
-              contentDiv.textContent += line[charIndex];
-              await new Promise(resolve => setTimeout(resolve, typingSpeed));
-            }
-            
-            // Add newline if not the last line
-            if (lineIndex < lines.length - 1) {
-              contentDiv.textContent += '\n';
-              await new Promise(resolve => setTimeout(resolve, delayBetweenLines));
-            }
+          // Type each character
+          for (let charIndex = 0; charIndex < line.length; charIndex++) {
+            contentDiv.textContent += line[charIndex];
+            await new Promise(resolve => setTimeout(resolve, typingSpeed));
           }
           
-          cycleCount++;
-          
-          // Pause before restarting or fade out after 2nd cycle
-          if (cycleCount < 2) {
-            await new Promise(resolve => setTimeout(resolve, pauseAtEnd));
-          } else {
-            // After 2nd cycle, wait then fade out
-            await new Promise(resolve => setTimeout(resolve, pauseAtEnd));
-            kurrentlyWindow.style.transition = 'opacity 1s ease-out';
-            kurrentlyWindow.style.opacity = '0';
+          // Add newline if not the last line
+          if (lineIndex < lines.length - 1) {
+            contentDiv.textContent += '\n';
+            await new Promise(resolve => setTimeout(resolve, delayBetweenLines));
           }
+        }
+        
+        // Wait then fade out
+        await new Promise(resolve => setTimeout(resolve, pauseAtEnd));
+        kurrentlyWindow.style.transition = 'opacity 1s ease-out';
+        kurrentlyWindow.style.opacity = '0';
+      }
+
+      // Repeat every 20 seconds
+      async function startKurrentlyLoop() {
+        while (true) {
+          kurrentlyWindow.style.opacity = '1';
+          kurrentlyWindow.style.transition = 'opacity 0s';
+          await typeLines();
+          await new Promise(resolve => setTimeout(resolve, 20000));
         }
       }
 
-      typeLines();
+      startKurrentlyLoop();
     }
   </script>
   
