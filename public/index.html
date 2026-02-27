@@ -2203,7 +2203,12 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       // Reusable function to randomize any element's font
       function startRandomizing(element, text) {
         // Guard clause in case the element doesn't exist on the page
-        if (!element || !text) return;
+        if (!element || !text) {
+          console.log('startRandomizing skipped - element or text missing:', { element, text });
+          return;
+        }
+
+        console.log('Starting randomization for:', element.id, 'with text:', text);
 
         const randomize = () => {
           let html = '';
@@ -2224,11 +2229,15 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const yourText = document.getElementById('your-text');
         const myText = document.getElementById('my-text');
 
+        console.log('Elements found:', { kumachiTitle, kameraTitle, yourText, myText });
+
         // Store original text content before any modification
         const kumachiText = kumachiTitle ? kumachiTitle.textContent : '';
         const kameraText = kameraTitle ? kameraTitle.textContent : '';
         const yourOriginalText = yourText ? yourText.textContent : '';
         const myOriginalText = myText ? myText.textContent : '';
+
+        console.log('Text content:', { kumachiText, kameraText, yourOriginalText, myOriginalText });
 
         // Apply randomization to each element
         startRandomizing(kumachiTitle, kumachiText);
