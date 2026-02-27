@@ -1849,6 +1849,17 @@ canvas#mirror-canvas {
   min-width: 280px;
   overflow: hidden;
   z-index: 1000;
+  transition: opacity 1s ease-out;
+}
+
+.window.faded {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.window.faded:hover {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .window-header {
@@ -2050,35 +2061,21 @@ canvas#mirror-canvas {
   
   .mode-buttons-vertical {
     flex-direction: row;
-    justify-content: flex-start;
-    gap: 8px;
-    overflow-x: auto;
-    overflow-y: hidden;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    overflow-x: visible;
+    overflow-y: visible;
     padding: 0 0 8px 0;
     margin-bottom: 12px;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
     width: 100%;
-  }
-  
-  .mode-buttons-vertical::-webkit-scrollbar {
-    height: 3px;
-  }
-  
-  .mode-buttons-vertical::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-  }
-  
-  .mode-buttons-vertical::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.4);
-    border-radius: 2px;
   }
   
   .mode-buttons-vertical .ctrl-btn {
     flex: 0 0 auto;
-    min-width: 80px;
+    min-width: 70px;
     padding: 8px 10px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     white-space: nowrap;
   }
   

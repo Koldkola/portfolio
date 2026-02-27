@@ -2113,31 +2113,11 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         window.windowsFaded = true;
         
         if (aboutWindow) {
-          aboutWindow.style.transition = 'opacity 1s ease-out';
-          aboutWindow.style.opacity = '0';
-          
-          // Add hover events to restore
-          aboutWindow.addEventListener('mouseenter', () => {
-            aboutWindow.style.opacity = '1';
-          });
-          
-          aboutWindow.addEventListener('mouseleave', () => {
-            aboutWindow.style.opacity = '0';
-          });
+          aboutWindow.classList.add('faded');
         }
         
         if (notesWindow) {
-          notesWindow.style.transition = 'opacity 1s ease-out';
-          notesWindow.style.opacity = '0';
-          
-          // Add hover events to restore
-          notesWindow.addEventListener('mouseenter', () => {
-            notesWindow.style.opacity = '1';
-          });
-          
-          notesWindow.addEventListener('mouseleave', () => {
-            notesWindow.style.opacity = '0';
-          });
+          notesWindow.classList.add('faded');
         }
       }, 20000);
     });
