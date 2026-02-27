@@ -7,6 +7,17 @@
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
+  <!-- Password Protection Modal -->
+  <div id="passwordModal" class="modal" style="display: flex;">
+    <div class="modal-content" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+      <h2 style="margin-top: 0; text-align: center;">🔐 Admin Access</h2>
+      <p style="text-align: center; opacity: 0.8;">This page is protected. Enter the password to continue.</p>
+      <input type="password" id="pagePassword" placeholder="Enter password..." style="width: 100%; padding: 12px; margin: 20px 0; border: 1px solid var(--glass-border); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; font-size: 1rem;" />
+      <div id="passwordError" style="color: #ef4444; text-align: center; margin: 10px 0; display: none; font-size: 0.9rem;">Incorrect password</div>
+      <button id="passwordSubmit" class="custom-btn" style="width: 100%; padding: 12px; margin-top: 10px;">Unlock</button>
+    </div>
+  </div>
+
   <header class="site-header">
     <nav class="nav">
       <a class="logo" href="/">Kumachi.</a>
@@ -24,7 +35,7 @@
     <div class="tooltip-hint">💡 <span class="tooltip-hint-text">Hover over <span style="color: #a855f7; font-weight: 600;">underlined words</span> to learn more</span></div>
   </header>
 
-  <main class="container">
+  <main class="container" id="mainContent" style="display: none;">
     <h1>Resume </h1>
 
     <div class="resume-actions">
@@ -158,5 +169,53 @@
   <script src="/js/search-index.js"></script>
   <script src="/js/site-search.js"></script>
   <script src="/js/randomize-buttons.js"></script>
+  <script>
+    // Password protection for resume page
+    const ADMIN_PASSWORD = 'Error930!';
+    const PASSWORD_KEY = 'resumePageUnlocked';
+    
+    async function hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    
+    function checkPassword() {
+      const stored = sessionStorage.getItem(PASSWORD_KEY);
+      const mainContent = document.getElementById('mainContent');
+      const passwordModal = document.getElementById('passwordModal');
+      
+      if (stored === 'true') {
+        mainContent.style.display = 'block';
+        passwordModal.style.display = 'none';
+      }
+    }
+    
+    async function submitPassword() {
+      const passwordInput = document.getElementById('pagePassword');
+      const entered = passwordInput.value;
+      const errorMsg = document.getElementById('passwordError');
+      
+      if (entered === ADMIN_PASSWORD) {
+        sessionStorage.setItem(PASSWORD_KEY, 'true');
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('passwordModal').style.display = 'none';
+      } else {
+        errorMsg.style.display = 'block';
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      checkPassword();
+      document.getElementById('passwordSubmit').addEventListener('click', submitPassword);
+      document.getElementById('pagePassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') submitPassword();
+      });
+    });
+  </script>
 </body>
 </html>
