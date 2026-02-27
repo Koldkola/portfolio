@@ -197,10 +197,8 @@ function openGlobeViewModal() {
       } else {
         // Display as sticky note
         const fontStyle = entry.font ? `font-family: ${entry.font};` : '';
-        const escapedText = entry.text.replace(/'/g, "\\'");
-        const escapedName = entry.name.replace(/'/g, "\\'");
         return `
-          <div class="board-sticky ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#000000'}; color: ${entry.textColor || '#ff1493'}; cursor: pointer;" data-index="${index}" onclick="openStickyModal('${escapedName}', '${escapedText}', '${entry.age || ''}', '${entry.timestamp}')">
+          <div class="board-sticky ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffd97d'}; color: ${entry.textColor || '#333'};" data-index="${index}">
             ${checkboxHtml}
             <div class="board-sticky-name" style="${fontStyle}">${entry.name}</div>
             <div class="board-sticky-text" style="${fontStyle}">${entry.text}</div>
@@ -260,42 +258,6 @@ function openPhotoModal(photoSrc) {
 
 function closePhotoModal() {
   const modal = document.getElementById('photo-modal');
-  if (modal) {
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-}
-
-// Sticky note modal functions
-function openStickyModal(name, text, age, timestamp) {
-  const modal = document.getElementById('sticky-modal');
-  if (!modal) {
-    // Create modal if it doesn't exist
-    const newModal = document.createElement('div');
-    newModal.id = 'sticky-modal';
-    newModal.className = 'modal';
-    newModal.innerHTML = `
-      <div class="modal-content" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-        <button onclick="closeStickyModal()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-primary);">×</button>
-        <h2 id="sticky-name"></h2>
-        <div id="sticky-text" style="white-space: pre-wrap; word-break: break-word; margin: 20px 0; line-height: 1.6;"></div>
-        <div id="sticky-meta" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 20px;"></div>
-      </div>
-    `;
-    document.body.appendChild(newModal);
-  }
-  
-  const modal = document.getElementById('sticky-modal');
-  document.getElementById('sticky-name').textContent = name;
-  document.getElementById('sticky-text').textContent = text;
-  document.getElementById('sticky-meta').textContent = `${age ? `Age ${age} • ` : ''}${new Date(timestamp).toLocaleDateString()}`;
-  
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeStickyModal() {
-  const modal = document.getElementById('sticky-modal');
   if (modal) {
     modal.classList.remove('active');
     document.body.style.overflow = '';
