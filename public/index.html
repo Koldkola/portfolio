@@ -73,25 +73,6 @@
         <div class="canvas-wrapper">
           <video id="webcam" width="640" height="480" autoplay playsinline style="display: none;"></video>
           <canvas id="mirror-canvas" width="640" height="480"></canvas>
-          
-          <!-- Color Palette Display -->
-          <div class="color-palette-section">
-            <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 0 0 12px 0;">What's the palette of your fit today?</h3>
-            <div class="color-swatches" id="colorSwatches">
-              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
-              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
-              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
-              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
-              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
-            </div>
-            <div class="color-hex-codes" id="colorHexCodes">
-              <span class="hex-code" data-hex="#cccccc">Click to copy</span>
-              <span class="hex-code" data-hex="#cccccc">Click to copy</span>
-              <span class="hex-code" data-hex="#cccccc">Click to copy</span>
-              <span class="hex-code" data-hex="#cccccc">Click to copy</span>
-              <span class="hex-code" data-hex="#cccccc">Click to copy</span>
-            </div>
-          </div>
         </div>
 
         <div class="mirror-side-controls">
@@ -102,7 +83,16 @@
             <button class="ctrl-btn" data-mode="temporal">CCTV Lag</button>
           </div>
 
-          
+          <div class="color-palette-section">
+            <div class="color-swatches" id="colorSwatches">
+              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
+              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
+              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
+              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
+              <div class="color-swatch" style="background: #ccc;" title="Loading..."></div>
+            </div>
+          </div>
+
           <div class="camera-shutter-wrapper">
             <button id="webcam-toggle" class="webcam-toggle-btn" title="Start or stop webcam">START CAMERA</button>
             <div class="capture-row">
@@ -979,9 +969,8 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       // Update color display with hex swatches
       function updateColorDisplay(colors) {
         const swatches = document.getElementById('colorSwatches');
-        const hexCodes = document.getElementById('colorHexCodes');
         
-        if (!swatches || !hexCodes) return;
+        if (!swatches) return;
         
         // Ensure we have exactly 5 colors
         while (colors.length < 5) {
@@ -989,7 +978,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         }
         
         const swatchElements = swatches.querySelectorAll('.color-swatch');
-        const hexElements = hexCodes.querySelectorAll('.hex-code');
         
         colors.slice(0, 5).forEach((color, idx) => {
           const hex = rgbToHex(color.r, color.g, color.b);
@@ -1001,13 +989,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             swatchElements[idx].title = hex;
             swatchElements[idx].setAttribute('data-hex', hex);
           }
-          
-          // Update hex code
-          if (hexElements[idx]) {
-            hexElements[idx].textContent = hex;
-            hexElements[idx].setAttribute('data-hex', hex);
-            hexElements[idx].classList.remove('copied');
-          }
         });
       }
 
@@ -1018,29 +999,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           return hex.length === 1 ? "0" + hex : hex;
         }).join('').toUpperCase();
       }
-
-      // Copy hex code to clipboard
-      document.addEventListener('click', (e) => {
-        if (e.target.closest('.color-swatch, .hex-code')) {
-          const hex = e.target.closest('.color-swatch')?.getAttribute('data-hex') || 
-                      e.target.closest('.hex-code')?.getAttribute('data-hex');
-          
-          if (hex) {
-            navigator.clipboard.writeText(hex).then(() => {
-              const element = e.target.closest('.hex-code');
-              if (element) {
-                element.classList.add('copied');
-                const originalText = element.textContent;
-                element.textContent = '✓ Copied!';
-                setTimeout(() => {
-                  element.textContent = originalText;
-                  element.classList.remove('copied');
-                }, 1500);
-              }
-            });
-          }
-        }
-      });
 
       // Main Processing Loop
       function processFrame() {
