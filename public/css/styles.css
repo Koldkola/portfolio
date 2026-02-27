@@ -1652,6 +1652,7 @@ main.container .link { color: var(--text-primary); }
     bottom: auto;
     top: calc(100% + 12px);
     transform: translateX(-50%) translateY(8px);
+    max-width: min(400px, 85vw);
   }
   
   .tooltip-popup::after {
@@ -1662,6 +1663,23 @@ main.container .link { color: var(--text-primary); }
   
   .tooltip-word:hover .tooltip-popup {
     transform: translateX(-50%) translateY(16px);
+  }
+  
+  /* Make tabs visible and usable on mobile */
+  .project-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  /* Allow tooltips to overflow window bodies */
+  .window-body {
+    overflow: visible;
   }
   
   .hero { flex-direction: column; text-align: center; margin: 40px auto; }
