@@ -500,6 +500,12 @@ body {
 .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-gaming); background: rgba(255,255,255,0.08); box-shadow: 0 0 12px rgba(139, 92, 246, 0.2); }
 .form-group textarea { resize: vertical; min-height: 100px; }
 
+.drawing-controls { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+.drawing-controls input[type="color"] { width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer; }
+.drawing-controls .btn { margin: 0; padding: 8px 16px; font-size: 0.85rem; }
+
+#drawingCanvas { max-width: 100%; }
+
 .eyebrow { color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 20px; }
 .hero h1 { font-family: var(--font-sans); font-size: clamp(3rem, 5vw, 4.5rem); line-height: 1.1; margin-bottom: 24px; font-weight: 300;}
 .italic-art { font-family: var(--font-serif); font-style: italic; color: var(--text-muted); }

@@ -264,6 +264,16 @@
             <label for="userPhoto">Add a photo (optional)</label>
             <input type="file" id="userPhoto" accept="image/*" />
           </div>
+
+          <div class="form-group">
+            <label>Draw something! (optional)</label>
+            <div class="drawing-controls">
+              <input type="color" id="drawColor" value="#000000" title="Drawing color" />
+              <button type="button" class="btn secondary" id="clearCanvasBtn">Clear</button>
+              <button type="button" class="btn secondary" id="useDrawingBtn">Use Drawing</button>
+            </div>
+            <canvas id="drawingCanvas" width="300" height="200" style="border: 2px dashed var(--glass-border); border-radius: 8px; background: #ffffff; cursor: crosshair; display: block; margin: 10px 0; touch-action: none;"></canvas>
+          </div>
           
           <div class="form-row">
             <div class="form-group">
@@ -672,5 +682,116 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   </div>
 
   <script src="/js/emoji-picker.js"></script>
+  
+  <script>
+    // Drawing canvas functionality
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    const drawColorInput = document.getElementById('drawColor');
+    const clearCanvasBtn = document.getElementById('clearCanvasBtn');
+    const useDrawingBtn = document.getElementById('useDrawingBtn');
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    // Initialize canvas background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Get canvas position
+    function getCanvasPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX || e.touches[0].clientX) - rect.left;
+      const y = (e.clientY || e.touches[0].clientY) - rect.top;
+      return { x, y };
+    }
+
+    // Start drawing
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getCanvasPos(e);
+      lastX = pos.x;
+      lastY = pos.y;
+      e.preventDefault();
+    }
+
+    // Draw
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      
+      const pos = getCanvasPos(e);
+      ctx.strokeStyle = drawColorInput.value;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    // Stop drawing
+    function stopDrawing(e) {
+      isDrawing = false;
+      e.preventDefault();
+    }
+
+    // Canvas events
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    // Clear canvas
+    clearCanvasBtn.addEventListener('click', () => {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Use drawing as photo
+    useDrawingBtn.addEventListener('click', () => {
+      const drawingData = canvas.toDataURL('image/png');
+      document.getElementById('userPhoto').value = '';
+      
+      // Create a hidden input to store the drawing
+      const drawingInput = document.getElementById('userDrawing');
+      if (drawingInput) {
+        drawingInput.value = drawingData;
+      } else {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.id = 'userDrawing';
+        input.value = drawingData;
+        document.getElementById('globe-form').appendChild(input);
+      }
+      
+      alert('Drawing saved! It will be submitted with your message.');
+      clearCanvasBtn.click();
+    });
+
+    // Update form submission to include drawing
+    const globeForm = document.getElementById('globe-form');
+    const originalHandleFormSubmit = window.handleFormSubmit;
+    globeForm.addEventListener('submit', (e) => {
+      const drawingInput = document.getElementById('userDrawing');
+      if (drawingInput && drawingInput.value) {
+        const photoInput = document.getElementById('userPhoto');
+        const dataTransfer = new DataTransfer();
+        const blob = new Blob([atob(drawingInput.value.split(',')[1])], { type: 'image/png' });
+        const file = new File([blob], 'drawing.png', { type: 'image/png' });
+        dataTransfer.items.add(file);
+        photoInput.files = dataTransfer.files;
+      }
+    });
+  </script>
 </body>
 </html>
