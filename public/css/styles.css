@@ -1451,6 +1451,30 @@ main.container .link { color: var(--text-primary); }
   margin-top: 40px;
 }
 
+/* --- DESKTOP VIEW (Floating Windows) --- */
+@media (min-width: 769px) {
+  .about-window {
+    position: fixed !important; 
+    top: 120px !important; 
+    left: 30px !important;
+    
+    width: 320px;
+    z-index: 9990 !important;
+    display: block;
+  }
+
+  .notes-window {
+    position: fixed !important; 
+    bottom: 30px !important; 
+    right: 30px !important; 
+    top: auto !important;
+    
+    width: 320px;
+    z-index: 9990 !important;
+    display: block;
+  }
+}
+
 @media (max-width: 768px) {
   body {
     display: flex;
