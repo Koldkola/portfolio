@@ -219,13 +219,23 @@
         </div>
 
         <div class="form-group">
-          <label for="weeklyImage">Image URL (optional)</label>
-          <input type="url" id="weeklyImage" placeholder="https://" />
+          <label for="weeklyImage">Image URLs (up to 4, one per line)</label>
+          <textarea id="weeklyImage" rows="3" placeholder="https://"></textarea>
         </div>
 
         <div class="form-group">
-          <label for="weeklyPhoto">Photo Upload (optional)</label>
-          <input type="file" id="weeklyPhoto" accept="image/*" />
+          <label for="weeklyPhoto">Photo Uploads (optional, up to 4)</label>
+          <input type="file" id="weeklyPhoto" accept="image/*" multiple />
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyVideo">Video URLs (optional, up to 4, one per line - YouTube, Vimeo, Twitter/X, direct links)</label>
+          <textarea id="weeklyVideo" rows="3" placeholder="https://youtube.com/watch?v=..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="weeklyVideoUpload">Video Uploads (optional, up to 4)</label>
+          <input type="file" id="weeklyVideoUpload" accept="video/*" multiple />
         </div>
 
         <div class="form-group">
@@ -1212,5 +1222,8 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       }
     }, true);
   </script>
+
+  <!-- Twitter/X embed widget -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>

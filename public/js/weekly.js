@@ -283,7 +283,22 @@ function normalizeWeeklyData(rawData) {
   return rawData.map(week => ({
     ...week,
     startDate: week.startDate instanceof Date ? week.startDate : new Date(week.startDate),
-    items: Array.isArray(week.items) ? week.items : []
+    items: Array.isArray(week.items)
+      ? week.items.map(item => {
+          const images = Array.isArray(item.images)
+            ? item.images.filter(Boolean)
+            : (item.img ? [item.img] : []);
+          const videos = Array.isArray(item.videos)
+            ? item.videos.filter(Boolean)
+            : [];
+          return {
+            ...item,
+            img: images[0] || item.img || '',
+            images: images.slice(0, 4),
+            videos: videos.slice(0, 4)
+          };
+        })
+      : []
   }));
 }
 
@@ -406,6 +421,103 @@ function renderWeek(index) {
   }, 400); 
 }
 
+function getWeeklyImages(item) {
+  if (!item) return [];
+  if (Array.isArray(item.images) && item.images.length > 0) {
+    return item.images.filter(Boolean).slice(0, 4);
+  }
+  return item.img ? [item.img] : [];
+}
+
+function buildWeeklyImageGrid(images, title) {
+  if (!images || images.length === 0) return null;
+  const grid = document.createElement('div');
+  grid.className = `weekly-image-grid count-${images.length}`;
+
+  images.forEach((src, index) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'weekly-image-btn';
+    btn.setAttribute('aria-label', `Enlarge image ${index + 1}${title ? ` for ${title}` : ''}`);
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = title ? `${title} image ${index + 1}` : `Weekly highlight image ${index + 1}`;
+
+    btn.appendChild(img);
+    btn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (window.openPhotoModal) {
+        window.openPhotoModal(src);
+      }
+    });
+
+    grid.appendChild(btn);
+  });
+
+  return grid;
+}
+
+function getWeeklyVideos(item) {
+  if (!item) return [];
+  if (Array.isArray(item.videos) && item.videos.length > 0) {
+    return item.videos.filter(Boolean).slice(0, 4);
+  }
+  return [];
+}
+
+function getVideoEmbedCode(url) {
+  // YouTube
+  const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s]+)/);
+  if (youtubeMatch) {
+    return `<iframe src="https://www.youtube.com/embed/${youtubeMatch[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  }
+
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) {
+    return `<iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  }
+
+  // Twitter/X
+  const twitterMatch = url.match(/(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/);
+  if (twitterMatch) {
+    // Use Twitter's blockquote embed which will be enhanced by the widget script
+    const embedId = `twitter-embed-${twitterMatch[1]}`;
+    setTimeout(() => {
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load();
+      }
+    }, 100);
+    return `<blockquote class="twitter-tweet" data-theme="dark"><a href="${url}"></a></blockquote>`;
+  }
+
+  // Direct video file (base64 or URL)
+  if (url.startsWith('data:video/') || url.match(/\.(mp4|webm|ogg)$/i)) {
+    return `<video controls><source src="${url}" /></video>`;
+  }
+
+  return null;
+}
+
+function buildWeeklyVideoGrid(videos) {
+  if (!videos || videos.length === 0) return null;
+  const grid = document.createElement('div');
+  grid.className = `weekly-video-grid count-${videos.length}`;
+
+  videos.forEach((src) => {
+    const container = document.createElement('div');
+    container.className = 'weekly-video-container';
+    const embedCode = getVideoEmbedCode(src);
+    if (embedCode) {
+      container.innerHTML = embedCode;
+    }
+    grid.appendChild(container);
+  });
+
+  return grid;
+}
+
 // Modal functionality
 function openCategoryModal(item, bgColor) {
   // Hide me.txt and content.txt windows
@@ -452,8 +564,23 @@ function openCategoryModal(item, bgColor) {
   
   if (item.detailedContent) {
     const introHtml = item.detailedContent.intro || '';
-    const imageHtml = item.img ? `<img src="${item.img}" alt="${item.title}" style="width: 100%; border-radius: 12px; margin-bottom: 16px;" />` : '';
-    modalIntro.innerHTML = `${imageHtml}${introHtml}`;
+    modalIntro.innerHTML = introHtml;
+
+    const images = getWeeklyImages(item);
+    const imageGrid = buildWeeklyImageGrid(images, item.title);
+    if (imageGrid) {
+      modalIntro.prepend(imageGrid);
+    }
+
+    const videos = getWeeklyVideos(item);
+    const videoGrid = buildWeeklyVideoGrid(videos);
+    if (videoGrid) {
+      if (imageGrid) {
+        imageGrid.after(videoGrid);
+      } else {
+        modalIntro.prepend(videoGrid);
+      }
+    }
     
     const highlightsRaw = item.detailedContent.highlights || [];
     const highlights = Array.isArray(highlightsRaw)
@@ -574,8 +701,14 @@ function openWeeklyEditor(weekIndex = currentWeekIndex, itemIndex = null) {
   document.getElementById('weeklyCategory').value = item?.category || '';
   document.getElementById('weeklyTitle').value = item?.title || '';
   document.getElementById('weeklyDescription').value = item?.description || '';
-  document.getElementById('weeklyImage').value = item?.img || '';
+  const existingImages = Array.isArray(item?.images)
+    ? item.images
+    : (item?.img ? [item.img] : []);
+  document.getElementById('weeklyImage').value = existingImages.join('\n');
   document.getElementById('weeklyPhoto').value = '';
+  const existingVideos = Array.isArray(item?.videos) ? item.videos : [];
+  document.getElementById('weeklyVideo').value = existingVideos.join('\n');
+  document.getElementById('weeklyVideoUpload').value = '';
   document.getElementById('weeklyIntro').value = item?.detailedContent?.intro || '';
   document.getElementById('weeklyHighlights').value = Array.isArray(item?.detailedContent?.highlights)
     ? item.detailedContent.highlights.join('\n')
@@ -646,15 +779,34 @@ function saveWeeklyItem() {
   const category = sanitizeInput(document.getElementById('weeklyCategory').value.trim());
   const title = sanitizeInput(document.getElementById('weeklyTitle').value.trim());
   const description = sanitizeInput(document.getElementById('weeklyDescription').value.trim());
-  let img = document.getElementById('weeklyImage').value.trim();
-  
-  // Validate image URL
-  if (img && !isValidURL(img)) {
+  const rawImages = document.getElementById('weeklyImage').value
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+  const urlImages = rawImages.slice(0, 4);
+
+  // Validate image URLs
+  const invalidUrl = urlImages.find(url => !isValidURL(url));
+  if (invalidUrl) {
     alert('Invalid image URL');
     return;
   }
-  
+
+  const rawVideos = document.getElementById('weeklyVideo').value
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+  const urlVideos = rawVideos.slice(0, 4);
+
+  // Validate video URLs
+  const invalidVideoUrl = urlVideos.find(url => !isValidURL(url));
+  if (invalidVideoUrl) {
+    alert('Invalid video URL');
+    return;
+  }
+
   const photoInput = document.getElementById('weeklyPhoto');
+  const videoInput = document.getElementById('weeklyVideoUpload');
   const intro = sanitizeHTML(document.getElementById('weeklyIntro').value.trim());
   const highlights = document.getElementById('weeklyHighlights').value
     .split('\n')
@@ -665,36 +817,69 @@ function saveWeeklyItem() {
 
   if (!weeklyData[weekIndex]) return;
 
-  // Handle photo upload - convert to base64
-  if (photoInput && photoInput.files && photoInput.files[0]) {
-    const file = photoInput.files[0];
-    
-    // Validate file
-    const validation = validateFileUpload(file);
-    if (!validation.valid) {
-      alert(validation.error);
-      return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      img = e.target.result; // Use base64 as image source
-      saveItem();
-    };
-    reader.onerror = function() {
-      alert('Failed to read file');
-    };
-    reader.readAsDataURL(file);
+  const uploadFiles = photoInput?.files ? Array.from(photoInput.files).slice(0, 4) : [];
+  const videoFiles = videoInput?.files ? Array.from(videoInput.files).slice(0, 4) : [];
+
+  const filePromises = [];
+
+  if (uploadFiles.length > 0) {
+    filePromises.push(Promise.all(uploadFiles.map(file => new Promise((resolve, reject) => {
+      const validation = validateFileUpload(file);
+      if (!validation.valid) {
+        reject(validation.error);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        resolve(e.target.result);
+      };
+      reader.onerror = function() {
+        reject('Failed to read file');
+      };
+      reader.readAsDataURL(file);
+    }))));
   } else {
-    saveItem();
+    filePromises.push(Promise.resolve([]));
   }
 
-  function saveItem() {
+  if (videoFiles.length > 0) {
+    filePromises.push(Promise.all(videoFiles.map(file => new Promise((resolve, reject) => {
+      const validation = validateFileUpload(file);
+      if (!validation.valid) {
+        reject(validation.error);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        resolve(e.target.result);
+      };
+      reader.onerror = function() {
+        reject('Failed to read file');
+      };
+      reader.readAsDataURL(file);
+    }))));
+  } else {
+    filePromises.push(Promise.resolve([]));
+  }
+
+  Promise.all(filePromises)
+    .then(([uploadedImages, uploadedVideos]) => {
+      const images = [...urlImages, ...uploadedImages].slice(0, 4);
+      const videos = [...urlVideos, ...uploadedVideos].slice(0, 4);
+      saveItem(images, videos);
+    })
+    .catch(error => {
+      alert(error);
+    });
+
+  function saveItem(images = [], videos = []) {
     const newItem = {
       category,
       title,
       description,
-      img,
+      img: images[0] || '',
+      images,
+      videos,
       detailedContent: {
         intro,
         highlights,
