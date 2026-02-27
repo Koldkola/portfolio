@@ -160,11 +160,12 @@ function openGlobeViewModal() {
         `;
       } else {
         // Display as sticky note
+        const fontStyle = entry.font ? `font-family: ${entry.font};` : '';
         return `
           <div class="board-sticky ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffd97d'}; color: ${entry.textColor || '#333'};" data-index="${index}">
             ${checkboxHtml}
-            <div class="board-sticky-name">${entry.name}</div>
-            <div class="board-sticky-text">${entry.text}</div>
+            <div class="board-sticky-name" style="${fontStyle}">${entry.name}</div>
+            <div class="board-sticky-text" style="${fontStyle}">${entry.text}</div>
             <div class="board-sticky-meta">
               ${entry.age ? `Age ${entry.age} • ` : ''}${new Date(entry.timestamp).toLocaleDateString()}
             </div>
@@ -411,6 +412,7 @@ function handleFormSubmit(e) {
   const age = document.getElementById('userAge').value;
   const textColor = document.getElementById('textColor').value;
   const bgColor = document.getElementById('bgColor').value;
+  const userFont = document.getElementById('userFont').value;
   const photoInput = document.getElementById('userPhoto');
   
   if (!name || !text) {
@@ -426,22 +428,23 @@ function handleFormSubmit(e) {
   if (photoInput.files && photoInput.files[0]) {
     const reader = new FileReader();
     reader.onload = async function(e) {
-      await saveNewEntry(name, text, age, textColor, bgColor, e.target.result, submitBtn);
+      await saveNewEntry(name, text, age, textColor, bgColor, userFont, e.target.result, submitBtn);
     };
     reader.readAsDataURL(photoInput.files[0]);
   } else {
-    saveNewEntry(name, text, age, textColor, bgColor, null, submitBtn);
+    saveNewEntry(name, text, age, textColor, bgColor, userFont, null, submitBtn);
   }
 }
 
 // Save new entry to backend
-async function saveNewEntry(name, text, age, textColor, bgColor, photo, submitBtn) {
+async function saveNewEntry(name, text, age, textColor, bgColor, userFont, photo, submitBtn) {
   const entry = {
     name: name,
     text: text,
     age: age || null,
     textColor: textColor,
     bgColor: bgColor,
+    font: userFont,
     photo: photo,
     timestamp: new Date().toISOString()
   };
