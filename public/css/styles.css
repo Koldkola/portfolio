@@ -604,7 +604,7 @@ main.container li { margin-bottom: 10px; }
 main.container .link { color: var(--text-primary); }
 
 /* Projects Grid */
-.projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 40px 0; }
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 40px 0; overflow: visible; }
 
 /* =========================================
    CAROUSEL STYLES - Projects Navigation
@@ -679,6 +679,7 @@ main.container .link { color: var(--text-primary); }
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
   overflow-x: auto;
+  overflow-y: visible;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
   padding: 8px 0;
@@ -965,11 +966,11 @@ main.container .link { color: var(--text-primary); }
     padding: 6px;
   }
 }
-.project-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 24px; transition: all 0.4s var(--ease-out-expo); cursor: pointer; }
+.project-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 24px; transition: all 0.4s var(--ease-out-expo); cursor: pointer; overflow: visible; }
 .project-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 .project-card h3 { font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 12px; color: #fff; }
 .project-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
-.project-info { display: flex; flex-direction: column; }
+.project-info { display: flex; flex-direction: column; overflow: visible; }
 .project-card .link { margin-right: 12px; display: inline-block; margin-bottom: 8px; }
 
 /* Search Box */
