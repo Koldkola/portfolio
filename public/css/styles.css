@@ -1619,16 +1619,23 @@ main.container .link { color: var(--text-primary); }
     gap: 3px;
   }
 
-  /* Reposition floating windows at top on mobile */
+  /* Reposition floating windows vertically stacked on mobile */
   .about-window {
     top: 10px !important;
     left: 10px !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
   }
   
   .notes-window {
-    top: 120px !important;
-    bottom: auto !important;
-    right: 10px !important;
+    top: auto !important;
+    bottom: 10px !important;
+    left: 10px !important;
+    right: auto !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
   }
 }
 
