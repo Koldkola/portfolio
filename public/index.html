@@ -478,9 +478,9 @@
       </div>
       <div class="category-modal-body">
         <div style="display: flex; gap: 16px;">
-          <div style="flex: 0 0 220px;">
+          <div style="flex: 1;">
             <img id="snap-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: block;" />
-            <video id="snap-preview-video" controls style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: none; max-height: 220px;"></video>
+            <video id="snap-preview-video" controls style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: none;"></video>
           </div>
           <form id="snap-post-form" style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
             <!-- Auto-add checkbox -->
@@ -598,6 +598,19 @@ In order to create a page that shows my <span class="tooltip-word">Undertow<span
 im <span class="tooltip-word">infatuated<span class="tooltip-popup">strong emotional pull<br>usually temporary<br>feels urgent or consuming</span></span> with / what's inspiring me at the moment.
 
 Will be adding to it as much as i can, hoping to make this a digital library</pre>
+    </div>
+  </section>
+
+  <!-- Kurrently Window -->
+  <section class="window kurrently-window" id="kurrentlyWindow" style="position: fixed; top: 30px; right: 30px; display: block;">
+    <div class="window-header drag-handle">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="window-title">Kurrently</span>
+    </div>
+    <div class="window-body">
+      <div id="kurrentlyContent" style="font-size: 0.85rem; line-height: 1.4; font-family: 'Courier New', monospace; min-height: 80px;"></div>
     </div>
   </section>
 
@@ -2024,6 +2037,20 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       }
     }
 
+    // Make Kurrently window draggable
+    const kurrentlyWindow = document.getElementById('kurrentlyWindow');
+    if (kurrentlyWindow) {
+      makeDraggable(kurrentlyWindow);
+      
+      // Add close functionality to red dot
+      const redDot = kurrentlyWindow.querySelector('.dot.red');
+      if (redDot) {
+        redDot.addEventListener('click', () => {
+          kurrentlyWindow.style.display = 'none';
+        });
+      }
+    }
+
     // Make sticky notes draggable
     document.querySelectorAll('.sticky-note').forEach(note => {
       makeDraggable(note);
@@ -2038,6 +2065,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       if (notesWindow) {
         sessionStorage.setItem('notesWindowVisible', notesWindow.style.display !== 'none');
       }
+      if (kurrentlyWindow) {
+        sessionStorage.setItem('kurrentlyWindowVisible', kurrentlyWindow.style.display !== 'none');
+      }
     };
 
     // Hide windows when clicking navigation links
@@ -2049,6 +2079,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           storeWindowState();
           if (aboutWindow) aboutWindow.style.display = 'none';
           if (notesWindow) notesWindow.style.display = 'none';
+          if (kurrentlyWindow) kurrentlyWindow.style.display = 'none';
         }
       });
     });
@@ -2057,6 +2088,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
     window.addEventListener('load', () => {
       const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
       const notesVisible = sessionStorage.getItem('notesWindowVisible');
+      const kurrentlyVisible = sessionStorage.getItem('kurrentlyWindowVisible');
       
       // If states exist, restore them, otherwise show by default
       if (aboutWindow) {
@@ -2065,7 +2097,162 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       if (notesWindow) {
         notesWindow.style.display = notesVisible === 'false' ? 'none' : 'block';
       }
+      if (kurrentlyWindow) {
+        kurrentlyWindow.style.display = kurrentlyVisible === 'false' ? 'none' : 'block';
+      }
+
+      // Start Kurrently typing animation
+      startKurrentlyAnimation();
     });
+
+    // Terminal typing animation for Kurrently window
+    function startKurrentlyAnimation() {
+      const contentDiv = document.getElementById('kurrentlyContent');
+      if (!contentDiv) return;
+
+      // Content arrays for randomization
+      const watchingItems = [
+        'Paradise ',
+        'industry ',
+        'JJK',
+        'One Piece',
+        'Frieren',
+        "Hell's paradise",
+        'The pitt',
+        'The Boys',
+        'You',
+        'Dune',
+        'Shameless',
+        'Knives Out',
+        'Entourage',
+        'Breaking Bad',
+        'The sopranos',
+        'Dark',
+        'AfroSenju'
+      ];
+
+      const listeningItems = [
+        'The sundays',
+        'Aya Nakamura',
+        'Dom Jr',
+        'Theodora',
+        'Grimm Grimm',
+        'Salvia Path',
+        'Lil Durk',
+        'The Pastels',
+        'Playboi Carti',
+        'Gvlli3',
+        'Jhene aiko',
+        'Bawo',
+        'Seyi Vibez',
+        'Asake',
+        'The Cavemen',
+        'ODUMODUBLVCK',
+        'Tame impala',
+        'The Shirelles',
+        'PinkPanthress',
+        'Charli xcx',
+        'Young Thug',
+        'Future',
+        'Frank Ocean',
+        'Kendrick Lamar',
+        'Lucki',
+        'King Krule',
+        'Ravyn Lenae',
+        'Panchiko',
+        'Sampha',
+        'Kid Cudi',
+        'Ethel Cain',
+        'EKKSTACY',
+        'The Drums',
+        'Title Fight',
+        'The Cranberries',
+        'Alex G',
+        'Amy Winehouse',
+        'Okay Kaya',
+        'Current Joys'
+      ];
+
+      const playingItems = [
+        'Overwatch',
+        'Ghost of Tsushima',
+        'Marvel rivals',
+        'It takes Two',
+        'Roblox',
+        'Wizard 101',
+        'Tomb Raider',
+        'SmashBros'
+      ];
+
+      const readingItems = [
+        'One piece',
+        'Kingdom',
+        'Gachiakuta',
+        'Beserk',
+        'Tomie',
+        'Vagabond',
+        'No longer Human',
+        'Flowers of evil',
+        'Homonculus',
+        'Gyo',
+        'Aku no hana',
+        'Chainsaw Man',
+        'Fire Punch',
+        'Leviathan',
+        'Emanon',
+        'i am hero',
+        'Vinland Saga'
+      ];
+
+      // Helper function to get random item from array
+      function getRandomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      // Get random items for this load
+      const watching = getRandomItem(watchingItems);
+      const listening = getRandomItem(listeningItems);
+      const playing = getRandomItem(playingItems);
+      const reading = getRandomItem(readingItems);
+
+      const lines = [
+        `watching: ${watching}`,
+        `listening to: ${listening}`,
+        `playing: ${playing}`,
+        `reading: ${reading}`
+      ];
+
+      const typingSpeed = 50; // ms per character
+      const delayBetweenLines = 400; // ms between lines
+      const pauseAtEnd = 2000; // ms pause before restart
+
+      async function typeLines() {
+        while (true) {
+          contentDiv.textContent = '';
+          
+          for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            const line = lines[lineIndex];
+            
+            // Type each character
+            for (let charIndex = 0; charIndex < line.length; charIndex++) {
+              contentDiv.textContent += line[charIndex];
+              await new Promise(resolve => setTimeout(resolve, typingSpeed));
+            }
+            
+            // Add newline if not the last line
+            if (lineIndex < lines.length - 1) {
+              contentDiv.textContent += '\n';
+              await new Promise(resolve => setTimeout(resolve, delayBetweenLines));
+            }
+          }
+          
+          // Pause before restarting
+          await new Promise(resolve => setTimeout(resolve, pauseAtEnd));
+        }
+      }
+
+      typeLines();
+    }
   </script>
   
   <style>
