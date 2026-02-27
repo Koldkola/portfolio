@@ -1603,6 +1603,17 @@ main.container .link { color: var(--text-primary); }
 }
 
 @media (max-width: 768px) {
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-header { order: 1; }
+  .about-window { order: 2; }
+  .notes-window { order: 3; }
+  main { order: 4; }
+  .site-footer { order: 5; }
+
   .hero { flex-direction: column; text-align: center; margin: 40px auto; }
   .hero-content { margin-bottom: 40px; }
   .nav-links { display: none; }
@@ -1619,23 +1630,27 @@ main.container .link { color: var(--text-primary); }
     gap: 3px;
   }
 
-  /* Reposition floating windows vertically stacked on mobile */
+  /* Change floating windows from fixed to relative positioning on mobile */
   .about-window {
-    top: 10px !important;
-    left: 10px !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
     right: auto !important;
     bottom: auto !important;
     width: auto !important;
-    max-width: calc(100vw - 20px) !important;
+    max-width: 100% !important;
+    margin: 10px;
   }
   
   .notes-window {
+    position: relative !important;
     top: auto !important;
-    bottom: 10px !important;
-    left: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
     right: auto !important;
     width: auto !important;
-    max-width: calc(100vw - 20px) !important;
+    max-width: 100% !important;
+    margin: 10px;
   }
 }
 
