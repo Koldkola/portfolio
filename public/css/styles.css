@@ -683,8 +683,8 @@ main.container .link { color: var(--text-primary); }
   overflow-y: visible;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-  padding: 140px 0 8px;
-  margin-top: -140px;
+  padding: 80px 0 8px;
+  margin-top: -80px;
   flex: 1;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
@@ -1518,8 +1518,8 @@ main.container .link { color: var(--text-primary); }
 }
 
 .tooltip-popup {
-  position: fixed;
-  bottom: auto;
+  position: absolute;
+  bottom: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%) translateY(-8px);
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.98), rgba(109, 40, 217, 0.98));
@@ -1530,8 +1530,8 @@ main.container .link { color: var(--text-primary); }
   font-weight: 500;
   white-space: normal;
   width: max-content;
-  min-width: 320px;
-  max-width: 400px;
+  min-width: 220px;
+  max-width: min(640px, 90vw);
   text-align: center;
   pointer-events: none;
   opacity: 0;
