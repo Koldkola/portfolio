@@ -1048,7 +1048,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             const entry = isAutoAdd 
               ? {
                   name: 'Anonymous',
-                  text: `Snapped with The Interface 📷`,
+                  text: `Snapped with The Kamera 📷`,
                   photo: window.snapPhotoData,
                   timestamp: new Date().toISOString(),
                   textColor,
@@ -1068,8 +1068,8 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             if (success) {
               closeSnapToBoardModal();
               showNotification(isAutoAdd 
-                ? '🎉 Your filtered photo has been auto-posted to Kommunity Korner!' 
-                : '🎉 Your filtered photo has been posted to Kommunity Korner!');
+                ? '🎉 Your  photo has been auto-posted to Kommunity Korner!' 
+                : '🎉 Your  photo has been posted to Kommunity Korner!');
               snapPostForm.reset();
               autoAddCheckbox.checked = false;
               manualFormSection.style.display = 'block';
