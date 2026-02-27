@@ -683,8 +683,8 @@ main.container .link { color: var(--text-primary); }
   overflow-y: visible;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-  padding: 140px 120px 8px;
-  margin: -140px -120px 0;
+  padding: 140px 0 8px;
+  margin-top: -140px;
   flex: 1;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
