@@ -602,7 +602,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   </section>
 
   <!-- Kurrently Window -->
-  <section class="window kurrently-window" id="kurrentlyWindow" style="position: fixed; top: 280px; left: 50%; transform: translateX(-50%); display: block;">
+  <section class="window kurrently-window" id="kurrentlyWindow" style="position: fixed; top: 491px; left: 179.2px; transform: translateX(-50%); display: block; right: auto;">
     <div class="window-header drag-handle">
       <span class="dot red"></span>
       <span class="dot yellow"></span>
@@ -2103,6 +2103,46 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
       // Start Kurrently typing animation
       startKurrentlyAnimation();
+
+      // Fade out Me.txt and Context.txt after 30 seconds
+      setTimeout(() => {
+        const aboutWindow = document.getElementById('aboutWindow');
+        const notesWindow = document.getElementById('notesWindow');
+        
+        if (aboutWindow) {
+          aboutWindow.style.transition = 'opacity 1s ease-out';
+          aboutWindow.style.opacity = '0';
+          aboutWindow.style.pointerEvents = 'none'; // Disable interactions when faded
+          
+          // Add hover events to restore
+          aboutWindow.addEventListener('mouseenter', () => {
+            aboutWindow.style.opacity = '1';
+            aboutWindow.style.pointerEvents = 'auto';
+          });
+          
+          aboutWindow.addEventListener('mouseleave', () => {
+            aboutWindow.style.opacity = '0';
+            aboutWindow.style.pointerEvents = 'none';
+          });
+        }
+        
+        if (notesWindow) {
+          notesWindow.style.transition = 'opacity 1s ease-out';
+          notesWindow.style.opacity = '0';
+          notesWindow.style.pointerEvents = 'none'; // Disable interactions when faded
+          
+          // Add hover events to restore
+          notesWindow.addEventListener('mouseenter', () => {
+            notesWindow.style.opacity = '1';
+            notesWindow.style.pointerEvents = 'auto';
+          });
+          
+          notesWindow.addEventListener('mouseleave', () => {
+            notesWindow.style.opacity = '0';
+            notesWindow.style.pointerEvents = 'none';
+          });
+        }
+      }, 30000);
     });
 
     // Terminal typing animation for Kurrently window
