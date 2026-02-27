@@ -81,6 +81,8 @@
             <button class="ctrl-btn" data-mode="thermal">Thermal</button>
             <button class="ctrl-btn" data-mode="zeroday">Normal</button>
             <button class="ctrl-btn" data-mode="temporal">Lag</button>
+            <button class="ctrl-btn" data-mode="watercolor">Watercolor</button>
+            <button class="ctrl-btn" data-mode="constellation">Constellation</button>
           </div>
 
           <div class="color-palette-section">
@@ -102,6 +104,7 @@
             <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
             <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner">📷 POST TO KORNER</button>
+            <button id="video-message-btn" class="feature-btn" title="Record 5-15 second video message">🎥 VIDEO MESSAGE</button>
             <button id="photobooth-btn" class="feature-btn" title="Auto-capture photos every 5 seconds">📸 PHOTOBOOTH</button>
           </div>
         </div>
@@ -330,6 +333,12 @@
           </div>
 
           <div class="form-group">
+            <label for="userVideo">Or add a video (optional, 5-15 seconds recommended)</label>
+            <input type="file" id="userVideo" accept="video/*" />
+            <p style="font-size: 0.75rem; opacity: 0.7; margin-top: 4px;">Note: Choose either photo or video, not both</p>
+          </div>
+
+          <div class="form-group">
             <label>Draw something! (optional)</label>
             <div class="drawing-controls">
               <input type="color" id="drawColor" value="#000000" title="Drawing color" />
@@ -470,7 +479,8 @@
       <div class="category-modal-body">
         <div style="display: flex; gap: 16px;">
           <div style="flex: 1;">
-            <img id="snap-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000;" />
+            <img id="snap-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: block;" />
+            <video id="snap-preview-video" controls style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: none;"></video>
           </div>
           <form id="snap-post-form" style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
             <!-- Auto-add checkbox -->
@@ -489,13 +499,13 @@
               </div>
               <div class="form-group">
                 <label for="snapCaption">Caption (Optional)</label>
-                <textarea id="snapCaption" placeholder="Add a caption to your photo..." rows="3" style="resize: vertical;"></textarea>
+                <textarea id="snapCaption" placeholder="Add a caption..." rows="3" style="resize: vertical;"></textarea>
               </div>
             </div>
 
             <!-- Auto-add confirmation (hidden until checked) -->
             <div id="auto-add-confirmation" style="display: none; padding: 12px; background: rgba(168, 85, 247, 0.15); border-radius: 6px; color: var(--text-primary); font-size: 0.9rem; line-height: 1.5;">
-              📸 Your photo will be posted with the current date and time. Ready to upload!
+              📸 Your media will be posted with the current date and time. Ready to upload!
             </div>
 
             <div style="display: flex; gap: 8px;">
@@ -503,6 +513,44 @@
               <button type="button" class="btn secondary" onclick="closeSnapToBoardModal()" style="flex: 1;">Cancel</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Message Recording Modal -->
+  <div id="video-message-modal" class="category-modal">
+    <div class="category-modal-content" style="max-width: 700px;">
+      <div class="category-modal-header">
+        <h2>Record Video Message</h2>
+        <button class="category-modal-close" onclick="closeVideoMessageModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <div style="text-align: center;">
+          <div style="position: relative; display: inline-block;">
+            <video id="video-message-preview" width="640" height="480" autoplay muted style="border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000;"></video>
+            <canvas id="video-message-canvas" width="640" height="480" style="display: none;"></canvas>
+            <div id="video-message-timer" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 1.2rem; font-weight: bold; display: none;">
+              00:00 / 00:15
+            </div>
+          </div>
+          <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+            <button id="start-video-record" class="btn primary" style="padding: 12px 24px; font-size: 1rem;">
+              🔴 Start Recording (5-15s)
+            </button>
+            <button id="stop-video-record" class="btn secondary" style="padding: 12px 24px; font-size: 1rem; display: none;">
+              ⏹️ Stop Recording
+            </button>
+            <button id="use-video-message" class="btn primary" style="padding: 12px 24px; font-size: 1rem; display: none;">
+              ✓ Use This Video
+            </button>
+            <button id="retake-video-message" class="btn secondary" style="padding: 12px 24px; font-size: 1rem; display: none;">
+              🔄 Retake
+            </button>
+          </div>
+          <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;">
+            Record a short video message (5-15 seconds) to share with the Kommunity
+          </p>
         </div>
       </div>
     </div>
@@ -1044,20 +1092,25 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           submitBtn.disabled = true;
           
           try {
-            // Create entry based on mode
+            // Check if we have photo or video data
+            const isVideo = window.snapVideoData && window.snapVideoData !== null;
+            
+            // Create entry based on mode and media type
             const entry = isAutoAdd 
               ? {
                   name: 'Anonymous',
-                  text: `Snapped with The Kamera 📷`,
-                  photo: window.snapPhotoData,
+                  text: isVideo ? `Video message 🎥` : `Snapped with The Kamera 📷`,
+                  photo: isVideo ? null : window.snapPhotoData,
+                  video: isVideo ? window.snapVideoData : null,
                   timestamp: new Date().toISOString(),
                   textColor,
                   bgColor
                 }
               : {
                   name: name,
-                  text: caption || 'Snapped with The Kamera 📷',
-                  photo: window.snapPhotoData,
+                  text: caption || (isVideo ? 'Video message 🎥' : 'Snapped with The Kamera 📷'),
+                  photo: isVideo ? null : window.snapPhotoData,
+                  video: isVideo ? window.snapVideoData : null,
                   timestamp: new Date().toISOString(),
                   textColor,
                   bgColor
@@ -1068,8 +1121,8 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             if (success) {
               closeSnapToBoardModal();
               showNotification(isAutoAdd 
-                ? '🎉 Your  photo has been auto-posted to Kommunity Korner!' 
-                : '🎉 Your  photo has been posted to Kommunity Korner!');
+                ? `🎉 Your ${isVideo ? 'video' : 'photo'} has been auto-posted to Kommunity Korner!` 
+                : `🎉 Your ${isVideo ? 'video' : 'photo'} has been posted to Kommunity Korner!`);
               snapPostForm.reset();
               autoAddCheckbox.checked = false;
               manualFormSection.style.display = 'block';
@@ -1092,6 +1145,17 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const modal = document.getElementById('snap-to-board-modal');
         modal.style.display = 'none';
         window.snapPhotoData = null;
+        window.snapVideoData = null;
+        
+        // Hide video preview, show image preview
+        const previewImg = document.getElementById('snap-preview-img');
+        const previewVideo = document.getElementById('snap-preview-video');
+        if (previewImg) previewImg.style.display = 'block';
+        if (previewVideo) {
+          previewVideo.style.display = 'none';
+          previewVideo.src = '';
+        }
+        
         // Reset form state
         const autoAddCheckbox = document.getElementById('autoAddCheckbox');
         const manualFormSection = document.getElementById('manual-form-section');
@@ -1101,6 +1165,282 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           manualFormSection.style.display = 'block';
           autoAddConfirmation.style.display = 'none';
         }
+      };
+
+      // Video Message Recording Functionality
+      const videoMessageBtn = document.getElementById('video-message-btn');
+      let videoMessageRecorder = null;
+      let videoMessageChunks = [];
+      let videoMessageStream = null;
+      let videoMessageRecordStartTime = 0;
+      let videoMessageTimerInterval = null;
+      let videoTimestampInterval = null;
+      const MAX_VIDEO_DURATION = 15000; // 15 seconds
+      const MIN_VIDEO_DURATION = 5000; // 5 seconds
+      
+      // Function to draw timestamp on canvas during video recording
+      function drawVideoTimestamp() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        
+        // Save current context
+        ctx.save();
+        
+        // Bottom right corner with background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(canvas.width - 200, canvas.height - 50, 190, 45);
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'right';
+        ctx.fillText(dateStr, canvas.width - 15, canvas.height - 28);
+        ctx.fillText(timeStr, canvas.width - 15, canvas.height - 10);
+        
+        // Restore context
+        ctx.restore();
+      }
+
+      if (videoMessageBtn) {
+        videoMessageBtn.addEventListener('click', () => {
+          if (!webcamStream) {
+            showNotification('Please start your camera first!', 'error');
+            return;
+          }
+          
+          // Open video message modal
+          const modal = document.getElementById('video-message-modal');
+          const videoPreview = document.getElementById('video-message-preview');
+          const videoCanvas = document.getElementById('video-message-canvas');
+          
+          modal.style.display = 'flex';
+          
+          // Set up video preview with current webcam mode
+          videoMessageStream = canvas.captureStream(30);
+          
+          // Add audio from webcam
+          if (webcamStream) {
+            const audioTracks = webcamStream.getAudioTracks();
+            audioTracks.forEach(track => videoMessageStream.addTrack(track));
+          }
+          
+          videoPreview.srcObject = videoMessageStream;
+          videoPreview.muted = true;
+          videoPreview.play();
+        });
+      }
+
+      // Start video recording
+      const startVideoRecordBtn = document.getElementById('start-video-record');
+      if (startVideoRecordBtn) {
+        startVideoRecordBtn.addEventListener('click', () => {
+          const videoTimer = document.getElementById('video-message-timer');
+          const stopBtn = document.getElementById('stop-video-record');
+          
+          videoMessageChunks = [];
+          videoMessageRecordStartTime = Date.now();
+          
+          // Show timer
+          videoTimer.style.display = 'block';
+          videoTimer.textContent = '00:00 / 00:15';
+          
+          // Set up MediaRecorder
+          let mimeType = 'video/webm;codecs=vp9';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm;codecs=vp8';
+          }
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm';
+          }
+          
+          videoMessageRecorder = new MediaRecorder(videoMessageStream, { mimeType });
+          
+          videoMessageRecorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+              videoMessageChunks.push(event.data);
+            }
+          };
+          
+          videoMessageRecorder.onstop = () => {
+            // Check if minimum duration met
+            const duration = Date.now() - videoMessageRecordStartTime;
+            
+            if (duration < MIN_VIDEO_DURATION) {
+              showNotification('Video must be at least 5 seconds long', 'error');
+              resetVideoRecording();
+              return;
+            }
+            
+            // Create blob and preview
+            const blob = new Blob(videoMessageChunks, { type: mimeType });
+            const videoUrl = URL.createObjectURL(blob);
+            
+            // Convert to base64 for storage
+            const reader = new FileReader();
+            reader.onloadend = function() {
+              window.recordedVideoMessage = reader.result;
+              
+              // Show preview and use/retake buttons
+              const videoPreview = document.getElementById('video-message-preview');
+              videoPreview.srcObject = null;
+              videoPreview.src = videoUrl;
+              videoPreview.muted = false;
+              videoPreview.controls = true;
+              
+              startVideoRecordBtn.style.display = 'none';
+              stopBtn.style.display = 'none';
+              document.getElementById('use-video-message').style.display = 'inline-block';
+              document.getElementById('retake-video-message').style.display = 'inline-block';
+              videoTimer.style.display = 'none';
+            };
+            reader.readAsDataURL(blob);
+          };
+          
+          videoMessageRecorder.start();
+          
+          // Start drawing timestamp on canvas during recording
+          videoTimestampInterval = setInterval(() => {
+            drawVideoTimestamp();
+          }, 1000); // Update timestamp every second
+          
+          // Update UI
+          startVideoRecordBtn.style.display = 'none';
+          stopBtn.style.display = 'inline-block';
+          
+          // Update timer
+          videoMessageTimerInterval = setInterval(() => {
+            const elapsed = Math.min(MAX_VIDEO_DURATION, Date.now() - videoMessageRecordStartTime);
+            const secs = Math.floor(elapsed / 1000);
+            const maxSecs = Math.floor(MAX_VIDEO_DURATION / 1000);
+            videoTimer.textContent = `00:${String(secs).padStart(2, '0')} / 00:${String(maxSecs).padStart(2, '0')}`;
+            
+            // Auto-stop at max duration
+            if (elapsed >= MAX_VIDEO_DURATION) {
+              stopBtn.click();
+            }
+          }, 100);
+        });
+      }
+
+      // Stop video recording
+      const stopVideoRecordBtn = document.getElementById('stop-video-record');
+      if (stopVideoRecordBtn) {
+        stopVideoRecordBtn.addEventListener('click', () => {
+          if (videoMessageRecorder && videoMessageRecorder.state === 'recording') {
+            videoMessageRecorder.stop();
+            
+            // Stop timestamp overlay
+            if (videoTimestampInterval) {
+              clearInterval(videoTimestampInterval);
+              videoTimestampInterval = null;
+            }
+            
+            if (videoMessageTimerInterval) {
+              clearInterval(videoMessageTimerInterval);
+              videoMessageTimerInterval = null;
+            }
+          }
+        });
+      }
+
+      // Use video message
+      const useVideoMessageBtn = document.getElementById('use-video-message');
+      if (useVideoMessageBtn) {
+        useVideoMessageBtn.addEventListener('click', () => {
+          if (!window.recordedVideoMessage) {
+            showNotification('No video recorded', 'error');
+            return;
+          }
+          
+          // Store video data
+          window.snapVideoData = window.recordedVideoMessage;
+          window.snapPhotoData = null;
+          
+          // Close video modal
+          closeVideoMessageModal();
+          
+          // Open snap to board modal with video preview
+          const modal = document.getElementById('snap-to-board-modal');
+          const previewImg = document.getElementById('snap-preview-img');
+          const previewVideo = document.getElementById('snap-preview-video');
+          
+          previewImg.style.display = 'none';
+          previewVideo.style.display = 'block';
+          previewVideo.src = window.recordedVideoMessage;
+          
+          modal.style.display = 'flex';
+          
+          // Focus on name input
+          setTimeout(() => document.getElementById('snapName').focus(), 100);
+        });
+      }
+
+      // Retake video message
+      const retakeVideoMessageBtn = document.getElementById('retake-video-message');
+      if (retakeVideoMessageBtn) {
+        retakeVideoMessageBtn.addEventListener('click', () => {
+          resetVideoRecording();
+        });
+      }
+
+      function resetVideoRecording() {
+        const videoPreview = document.getElementById('video-message-preview');
+        const startBtn = document.getElementById('start-video-record');
+        const stopBtn = document.getElementById('stop-video-record');
+        const useBtn = document.getElementById('use-video-message');
+        const retakeBtn = document.getElementById('retake-video-message');
+        const videoTimer = document.getElementById('video-message-timer');
+        
+        // Reset video preview
+        videoPreview.src = '';
+        videoPreview.srcObject = videoMessageStream;
+        videoPreview.muted = true;
+        videoPreview.controls = false;
+        videoPreview.play();
+        
+        // Reset UI
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+        useBtn.style.display = 'none';
+        retakeBtn.style.display = 'none';
+        videoTimer.style.display = 'none';
+        
+        // Clear recorded data
+        window.recordedVideoMessage = null;
+        videoMessageChunks = [];
+      }
+
+      // Close video message modal
+      window.closeVideoMessageModal = function() {
+        const modal = document.getElementById('video-message-modal');
+        const videoPreview = document.getElementById('video-message-preview');
+        
+        modal.style.display = 'none';
+        
+        // Stop video preview
+        if (videoPreview.srcObject) {
+          videoPreview.srcObject = null;
+        }
+        videoPreview.src = '';
+        
+        // Stop any ongoing recording
+        if (videoMessageRecorder && videoMessageRecorder.state === 'recording') {
+          videoMessageRecorder.stop();
+        }
+        
+        // Stop timestamp overlay
+        if (videoTimestampInterval) {
+          clearInterval(videoTimestampInterval);
+          videoTimestampInterval = null;
+        }
+        
+        if (videoMessageTimerInterval) {
+          clearInterval(videoMessageTimerInterval);
+          videoMessageTimerInterval = null;
+        }
+        
+        // Reset UI
+        resetVideoRecording();
       };
 
       // Extract dominant colors from canvas
@@ -1244,6 +1584,8 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           case 'thermal': drawThermal(); break;
           case 'zeroday': drawZeroDay(); break;
           case 'temporal': drawTemporalGrid(); break;
+          case 'watercolor': drawWatercolor(); break;
+          case 'constellation': drawConstellation(); break;
         }
         
         // Extract and display dominant colors in real-time
@@ -1408,6 +1750,208 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             ctx.fillRect(x + px, y + py, size, size);
           }
         }
+      }
+
+      // --- WATERCOLOR / INK WASH MODE ---
+      let watercolorBlobs = [];
+      
+      function drawWatercolor() {
+        // Draw video frame
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Sample dominant colors from current frame
+        const dominantColors = extractDominantColorsForWatercolor();
+        
+        // Update or create blobs every few frames for smooth animation
+        if (Math.random() < 0.1 || watercolorBlobs.length === 0) {
+          watercolorBlobs = [];
+          
+          // Create 8-12 large blurred blobs in dominant colors
+          const blobCount = 8 + Math.floor(Math.random() * 5);
+          for (let i = 0; i < blobCount; i++) {
+            const color = dominantColors[Math.floor(Math.random() * dominantColors.length)];
+            watercolorBlobs.push({
+              x: Math.random() * canvas.width,
+              y: Math.random() * canvas.height,
+              radius: 60 + Math.random() * 120,
+              color: color,
+              alpha: 0.3 + Math.random() * 0.4,
+              vx: (Math.random() - 0.5) * 2,
+              vy: (Math.random() - 0.5) * 2
+            });
+          }
+        }
+        
+        // Clear canvas with soft white background
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw blurred blobs
+        watercolorBlobs.forEach(blob => {
+          // Animate blob positions slightly
+          blob.x += blob.vx;
+          blob.y += blob.vy;
+          
+          // Bounce off edges
+          if (blob.x < 0 || blob.x > canvas.width) blob.vx *= -1;
+          if (blob.y < 0 || blob.y > canvas.height) blob.vy *= -1;
+          
+          // Create gradient for soft watercolor effect
+          const gradient = ctx.createRadialGradient(
+            blob.x, blob.y, 0,
+            blob.x, blob.y, blob.radius
+          );
+          
+          gradient.addColorStop(0, `rgba(${blob.color.r}, ${blob.color.g}, ${blob.color.b}, ${blob.alpha})`);
+          gradient.addColorStop(0.5, `rgba(${blob.color.r}, ${blob.color.g}, ${blob.color.b}, ${blob.alpha * 0.5})`);
+          gradient.addColorStop(1, `rgba(${blob.color.r}, ${blob.color.g}, ${blob.color.b}, 0)`);
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(blob.x, blob.y, blob.radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        
+        // Apply subtle blur effect
+        ctx.globalAlpha = 0.95;
+        ctx.filter = 'blur(8px)';
+        ctx.drawImage(canvas, 0, 0);
+        ctx.filter = 'none';
+        ctx.globalAlpha = 1.0;
+      }
+      
+      function extractDominantColorsForWatercolor() {
+        try {
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+          const step = 10;
+          const colors = [];
+          
+          for (let i = 0; i < data.length; i += step * 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const a = data[i + 3];
+            
+            if (a > 128 && (r + g + b) > 50) {
+              colors.push({ r, g, b });
+            }
+          }
+          
+          if (colors.length === 0) return [{ r: 200, g: 100, b: 150 }];
+          
+          return getKMeansClusters(colors, 5);
+        } catch (e) {
+          return [{ r: 200, g: 100, b: 150 }];
+        }
+      }
+
+      // --- CONSTELLATION / STAR CHART MODE ---
+      let constellationPoints = [];
+      
+      function drawConstellation() {
+        // Draw video and apply edge detection
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Get edge-detected bright points
+        const brightPoints = detectBrightEdges();
+        
+        // Update constellation points (smooth transition)
+        constellationPoints = brightPoints;
+        
+        // Dark starfield background
+        ctx.fillStyle = 'rgba(5, 10, 25, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw stars (bright points)
+        ctx.fillStyle = '#ffffff';
+        constellationPoints.forEach(point => {
+          // Draw star with glow
+          const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 3);
+          gradient.addColorStop(0, `rgba(255, 255, 255, ${point.brightness})`);
+          gradient.addColorStop(0.5, `rgba(200, 220, 255, ${point.brightness * 0.5})`);
+          gradient.addColorStop(1, 'rgba(150, 180, 255, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        
+        // Connect nearby points with lines (constellation effect)
+        ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
+        ctx.lineWidth = 1;
+        
+        for (let i = 0; i < constellationPoints.length; i++) {
+          const p1 = constellationPoints[i];
+          
+          // Find nearby points
+          for (let j = i + 1; j < constellationPoints.length; j++) {
+            const p2 = constellationPoints[j];
+            const distance = Math.sqrt(
+              Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)
+            );
+            
+            // Connect if within threshold distance
+            if (distance < 80) {
+              const alpha = (1 - distance / 80) * 0.4;
+              ctx.strokeStyle = `rgba(150, 180, 255, ${alpha})`;
+              ctx.beginPath();
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      
+      function detectBrightEdges() {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        tempCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        const points = [];
+        const step = 8;
+        
+        // Sobel edge detection with brightness sampling
+        for (let y = step; y < canvas.height - step; y += step) {
+          for (let x = step; x < canvas.width - step; x += step) {
+            const idx = (y * canvas.width + x) * 4;
+            
+            // Calculate luminance
+            const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+            
+            // Sample neighboring pixels for edge detection
+            const lumTop = 0.299 * data[idx - canvas.width * 4] + 0.587 * data[idx - canvas.width * 4 + 1] + 0.114 * data[idx - canvas.width * 4 + 2];
+            const lumBottom = 0.299 * data[idx + canvas.width * 4] + 0.587 * data[idx + canvas.width * 4 + 1] + 0.114 * data[idx + canvas.width * 4 + 2];
+            const lumLeft = 0.299 * data[idx - 4] + 0.587 * data[idx - 3] + 0.114 * data[idx - 2];
+            const lumRight = 0.299 * data[idx + 4] + 0.587 * data[idx + 5] + 0.114 * data[idx + 6];
+            
+            // Edge strength
+            const edgeX = Math.abs(lumRight - lumLeft);
+            const edgeY = Math.abs(lumBottom - lumTop);
+            const edgeStrength = Math.sqrt(edgeX * edgeX + edgeY * edgeY);
+            
+            // Only keep bright edges
+            if (lum > 120 && edgeStrength > 30) {
+              points.push({
+                x: x,
+                y: y,
+                brightness: Math.min(1, lum / 255)
+              });
+            }
+          }
+        }
+        
+        // Limit to ~150 brightest points for performance
+        return points
+          .sort((a, b) => b.brightness - a.brightness)
+          .slice(0, 150);
       }
     });
   </script>

@@ -69,7 +69,7 @@ function updateGlobeDisplay() {
   if (!globe) return;
   
   if (globeEntries.length === 0) {
-    globe.innerHTML = '<div class="globe-prompt">Share your week</div>';
+    globe.innerHTML = '<div class="globe-prompt">what are you feeling</div>';
     return;
   }
   
@@ -179,8 +179,23 @@ function openGlobeViewModal() {
       const selectableClass = isAdminMode ? 'selectable' : '';
       const selectedClass = selectedEntries.has(index) ? 'selected' : '';
       
-      if (entry.photo) {
-        // Display as polaroid
+      if (entry.video) {
+        // Display as video polaroid
+        return `
+          <div class="board-polaroid ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffffff'};" data-index="${index}">
+            ${checkboxHtml}
+            <video src="${entry.video}" class="board-polaroid-photo" controls preload="metadata" style="cursor: pointer;"></video>
+            <div class="board-polaroid-content">
+              <div class="board-polaroid-name" style="color: ${entry.textColor || '#333'};">${entry.name}</div>
+              <div class="board-polaroid-text" style="color: ${entry.textColor || '#555'};">${entry.text}</div>
+              <div class="board-polaroid-meta" style="color: ${adjustOpacity(entry.textColor || '#888', 0.7)};">
+                ${entry.age ? `Age ${entry.age} • ` : ''}${new Date(entry.timestamp).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (entry.photo) {
+        // Display as photo polaroid
         return `
           <div class="board-polaroid ${selectableClass} ${selectedClass}" style="background: ${entry.bgColor || '#ffffff'};" data-index="${index}">
             ${checkboxHtml}
@@ -449,6 +464,7 @@ function handleFormSubmit(e) {
   const bgColor = document.getElementById('bgColor').value;
   const userFont = document.getElementById('userFont').value;
   const photoInput = document.getElementById('userPhoto');
+  const videoInput = document.getElementById('userVideo');
   const drawingInput = document.getElementById('userDrawing');
   
   if (!name || !text) {
@@ -462,23 +478,51 @@ function handleFormSubmit(e) {
   
   // Check for drawing first
   if (drawingInput && drawingInput.value) {
-    saveNewEntry(name, text, age, textColor, bgColor, userFont, drawingInput.value, submitBtn);
+    saveNewEntry(name, text, age, textColor, bgColor, userFont, drawingInput.value, null, submitBtn);
     drawingInput.value = '';
   }
+  // Handle video if provided
+  else if (videoInput && videoInput.files && videoInput.files[0]) {
+    const videoFile = videoInput.files[0];
+    
+    // Check video duration
+    const videoElement = document.createElement('video');
+    videoElement.preload = 'metadata';
+    
+    videoElement.onloadedmetadata = function() {
+      window.URL.revokeObjectURL(videoElement.src);
+      
+      // Check if video is too long (max 30 seconds for uploads)
+      if (videoElement.duration > 30) {
+        showNotification('Video must be 30 seconds or less', 'error');
+        if (submitBtn) submitBtn.disabled = false;
+        return;
+      }
+      
+      // Read video file
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        await saveNewEntry(name, text, age, textColor, bgColor, userFont, null, e.target.result, submitBtn);
+      };
+      reader.readAsDataURL(videoFile);
+    };
+    
+    videoElement.src = URL.createObjectURL(videoFile);
+  }
   // Handle photo if provided
-  else if (photoInput.files && photoInput.files[0]) {
+  else if (photoInput && photoInput.files && photoInput.files[0]) {
     const reader = new FileReader();
     reader.onload = async function(e) {
-      await saveNewEntry(name, text, age, textColor, bgColor, userFont, e.target.result, submitBtn);
+      await saveNewEntry(name, text, age, textColor, bgColor, userFont, e.target.result, null, submitBtn);
     };
     reader.readAsDataURL(photoInput.files[0]);
   } else {
-    saveNewEntry(name, text, age, textColor, bgColor, userFont, null, submitBtn);
+    saveNewEntry(name, text, age, textColor, bgColor, userFont, null, null, submitBtn);
   }
 }
 
 // Save new entry to backend
-async function saveNewEntry(name, text, age, textColor, bgColor, userFont, photo, submitBtn) {
+async function saveNewEntry(name, text, age, textColor, bgColor, userFont, photo, video, submitBtn) {
   const entry = {
     name: name,
     text: text,
@@ -487,6 +531,7 @@ async function saveNewEntry(name, text, age, textColor, bgColor, userFont, photo
     bgColor: bgColor,
     font: userFont,
     photo: photo,
+    video: video,
     timestamp: new Date().toISOString()
   };
   
