@@ -69,25 +69,25 @@
       </div>
       
       <div class="mirror-container glass-panel">
-        <video id="webcam" autoplay playsinline style="display: none;"></video>
         
-        <canvas id="mirror-canvas" width="640" height="480"></canvas>
-        
-        <div id="target-box" class="target-box hidden">
-          <p>ALIGN SUBJECT</p>
+        <div class="canvas-wrapper">
+          <video id="webcam" width="640" height="480" autoplay playsinline style="display: none;"></video>
+          <canvas id="mirror-canvas" width="640" height="480"></canvas>
         </div>
 
-        <div class="mirror-controls">
-          <div class="mode-buttons">
-            <button class="ctrl-btn active" data-mode="aura">Aura Sync</button>
-            <button class="ctrl-btn" data-mode="ghost">Entity Trail</button>
-            <button class="ctrl-btn" data-mode="wireframe">Neon Wireframe</button>
+        <div class="mirror-side-controls">
+          <div class="mode-buttons-vertical">
+            <button class="ctrl-btn active" data-mode="wireframe">Neon Wireframe</button>
             <button class="ctrl-btn" data-mode="thermal">Thermal Vision</button>
-            <button class="ctrl-btn" data-mode="glitch">Glitch Booth</button>
-            <button class="ctrl-btn" data-mode="zeroday">Zero-Day</button>
+            <button class="ctrl-btn" data-mode="zeroday">Zero-Day Anonymizer</button>
           </div>
-          <button id="capture-btn" class="glass-btn">Capture Archive</button>
+          
+          <div class="camera-shutter-wrapper">
+            <button id="capture-btn" class="shutter-btn" title="Capture Archive"></button>
+            <span class="shutter-label">CAPTURE</span>
+          </div>
         </div>
+        
       </div>
     </section>
 
@@ -470,18 +470,20 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   <script src="/js/security.js"></script>
   <script src="/js/weekly.js"></script>
   <script src="/js/globe.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/tracking-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/eye-min.js"></script>
   <script>
-    // The Interface - Webcam Mirror Effects
+    // The Interface - Webcam Mirror Effects with Eye Tracking
     document.addEventListener('DOMContentLoaded', () => {
       const video = document.getElementById('webcam');
       const canvas = document.getElementById('mirror-canvas');
       const ctx = canvas.getContext('2d');
-      const buttons = document.querySelectorAll('.mode-buttons .ctrl-btn');
-      const captureBtn = document.getElementById('capture-btn');
-      const targetBox = document.getElementById('target-box');
+      const buttons = document.querySelectorAll('.mode-buttons-vertical .ctrl-btn');
+      const shutterBtn = document.querySelector('.shutter-btn');
       
-      let currentMode = 'aura';
+      let currentMode = 'wireframe';
       let animationFrameId;
+      let detectedEyes = []; // Store eye positions detected by tracking.js
       
       // Start Webcam with mobile-friendly settings
       const constraints = {
@@ -496,6 +498,21 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         .then(stream => {
           video.srcObject = stream;
           video.play();
+          
+          // Initialize Eye Tracking (tracking.js)
+          if (typeof tracking !== 'undefined') {
+            const tracker = new tracking.ObjectTracker('eye');
+            tracker.setInitialScale(4);
+            tracker.setStepSize(2);
+            tracker.setEdgesDensity(0.1);
+            
+            tracker.on('track', event => {
+              detectedEyes = event.data; // Update detected eye positions
+            });
+            
+            tracking.track(video, tracker);
+          }
+          
           requestAnimationFrame(processFrame);
         })
         .catch(err => {
@@ -517,22 +534,24 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           e.target.classList.add('active');
           currentMode = e.target.dataset.mode;
           
-          // Show/Hide target box for Zero Day
-          if(currentMode === 'zeroday') targetBox.classList.remove('hidden');
-          else targetBox.classList.add('hidden');
-          
           // Reset canvas state
           ctx.globalAlpha = 1.0;
           ctx.globalCompositeOperation = 'source-over';
         });
       });
 
-      // Capture Image
-      captureBtn.addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.download = `archive_${currentMode}_${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+      // Camera Shutter Capture with Flash Effect
+      shutterBtn.addEventListener('click', () => {
+        // Flash effect
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        setTimeout(() => {
+          const link = document.createElement('a');
+          link.download = `interface_${currentMode}_${Date.now()}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }, 100);
       });
 
       // Main Processing Loop
@@ -541,21 +560,11 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
         // Depending on the mode, we draw the canvas differently
         switch (currentMode) {
-          case 'aura':
-            drawNormal();
-            calculateAura();
-            break;
-          case 'ghost':
-            drawGhostTrail();
-            break;
           case 'wireframe':
             drawWireframe();
             break;
           case 'thermal':
             drawThermal();
-            break;
-          case 'glitch':
-            drawGlitch();
             break;
           case 'zeroday':
             drawZeroDay();
@@ -565,51 +574,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         animationFrameId = requestAnimationFrame(processFrame);
       }
 
-      // --- 1. AURA SYNC ---
-      function drawNormal() {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      }
-      
-      let frameCount = 0;
-      function calculateAura() {
-        frameCount++;
-        if (frameCount % 15 !== 0) return; // Only calculate every 15 frames for performance
-        
-        // Sample a small version of the canvas to get average color
-        ctx.drawImage(video, 0, 0, 50, 50);
-        const data = ctx.getImageData(0, 0, 50, 50).data;
-        let r = 0, g = 0, b = 0;
-        
-        for (let i = 0; i < data.length; i += 4) {
-          r += data[i]; g += data[i+1]; b += data[i+2];
-        }
-        const totalPixels = data.length / 4;
-        r = Math.floor(r / totalPixels);
-        g = Math.floor(g / totalPixels);
-        b = Math.floor(b / totalPixels);
-        
-        // Boost vibrancy slightly so the background glows nicely
-        document.documentElement.style.setProperty('--aura-1', `rgb(${r+30},${g},${b+50})`);
-        document.documentElement.style.setProperty('--aura-2', `rgb(${r},${g+40},${b+20})`);
-        
-        // Redraw the actual video frame since we shrunk it to calculate
-        drawNormal(); 
-      }
-
-      // --- 2. GHOST TRAIL (Horror) ---
-      function drawGhostTrail() {
-        // Draw a semi-transparent black rectangle over the PREVIOUS frame
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // Adjust 0.15 for trail length (lower = longer trail)
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw the new frame lightly on top
-        ctx.globalAlpha = 0.3; 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1.0;
-      }
-
-      // --- 3. NEON WIREFRAME (PS5 / Edge Detection) ---
+      // --- 1. NEON WIREFRAME (PS5 / Edge Detection) ---
       function drawWireframe() {
         // A clever, lightning-fast edge detection hack using blend modes
         ctx.globalCompositeOperation = 'source-over';
@@ -636,7 +601,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.putImageData(imgData, 0, 0);
       }
 
-      // --- 4. THERMAL VISION ---
+      // --- 2. THERMAL VISION (Improved FLIR Gradient) ---
       function drawThermal() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -646,85 +611,81 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           // Get luminance (brightness)
           let lum = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
           
-          // Map brightness to thermal colors
-          if (lum < 50) { // Cold / Black/Blue
-            data[i] = 0; data[i+1] = 0; data[i+2] = lum * 5; 
-          } else if (lum < 120) { // Mid / Purple/Red
-            data[i] = lum * 2; data[i+1] = 0; data[i+2] = 100;
-          } else if (lum < 200) { // Warm / Orange/Yellow
-            data[i] = 255; data[i+1] = (lum - 120) * 2; data[i+2] = 0;
-          } else { // Hot / White
-            data[i] = 255; data[i+1] = 255; data[i+2] = lum;
+          // True FLIR thermal gradient: Black → Blue → Purple → Red → Yellow → White
+          if (lum < 40) { // Very Cold / Black
+            data[i] = 0; data[i+1] = 0; data[i+2] = 0;
+          } else if (lum < 80) { // Cold / Blue
+            data[i] = 0; data[i+1] = 0; data[i+2] = (lum - 40) * 6;
+          } else if (lum < 120) { // Cool / Purple
+            const t = (lum - 80) / 40;
+            data[i] = t * 180; data[i+1] = 0; data[i+2] = 255;
+          } else if (lum < 160) { // Warm / Red
+            const t = (lum - 120) / 40;
+            data[i] = 255; data[i+1] = 0; data[i+2] = (1 - t) * 255;
+          } else if (lum < 200) { // Hot / Orange/Yellow
+            const t = (lum - 160) / 40;
+            data[i] = 255; data[i+1] = t * 255; data[i+2] = 0;
+          } else { // Very Hot / Yellow/White
+            const t = (lum - 200) / 55;
+            data[i] = 255; data[i+1] = 255; data[i+2] = t * 255;
           }
         }
         ctx.putImageData(imgData, 0, 0);
       }
 
-      // --- 5. GLITCH BOOTH ---
-      function drawGlitch() {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // RGB Split effect
-        if (Math.random() > 0.8) {
-          const offset = (Math.random() * 15) - 7;
-          
-          // Draw Red channel shifted
-          ctx.globalCompositeOperation = 'screen';
-          ctx.fillStyle = 'rgba(255,0,0,0.5)';
-          ctx.drawImage(video, offset, offset, canvas.width, canvas.height);
-          
-          // Draw Cyan channel shifted opposite
-          ctx.fillStyle = 'rgba(0,255,255,0.5)';
-          ctx.drawImage(video, -offset, -offset, canvas.width, canvas.height);
-          ctx.globalCompositeOperation = 'source-over';
-        }
-
-        // Add CRT scanlines randomly
-        if (Math.random() > 0.5) {
-          ctx.fillStyle = 'rgba(0,0,0,0.2)';
-          for (let i = 0; i < canvas.height; i += 4) {
-            ctx.fillRect(0, i, canvas.width, 2);
-          }
-        }
-      }
-
-      // --- 6. ZERO-DAY ANONYMIZER (Hacker/Cybersecurity) ---
-      const binaryChars = ['0', '1', 'ERROR', 'NULL', 'SYSTEM'];
+      // --- 3. ZERO-DAY ANONYMIZER (Hacker/Cybersecurity with Eye Tracking) ---
+      const binaryChars = ['0', '1', 'ERROR', 'NULL', 'SYSTEM', 'ACCESS', 'DENIED'];
+      
       function drawZeroDay() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // We use the CSS target box area (top middle) to apply the censor
-        // Target area roughly: x: 220 to 420, y: 70 to 320 (based on a 640x480 canvas)
-        const zoneX = 220;
-        const zoneY = 70;
-        const zoneW = 200;
-        const zoneH = 250;
-        
-        // Pixelate the target zone heavily
-        const size = 10; // Pixel size
-        const imgData = ctx.getImageData(zoneX, zoneY, zoneW, zoneH);
+        // Pixelate detected eye regions if tracking.js found any
+        if (detectedEyes && detectedEyes.length > 0) {
+          detectedEyes.forEach(eye => {
+            // Eye coordinates from tracking.js
+            const ex = eye.x;
+            const ey = eye.y;
+            const ew = eye.width;
+            const eh = eye.height;
+            
+            // Expand the region slightly for better coverage
+            const expandedX = Math.max(0, ex - 15);
+            const expandedY = Math.max(0, ey - 15);
+            const expandedW = Math.min(canvas.width - expandedX, ew + 30);
+            const expandedH = Math.min(canvas.height - expandedY, eh + 30);
+            
+            // Pixelate this region
+            pixelateRegion(expandedX, expandedY, expandedW, expandedH, 12);
+            
+            // Add glitch bar over the eye
+            ctx.fillStyle = '#000';
+            ctx.fillRect(expandedX - 10, ey + eh/2 - 10, expandedW + 20, 30);
+            
+            // Matrix Green Text on the censor bar
+            ctx.fillStyle = '#00ff88';
+            ctx.font = '16px Courier';
+            const randomText = binaryChars[Math.floor(Math.random() * binaryChars.length)];
+            ctx.fillText(randomText, expandedX, ey + eh/2 + 10);
+          });
+        }
+      }
+      
+      // Helper function to pixelate a specific region
+      function pixelateRegion(x, y, w, h, size) {
+        const imgData = ctx.getImageData(x, y, w, h);
         const data = imgData.data;
         
-        for(let y = 0; y < zoneH; y += size) {
-          for(let x = 0; x < zoneW; x += size) {
-            const i = (y * zoneW + x) * 4;
-            const r = data[i]; const g = data[i+1]; const b = data[i+2];
+        for(let py = 0; py < h; py += size) {
+          for(let px = 0; px < w; px += size) {
+            const i = (py * w + px) * 4;
+            const r = data[i]; 
+            const g = data[i+1]; 
+            const b = data[i+2];
             
             ctx.fillStyle = `rgb(${r},${g},${b})`;
-            ctx.fillRect(zoneX + x, zoneY + y, size, size);
+            ctx.fillRect(x + px, y + py, size, size);
           }
         }
-
-        // Overlay jagged hacker bar over the eyes (roughly middle of the box)
-        ctx.fillStyle = '#000';
-        ctx.fillRect(zoneX - 20, zoneY + 60, zoneW + 40, 50);
-        
-        // Matrix Green Text on the censor bar
-        ctx.fillStyle = '#00ff88';
-        ctx.font = '20px Courier';
-        const randomText = binaryChars[Math.floor(Math.random() * binaryChars.length)];
-        ctx.fillText(randomText, zoneX + 10, zoneY + 90);
-        ctx.fillText(Math.random().toString(2).substr(2, 8), zoneX + 100, zoneY + 90);
       }
     });
   </script>

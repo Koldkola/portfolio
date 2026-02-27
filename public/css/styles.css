@@ -1063,38 +1063,116 @@ main.container .link { color: var(--text-primary); }
 /* =========================================
    THE INTERFACE (Webcam Mirror)
 ========================================= */
-.mirror-section { max-width: 900px; margin: 80px auto; padding: 0 40px; }
-.mirror-container { position: relative; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; overflow: hidden; }
+.mirror-section { max-width: 1000px; margin: 100px auto; padding: 0 40px; }
+
+/* Flex layout: Canvas on Left, Controls on Right */
+.mirror-container { 
+  border-radius: 16px; 
+  display: flex; 
+  flex-direction: row; 
+  align-items: stretch; 
+  overflow: hidden; 
+  padding: 0; /* Removing padding so the divider goes edge-to-edge */
+}
+
+.canvas-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+}
 
 canvas#mirror-canvas { 
   width: 100%; 
-  max-width: 640px; 
+  max-width: 700px; 
   height: auto; 
-  aspect-ratio: 4/3;
-  border-radius: 8px; 
-  background: #000; 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  display: block;
   /* Flips the webcam so it acts like a mirror */
   transform: scaleX(-1); 
 }
 
-.mirror-controls { width: 100%; max-width: 640px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-.mode-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-.mode-buttons .ctrl-btn { 
+.mirror-side-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 30px;
+  min-width: 250px;
+  background: rgba(0,0,0,0.4);
+  border-left: 1px solid var(--glass-border);
+}
+
+.mode-buttons-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.mode-buttons-vertical .ctrl-btn { 
   background: rgba(255,255,255,0.05); 
   border: 1px solid rgba(255,255,255,0.1); 
-  padding: 8px 16px; 
-  border-radius: 20px; 
-  font-size: 0.8rem; 
+  padding: 12px 20px; 
+  border-radius: 8px; 
+  font-size: 0.85rem; 
   text-transform: uppercase; 
   letter-spacing: 1px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
 }
-.mode-buttons .ctrl-btn.active { background: #fff; color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.4); }
 
-/* The Target box for the Zero-Day effect */
-.target-box { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 200px; height: 250px; border: 2px dashed #ff003c; border-radius: 10px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 10px; pointer-events: none; z-index: 10; opacity: 0.7;}
-.target-box p { color: #ff003c; font-family: monospace; font-size: 0.8rem; letter-spacing: 2px; text-shadow: 0 0 5px #ff003c;}
-.target-box.hidden { display: none; }
+.mode-buttons-vertical .ctrl-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.mode-buttons-vertical .ctrl-btn.active { 
+  background: #fff; 
+  color: #000; 
+  box-shadow: 0 0 15px rgba(255,255,255,0.4); 
+  font-weight: 600;
+}
+
+/* Physical Camera Shutter Button */
+.camera-shutter-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.shutter-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid #111;
+  outline: 4px solid #fff;
+  cursor: pointer;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.8);
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s;
+}
+
+.shutter-btn:hover {
+  background: #f0f0f0;
+  outline-color: #ccc;
+}
+
+.shutter-btn:active {
+  transform: scale(0.92);
+  background: #ccc;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 2px 5px rgba(0,0,0,0.8);
+}
+
+.shutter-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
 
 /* =========================================
   WEEKLY WONDER SLIDESHOW (continued)
@@ -1549,6 +1627,36 @@ canvas#mirror-canvas {
   
   .contact-btn {
     flex: 1 1 calc(50% - 5px);
+  }
+  
+  /* The Interface Mobile Layout */
+  .mirror-container {
+    flex-direction: column;
+  }
+  
+  .mirror-side-controls {
+    width: 100%;
+    min-width: unset;
+    padding: 30px 20px;
+    border-left: none;
+    border-top: 1px solid var(--glass-border);
+  }
+  
+  .mode-buttons-vertical {
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .mode-buttons-vertical .ctrl-btn {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .shutter-btn {
+    width: 60px;
+    height: 60px;
   }
 }
 
