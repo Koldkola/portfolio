@@ -440,7 +440,7 @@
   </footer>
 
   <!-- About Window -->
-  <section class="window about-window" id="aboutWindow" style="position: fixed; top: 120px; left: 30px; display: block;">
+  <section class="window about-window fade-in" id="aboutWindow" style="position: fixed; top: 120px; left: 30px; display: block;">
     <div class="window-header drag-handle">
       <span class="dot red"></span>
       <span class="dot yellow"></span>
@@ -448,7 +448,7 @@
       <span class="window-title">Me.txt</span>
     </div>
     <div class="window-body">
-      <pre class="about-text">hi im Kenechi, but i did name this <span class="tooltip-word">kumachi<span class="tooltip-popup">"Bartholomew Kuma" (Kumachi) is a fictional character from "one piece" who is a priest focused on his community/church, who is known for his resilience, patience, empathy and determination.</span></span>.
+      <pre class="about-text terminal-block" data-typing="me">hi im Kenechi, but i did name this <span class="tooltip-word">kumachi<span class="tooltip-popup">"Bartholomew Kuma" (Kumachi) is a fictional character from "one piece" who is a priest focused on his community/church, who is known for his resilience, patience, empathy and determination.</span></span>.
 
 <span class="tooltip-word">kumachi's korner<span class="tooltip-popup">  A korner for me and mine who may relate or wish to see. Like Kumachi, I preach to myself and all who listen.</span></span> is a digital congregation in which im working on blending all of my interests in its diverse forms. <br>
 In order to create a page that shows my <span class="tooltip-word">Undertow<span class="tooltip-popup">A quiet internal current that shapes ones decisions or mood</span></span>.
@@ -457,7 +457,7 @@ In order to create a page that shows my <span class="tooltip-word">Undertow<span
     </div>
   </section>
 
-  <section class="window notes-window" id="notesWindow" style="position: fixed; bottom: 30px; right: 30px; top: auto; display: block;">
+  <section class="window notes-window fade-in" id="notesWindow" style="position: fixed; bottom: 30px; right: 30px; top: auto; display: block;">
     <div class="window-header drag-handle">
       <span class="dot red"></span>
       <span class="dot yellow"></span>
@@ -465,7 +465,7 @@ In order to create a page that shows my <span class="tooltip-word">Undertow<span
       <span class="window-title">Context.txt</span>
     </div>
     <div class="window-body">
-      <pre class="about-text">Media, entertainment, art, music, films, writing whatever 
+      <pre class="about-text terminal-block" data-typing="context" data-typing-on-view="true">Media, entertainment, art, music, films, writing whatever 
 im <span class="tooltip-word">infatuated<span class="tooltip-popup">strong emotional pull<br>usually temporary<br>feels urgent or consuming</span></span> with / what's inspiring me at the moment.
 
 Will be adding to it as much as i can, hoping to make this a digital library</pre>
@@ -507,6 +507,93 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       let recordTimerInterval = null;
       
       let webcamStream = null;
+
+      const typingBlocks = document.querySelectorAll('.terminal-block[data-typing]');
+      const fadeInSections = document.querySelectorAll('.fade-in');
+
+      const wrapTypingWords = (root) => {
+        if (root.dataset.prepared === 'true') return;
+        const textNodes = [];
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+        let currentNode = walker.nextNode();
+        while (currentNode) {
+          if (currentNode.nodeValue && currentNode.nodeValue.trim().length > 0) {
+            textNodes.push(currentNode);
+          }
+          currentNode = walker.nextNode();
+        }
+
+        textNodes.forEach((node) => {
+          const fragments = document.createDocumentFragment();
+          const parts = node.nodeValue.split(/(\s+)/);
+          parts.forEach((part) => {
+            if (part.trim() === '') {
+              fragments.appendChild(document.createTextNode(part));
+            } else {
+              const span = document.createElement('span');
+              span.className = 'typing-word';
+              span.textContent = part;
+              fragments.appendChild(span);
+            }
+          });
+          node.parentNode.replaceChild(fragments, node);
+        });
+
+        root.dataset.prepared = 'true';
+      };
+
+      const startTyping = (root) => {
+        if (root.dataset.typed === 'true') return;
+        wrapTypingWords(root);
+        const words = root.querySelectorAll('.typing-word');
+        words.forEach((word, index) => {
+          word.style.animationDelay = `${index * 0.06}s`;
+        });
+        root.classList.add('typing-start');
+        root.dataset.typed = 'true';
+      };
+
+      const revealSection = (section) => {
+        if (!section.classList.contains('is-visible')) {
+          section.classList.add('is-visible');
+        }
+      };
+
+      typingBlocks.forEach((block) => {
+        if (!block.hasAttribute('data-typing-on-view')) {
+          const container = block.closest('.fade-in');
+          if (container) revealSection(container);
+          startTyping(block);
+        }
+      });
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const section = entry.target;
+            revealSection(section);
+            const typingTarget = section.querySelector('.terminal-block[data-typing-on-view]');
+            if (typingTarget) startTyping(typingTarget);
+            obs.unobserve(section);
+          });
+        }, { threshold: 0.2, rootMargin: '0px 0px -10% 0px' });
+
+        fadeInSections.forEach((section) => {
+          const typingTarget = section.querySelector('.terminal-block[data-typing-on-view]');
+          if (typingTarget) {
+            observer.observe(section);
+          }
+        });
+      } else {
+        fadeInSections.forEach((section) => {
+          const typingTarget = section.querySelector('.terminal-block[data-typing-on-view]');
+          if (typingTarget) {
+            revealSection(section);
+            startTyping(typingTarget);
+          }
+        });
+      }
       
       // --- EYE TRACKING INITIALIZATION ---
       const eyeTracker = new tracking.ObjectTracker('eye');
