@@ -103,21 +103,21 @@
             <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
             <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner">📷 POST TO KORNER</button>
-            <button id="contact-sheet-btn" class="feature-btn" title="Auto-capture contact sheet every 5 seconds">📸 CONTACT SHEET</button>
+            <button id="photobooth-btn" class="feature-btn" title="Auto-capture photos every 5 seconds">📸 PHOTOBOOTH</button>
             <button id="split-screen-btn" class="feature-btn" title="Enable split-screen with visitor (requires signaling server)">👥 SPLIT SCREEN</button>
           </div>
         </div>
         
-        <!-- Contact Sheet Grid Display -->
-        <div id="contact-sheet-panel" class="contact-sheet-panel hidden">
-          <div class="contact-sheet-header">
-            <h3>Contact Sheet</h3>
+        <!-- Photobooth Grid Display -->
+        <div id="photobooth-panel" class="photobooth-panel hidden">
+          <div class="photobooth-header">
+            <h3>Photobooth</h3>
             <div>
-              <button id="download-contact-sheet" class="btn secondary" style="margin-right: 8px;">Download Grid</button>
-              <button id="clear-contact-sheet" class="btn secondary">Clear</button>
+              <button id="download-photobooth" class="btn secondary" style="margin-right: 8px;">Download Grid</button>
+              <button id="clear-photobooth" class="btn secondary">Clear</button>
             </div>
           </div>
-          <div id="contact-sheet-grid" class="contact-sheet-grid"></div>
+          <div id="photobooth-grid" class="photobooth-grid"></div>
         </div>
 
         <!-- Split Screen Visitor Canvas -->
@@ -570,6 +570,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   <script src="/js/security.js"></script>
   <script src="/js/weekly.js"></script>
   <script src="/js/globe.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/tracking-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/eye-min.js"></script>
   <script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script>
@@ -601,20 +602,16 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       
       let webcamStream = null;
       
-      // Contact Sheet variables
-      let contactSheetActive = false;
-      let contactSheetFrames = [];
-      let contactSheetInterval = null;
-      const CONTACT_SHEET_DELAY = 5000; // 5 seconds
+      // Photobooth variables
+      let photoboothActive = false;
+      let photoboothFrames = [];
+      let photoboothInterval = null;
+      const PHOTOBOOTH_DELAY = 5000; // 5 seconds
       
       // Split Screen variables
       let splitScreenActive = false;
-      let peerConnection = null;
-      let visitorStream = null;
       
-      // Text Rain variables
-      let textRainParticles = [];
-      const TEXT_RAIN_WORDS = ['Kumachi', 'Korner', 'Interface', 'Archive', 'Community', 'Art', 'Music', 'Film', 'Fashion', 'Tech', 'Nerd', 'Undertow', 'Congregation'];
+
       
       // --- EYE TRACKING INITIALIZATION ---
       const eyeTracker = new tracking.ObjectTracker('eye');
@@ -777,12 +774,12 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         }
       });
 
-      // Contact Sheet functionality
-      const contactSheetBtn = document.getElementById('contact-sheet-btn');
-      const contactSheetPanel = document.getElementById('contact-sheet-panel');
-      const contactSheetGrid = document.getElementById('contact-sheet-grid');
-      const downloadContactSheetBtn = document.getElementById('download-contact-sheet');
-      const clearContactSheetBtn = document.getElementById('clear-contact-sheet');
+      // Photobooth functionality
+      const photoboothBtn = document.getElementById('photobooth-btn');
+      const photoboothPanel = document.getElementById('photobooth-panel');
+      const photoboothGrid = document.getElementById('photobooth-grid');
+      const downloadPhotoboothBtn = document.getElementById('download-photobooth');
+      const clearPhotoboothBtn = document.getElementById('clear-photobooth');
 
       if (contactSheetBtn) {
         contactSheetBtn.addEventListener('click', () => {
@@ -811,23 +808,23 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         });
       }
 
-      function captureContactSheetFrame() {
+      function capturePhotoboothFrame() {
         const frameData = canvas.toDataURL('image/png');
         const timestamp = new Date().toLocaleTimeString();
-        contactSheetFrames.push({ data: frameData, time: timestamp });
+        photoboothFrames.push({ data: frameData, time: timestamp });
 
         const frameDiv = document.createElement('div');
-        frameDiv.className = 'contact-sheet-frame';
+        frameDiv.className = 'photobooth-frame';
         frameDiv.innerHTML = `
-          <img src="${frameData}" alt="Frame ${contactSheetFrames.length}" />
-          <div class="contact-sheet-timestamp">${timestamp}</div>
+          <img src="${frameData}" alt="Frame ${photoboothFrames.length}" />
+          <div class="photobooth-timestamp">${timestamp}</div>
         `;
-        contactSheetGrid.appendChild(frameDiv);
+        photoboothGrid.appendChild(frameDiv);
       }
 
-      if (downloadContactSheetBtn) {
-        downloadContactSheetBtn.addEventListener('click', () => {
-          if (contactSheetFrames.length === 0) {
+      if (downloadPhotoboothBtn) {
+        downloadPhotoboothBtn.addEventListener('click', () => {
+          if (photoboothFrames.length === 0) {
             showNotification('No frames captured yet', 'error');
             return;
           }
@@ -836,7 +833,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           const gridCanvas = document.createElement('canvas');
           const gridCtx = gridCanvas.getContext('2d');
           const cols = 3;
-          const rows = Math.ceil(contactSheetFrames.length / cols);
+          const rows = Math.ceil(photoboothFrames.length / cols);
           const frameWidth = 320;
           const frameHeight = 240;
           
@@ -845,7 +842,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           gridCtx.fillStyle = '#000';
           gridCtx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
 
-          contactSheetFrames.forEach((frame, idx) => {
+          photoboothFrames.forEach((frame, idx) => {
             const img = new Image();
             img.onload = () => {
               const col = idx % cols;
@@ -861,12 +858,12 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
               gridCtx.fillText(frame.time, col * frameWidth + frameWidth / 2, row * frameHeight + frameHeight - 6);
 
               // Download after last frame
-              if (idx === contactSheetFrames.length - 1) {
+              if (idx === photoboothFrames.length - 1) {
                 const link = document.createElement('a');
-                link.download = `contact_sheet_${Date.now()}.png`;
+                link.download = `photobooth_${Date.now()}.png`;
                 link.href = gridCanvas.toDataURL();
                 link.click();
-                showNotification('Contact sheet downloaded!');
+                showNotification('Photobooth downloaded!');
               }
             };
             img.src = frame.data;
@@ -874,18 +871,30 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         });
       }
 
-      if (clearContactSheetBtn) {
-        clearContactSheetBtn.addEventListener('click', () => {
-          contactSheetFrames = [];
-          contactSheetGrid.innerHTML = '';
-          showNotification('Contact sheet cleared');
+      if (clearPhotoboothBtn) {
+        clearPhotoboothBtn.addEventListener('click', () => {
+          photoboothFrames = [];
+          photoboothGrid.innerHTML = '';
+          showNotification('Photobooth cleared');
         });
       }
 
-      // Split Screen functionality
+      // Split Screen functionality with WebRTC
       const splitScreenBtn = document.getElementById('split-screen-btn');
       const splitScreenContainer = document.getElementById('split-screen-container');
       const visitorVideo = document.getElementById('visitor-video');
+      
+      let socket = null;
+      let peerConnection = null;
+      let currentRoom = null;
+
+      // ICE servers (STUN for NAT traversal)
+      const iceServers = {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      };
 
       if (splitScreenBtn) {
         splitScreenBtn.addEventListener('click', () => {
@@ -901,14 +910,133 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           if (splitScreenActive) {
             // Adjust canvas to half width
             canvas.style.width = '50%';
-            showNotification('Split screen enabled - WebRTC signaling server needed for visitor connection', 'error');
-            // Note: Full WebRTC implementation requires signaling server
-            // This is UI framework only - backend needed for peer connection
+            initializeWebRTC();
+            showNotification('Split screen enabled - Waiting for visitor...');
           } else {
             canvas.style.width = '100%';
+            disconnectWebRTC();
             showNotification('Split screen disabled');
           }
         });
+      }
+
+      function initializeWebRTC() {
+        // Connect to signaling server
+        socket = io(window.location.origin);
+        
+        // Use a fixed room so all Interface users can connect
+        currentRoom = 'interface-main-room';
+        
+        // Join the room
+        socket.emit('join-room', currentRoom);
+        
+        // Socket event handlers
+        socket.on('room-joined', ({ roomId, totalUsers }) => {
+          console.log('Joined room:', roomId, 'Total users:', totalUsers);
+          if (totalUsers === 1) {
+            showNotification('Waiting for visitor to join...');
+          }
+        });
+
+        socket.on('user-joined', async ({ userId, totalUsers }) => {
+          console.log('New user joined:', userId);
+          showNotification('Visitor joined! Connecting...');
+          // Create offer for the new user
+          await createPeerConnection(userId);
+          await createOffer(userId);
+        });
+
+        socket.on('offer', async ({ offer, senderId }) => {
+          console.log('Received offer from:', senderId);
+          await createPeerConnection(senderId);
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+          const answer = await peerConnection.createAnswer();
+          await peerConnection.setLocalDescription(answer);
+          socket.emit('answer', { answer, roomId: currentRoom, targetId: senderId });
+        });
+
+        socket.on('answer', async ({ answer, senderId }) => {
+          console.log('Received answer from:', senderId);
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        });
+
+        socket.on('ice-candidate', async ({ candidate, senderId }) => {
+          console.log('Received ICE candidate from:', senderId);
+          if (peerConnection && candidate) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+          }
+        });
+
+        socket.on('user-left', ({ userId }) => {
+          console.log('User left:', userId);
+          showNotification('Visitor disconnected');
+          if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+          }
+        });
+      }
+
+      async function createPeerConnection(targetId) {
+        peerConnection = new RTCPeerConnection(iceServers);
+        
+        // Add local stream to peer connection
+        webcamStream.getTracks().forEach(track => {
+          peerConnection.addTrack(track, webcamStream);
+        });
+
+        // Handle incoming stream
+        peerConnection.ontrack = (event) => {
+          console.log('Received remote stream');
+          visitorVideo.srcObject = event.streams[0];
+          showNotification('Connected! Split screen active');
+        };
+
+        // Handle ICE candidates
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate) {
+            socket.emit('ice-candidate', {
+              candidate: event.candidate,
+              roomId: currentRoom,
+              targetId: targetId
+            });
+          }
+        };
+
+        // Handle connection state changes
+        peerConnection.onconnectionstatechange = () => {
+          console.log('Connection state:', peerConnection.connectionState);
+          if (peerConnection.connectionState === 'disconnected' || 
+              peerConnection.connectionState === 'failed') {
+            showNotification('Connection lost', 'error');
+          }
+        };
+      }
+
+      async function createOffer(targetId) {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        socket.emit('offer', { offer, roomId: currentRoom, targetId });
+      }
+
+      function disconnectWebRTC() {
+        if (socket) {
+          socket.emit('leave-room', currentRoom);
+          socket.disconnect();
+          socket = null;
+        }
+        
+        if (peerConnection) {
+          peerConnection.close();
+          peerConnection = null;
+        }
+        
+        if (visitorVideo.srcObject) {
+          visitorVideo.srcObject.getTracks().forEach(track => track.stop());
+          visitorVideo.srcObject = null;
+        }
+        
+        currentRoom = null;
       }
 
       // Snap to Board functionality
@@ -1182,7 +1310,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           case 'thermal': drawThermal(); break;
           case 'zeroday': drawZeroDay(); break;
           case 'temporal': drawTemporalGrid(); break;
-          case 'textrain': drawTextRain(); break;
         }
         
         // Extract and display dominant colors in real-time

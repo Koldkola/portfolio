@@ -5,9 +5,18 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const Database = require('better-sqlite3');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CORS_ORIGIN || "*",
+    methods: ["GET", "POST"]
+  }
+});
 const port = process.env.PORT || 3000;
 
 // Initialize SQLite database
@@ -239,7 +248,7 @@ module.exports = {
 };
 
 if (require.main === module) {
-  const server = app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+  server.listen(port, () => console.log(`Server running on http://localhost:${port}`));
   
   // Graceful shutdown
   process.on('SIGINT', () => {
@@ -251,3 +260,77 @@ if (require.main === module) {
     });
   });
 }
+
+// WebRTC Signaling Server
+const rooms = new Map(); // Store active rooms and their participants
+
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  // Join a room
+  socket.on('join-room', (roomId) => {
+    socket.join(roomId);
+    
+    if (!rooms.has(roomId)) {
+      rooms.set(roomId, new Set());
+    }
+    rooms.get(roomId).add(socket.id);
+    
+    // Notify existing users in the room
+    const roomUsers = Array.from(rooms.get(roomId));
+    socket.to(roomId).emit('user-joined', { userId: socket.id, totalUsers: roomUsers.length });
+    
+    // Send current room info to the new user
+    socket.emit('room-joined', { roomId, totalUsers: roomUsers.length, users: roomUsers });
+    
+    console.log(`User ${socket.id} joined room ${roomId}. Total users: ${roomUsers.length}`);
+  });
+
+  // WebRTC signaling: offer
+  socket.on('offer', ({ offer, roomId, targetId }) => {
+    console.log(`Offer from ${socket.id} to ${targetId} in room ${roomId}`);
+    io.to(targetId).emit('offer', { offer, senderId: socket.id });
+  });
+
+  // WebRTC signaling: answer
+  socket.on('answer', ({ answer, roomId, targetId }) => {
+    console.log(`Answer from ${socket.id} to ${targetId} in room ${roomId}`);
+    io.to(targetId).emit('answer', { answer, senderId: socket.id });
+  });
+
+  // WebRTC signaling: ICE candidate
+  socket.on('ice-candidate', ({ candidate, roomId, targetId }) => {
+    console.log(`ICE candidate from ${socket.id} to ${targetId}`);
+    io.to(targetId).emit('ice-candidate', { candidate, senderId: socket.id });
+  });
+
+  // Leave room
+  socket.on('leave-room', (roomId) => {
+    if (rooms.has(roomId)) {
+      rooms.get(roomId).delete(socket.id);
+      if (rooms.get(roomId).size === 0) {
+        rooms.delete(roomId);
+      }
+      socket.to(roomId).emit('user-left', { userId: socket.id });
+      socket.leave(roomId);
+      console.log(`User ${socket.id} left room ${roomId}`);
+    }
+  });
+
+  // Handle disconnect
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+    // Clean up rooms
+    rooms.forEach((users, roomId) => {
+      if (users.has(socket.id)) {
+        users.delete(socket.id);
+        socket.to(roomId).emit('user-left', { userId: socket.id });
+        if (users.size === 0) {
+          rooms.delete(roomId);
+        }
+      }
+    });
+  });
+});
+
+module.exports = app;
