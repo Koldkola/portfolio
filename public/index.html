@@ -2105,9 +2105,12 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       startKurrentlyAnimation();
 
       // Fade out Me.txt and Context.txt after 20 seconds
-      setTimeout(() => {
+      window.windowsFaded = false;
+      window.fadeTimeout = setTimeout(() => {
         const aboutWindow = document.getElementById('aboutWindow');
         const notesWindow = document.getElementById('notesWindow');
+        
+        window.windowsFaded = true;
         
         if (aboutWindow) {
           aboutWindow.style.transition = 'opacity 1s ease-out';

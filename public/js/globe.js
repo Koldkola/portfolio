@@ -133,12 +133,12 @@ function closeGlobeModal() {
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
   
-  // Fade in floating windows
-  if (aboutWindow) {
+  // Fade in floating windows (only if they haven't been auto-faded)
+  if (aboutWindow && !window.windowsFaded) {
     aboutWindow.style.opacity = '1';
     aboutWindow.style.pointerEvents = 'auto';
   }
-  if (notesWindow) {
+  if (notesWindow && !window.windowsFaded) {
     notesWindow.style.opacity = '1';
     notesWindow.style.pointerEvents = 'auto';
   }
@@ -445,14 +445,14 @@ function closeGlobeViewModal() {
     renderBoardModal();
   }
   
-  // Fade in floating windows
+  // Fade in floating windows (only if they haven't been auto-faded)
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
-  if (aboutWindow) {
+  if (aboutWindow && !window.windowsFaded) {
     aboutWindow.style.opacity = '1';
     aboutWindow.style.pointerEvents = 'auto';
   }
-  if (notesWindow) {
+  if (notesWindow && !window.windowsFaded) {
     notesWindow.style.opacity = '1';
     notesWindow.style.pointerEvents = 'auto';
   }
