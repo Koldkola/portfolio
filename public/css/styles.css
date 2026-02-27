@@ -16,6 +16,31 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Custom Downloaded Fonts */
+@font-face { font-family: 'Bad Unicorn'; src: url('/assets/fonts/BadUnicornDemoRegular-BVWx.ttf') format('truetype'); }
+@font-face { font-family: 'Bajareczka'; src: url('/assets/fonts/Bajareczka-l9p0.ttf') format('truetype'); }
+@font-face { font-family: 'Bajareczka Shadow'; src: url('/assets/fonts/BajareczkaShadow-nv40.ttf') format('truetype'); }
+@font-face { font-family: 'Bananas'; src: url('/assets/fonts/BananasItalicPersonalUseRegular-WyBxO.ttf') format('truetype'); font-style: italic; }
+@font-face { font-family: 'Biloxi Script'; src: url('/assets/fonts/BiloxiScript-g5WY.ttf') format('truetype'); }
+@font-face { font-family: 'Cookie Monster'; src: url('/assets/fonts/Cookiemonster-gv11.ttf') format('truetype'); }
+@font-face { font-family: 'Darlington'; src: url('/assets/fonts/DarlingtonDemo-z8xjG.ttf') format('truetype'); }
+@font-face { font-family: 'Feijoada'; src: url('/assets/fonts/Feijoada-qZjxl.ttf') format('truetype'); }
+@font-face { font-family: 'Flight of the Ocean'; src: url('/assets/fonts/FlightOfTheOcean-e92oB.ttf') format('truetype'); }
+@font-face { font-family: 'Halimun'; src: url('/assets/fonts/Halimun-W7jn.ttf') format('truetype'); }
+@font-face { font-family: 'Hello Ketta'; src: url('/assets/fonts/HelloKetta-d99oX.ttf') format('truetype'); }
+@font-face { font-family: 'Honeybee'; src: url('/assets/fonts/Honeybeeregular-MG0p.ttf') format('truetype'); }
+@font-face { font-family: 'Koenigsberg'; src: url('/assets/fonts/Koenigsberg-lG20.ttf') format('truetype'); }
+@font-face { font-family: 'Lovely Home'; src: url('/assets/fonts/LovelyHome-9aBZ.ttf') format('truetype'); }
+@font-face { font-family: 'Oogie Boogie'; src: url('/assets/fonts/Oogieboogie-ogB0.ttf') format('truetype'); }
+@font-face { font-family: 'Sweet Getaway'; src: url('/assets/fonts/SweetGetawayDemoRegular-2XyK.ttf') format('truetype'); }
+@font-face { font-family: 'Tiki Tropic'; src: url('/assets/fonts/TikiTropic-zezw.ttf') format('truetype'); }
+@font-face { font-family: 'Tiki Tropic Bold'; src: url('/assets/fonts/TikiTropicBold-5zZZ.ttf') format('truetype'); font-weight: bold; }
+@font-face { font-family: 'Tiki Tropic Outline'; src: url('/assets/fonts/TikiTropicOutline-6G3q.ttf') format('truetype'); }
+@font-face { font-family: 'Tomatoes'; src: url('/assets/fonts/Tomatoes-O8L8.ttf') format('truetype'); }
+@font-face { font-family: 'Wedding Day'; src: url('/assets/fonts/WeddingdayPersonalUseRegular-1Gvo0.ttf') format('truetype'); }
+@font-face { font-family: 'Xiomara'; src: url('/assets/fonts/Xiomara-wWLw.ttf') format('truetype'); }
+@font-face { font-family: 'Yokelvision'; src: url('/assets/fonts/Yokelvision-J6yx.ttf') format('truetype'); }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
