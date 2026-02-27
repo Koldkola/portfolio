@@ -1408,41 +1408,6 @@ canvas#mirror-canvas {
   border-radius: 2px;
 }
 
-/* Split Screen Styles */
-.split-screen-container {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  border-left: 2px solid var(--accent-gaming);
-  overflow: hidden;
-}
-
-.split-screen-container.hidden {
-  display: none;
-}
-
-.visitor-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.split-screen-label {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(139, 92, 246, 0.9);
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 /* Text Rain Particles */
 .text-rain-particle {
   position: absolute;
