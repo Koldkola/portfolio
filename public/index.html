@@ -80,10 +80,50 @@
             <button class="ctrl-btn active" data-mode="wireframe">Neon Wireframe</button>
             <button class="ctrl-btn" data-mode="thermal">Thermal Vision</button>
             <button class="ctrl-btn" data-mode="zeroday">Zero-Day Anonymizer</button>
+            <button class="ctrl-btn" data-mode="binary">Binary Matrix</button>
+            <button class="ctrl-btn" data-mode="temporal">Temporal Grid</button>
+            <button class="ctrl-btn" data-mode="poly">Poly-Construct</button>
+          </div>
+          
+          <div id="binary-panel" class="specific-controls hidden">
+            <div class="live-preview-box">
+              <p>LIVE INPUT</p>
+              <video id="bin-preview-vid" autoplay playsinline muted></video>
+              <img id="bin-preview-img" class="hidden" />
+            </div>
+
+            <div class="control-group row-btns">
+              <button id="bin-start" class="mini-btn active">Webcam</button>
+              <button id="bin-stop" class="mini-btn">Stop</button>
+              <label class="mini-btn file-upload">
+                Upload
+                <input type="file" id="bin-upload" accept="image/*" style="display:none;">
+              </label>
+            </div>
+
+            <div class="control-group">
+              <label>Char Spacing: <span id="spacing-val">12</span>px</label>
+              <input type="range" id="bin-spacing" min="6" max="30" value="12">
+            </div>
+
+            <div class="control-group">
+              <label>Image Zoom: <span id="zoom-val">1.0</span>x</label>
+              <input type="range" id="bin-zoom" min="0.5" max="3.0" step="0.1" value="1.0">
+            </div>
+
+            <div class="control-group">
+              <label>Export Size: <span id="export-val">1.0</span>x</label>
+              <input type="range" id="bin-export" min="1.0" max="4.0" step="0.5" value="1.0">
+            </div>
           </div>
           
           <div class="camera-shutter-wrapper">
-            <button id="capture-btn" class="shutter-btn" title="Capture Archive"></button>
+            <button id="webcam-toggle" class="webcam-toggle-btn" title="Start or stop webcam">START CAMERA</button>
+            <div class="capture-row">
+              <button id="capture-btn" class="shutter-btn" title="Capture Archive"></button>
+              <button id="record-btn" class="record-btn" title="Record Clip">REC</button>
+            </div>
+            <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
           </div>
         </div>
@@ -472,6 +512,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   <script src="/js/globe.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/tracking-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/eye-min.js"></script>
+  <script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script>
   <script>
     // The Interface - Webcam Mirror Effects with Eye Tracking
     document.addEventListener('DOMContentLoaded', () => {
@@ -479,210 +520,518 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       const canvas = document.getElementById('mirror-canvas');
       const ctx = canvas.getContext('2d');
       const buttons = document.querySelectorAll('.mode-buttons-vertical .ctrl-btn');
-      const shutterBtn = document.querySelector('.shutter-btn');
+      const captureBtn = document.getElementById('capture-btn');
+      const recordBtn = document.getElementById('record-btn');
+      const recordTimer = document.getElementById('record-timer');
+      const webcamToggleBtn = document.getElementById('webcam-toggle');
       
+      // Binary specific elements
+      const binaryPanel = document.getElementById('binary-panel');
+      const binPreviewVid = document.getElementById('bin-preview-vid');
+      const binPreviewImg = document.getElementById('bin-preview-img');
+      let useWebcam = true;
+      let uploadedImg = new Image();
+      let webcamStream = null;
+
       let currentMode = 'wireframe';
       let animationFrameId;
-      let detectedEyes = []; // Store eye positions detected by tracking.js
+      let detectedEyes = [];
       
-      // Start Webcam with mobile-friendly settings
-      const constraints = {
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          facingMode: 'user' // Front camera on mobile
-        }
-      };
-      
-      navigator.mediaDevices.getUserMedia(constraints)
-        .then(stream => {
-          video.srcObject = stream;
-          video.play();
-          
-          // Initialize Eye Tracking (tracking.js)
-          if (typeof tracking !== 'undefined') {
-            const tracker = new tracking.ObjectTracker('eye');
-            tracker.setInitialScale(4);
-            tracker.setStepSize(2);
-            tracker.setEdgesDensity(0.1);
-            
-            tracker.on('track', event => {
-              detectedEyes = event.data; // Update detected eye positions
-            });
-            
-            tracking.track(video, tracker);
-          }
-          
-          requestAnimationFrame(processFrame);
-        })
-        .catch(err => {
-          console.error("Camera access denied or unavailable.", err);
-          ctx.fillStyle = '#ff003c';
-          ctx.font = 'bold 16px Arial';
-          ctx.textAlign = 'center';
-          ctx.fillText('Camera Access Required', canvas.width/2, canvas.height/2 - 20);
-          ctx.fillStyle = '#fff';
-          ctx.font = '14px Arial';
-          ctx.fillText('Please allow camera permissions', canvas.width/2, canvas.height/2 + 10);
-          ctx.fillText('to use The Interface', canvas.width/2, canvas.height/2 + 30);
-        });
+      // Temporal Grid Buffer
+      const frameBuffer = [];
+      const MAX_FRAMES = 180; // 6 seconds at 30fps
 
-      // Mode Switching
+      // Poly-Construct Timing
+      let lastPolyTime = 0;
+      let mediaRecorder = null;
+      let recordedChunks = [];
+      let isRecording = false;
+      let recordStartTime = 0;
+      let recordTimerInterval = null;
+      
+      // --- EYE TRACKING INITIALIZATION ---
+      const eyeTracker = new tracking.ObjectTracker('eye');
+      eyeTracker.setInitialScale(4);
+      eyeTracker.setStepSize(2);
+      eyeTracker.setEdgesDensity(0.1);
+      eyeTracker.on('track', function(event) {
+        detectedEyes = event.data.length === 0 ? [] : event.data;
+      });
+
+      // Start Webcam Function
+      function startWebcam() {
+        navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
+          .then(stream => {
+            webcamStream = stream;
+            video.srcObject = stream;
+            binPreviewVid.srcObject = stream;
+            video.play();
+            tracking.track('#webcam', eyeTracker);
+            if (!animationFrameId) requestAnimationFrame(processFrame);
+            webcamToggleBtn.textContent = 'STOP CAMERA';
+          })
+          .catch(err => console.error("Camera access denied.", err));
+      }
+
+      function stopWebcam() {
+        if (webcamStream) {
+          webcamStream.getTracks().forEach(track => track.stop());
+          webcamStream = null;
+        }
+        video.pause();
+        video.srcObject = null;
+        binPreviewVid.pause();
+        binPreviewVid.srcObject = null;
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Camera is off', canvas.width / 2, canvas.height / 2);
+        webcamToggleBtn.textContent = 'START CAMERA';
+      }
+
+      webcamToggleBtn.addEventListener('click', () => {
+        if (webcamStream) {
+          stopWebcam();
+        } else {
+          startWebcam();
+        }
+      });
+
+      // --- UI EVENT LISTENERS ---
       buttons.forEach(btn => {
         btn.addEventListener('click', (e) => {
           buttons.forEach(b => b.classList.remove('active'));
           e.target.classList.add('active');
           currentMode = e.target.dataset.mode;
           
-          // Reset canvas state
+          // Toggle Binary Panel visibility
+          if (currentMode === 'binary') {
+            binaryPanel.classList.remove('hidden');
+            canvas.style.transform = useWebcam ? "scaleX(-1)" : "scaleX(1)"; // Fix mirror flip for images
+          } else {
+            binaryPanel.classList.add('hidden');
+            canvas.style.transform = "scaleX(-1)";
+          }
+
+          // Clear temporal buffer if we switch modes to save RAM
+          if (currentMode !== 'temporal') frameBuffer.length = 0;
+          
           ctx.globalAlpha = 1.0;
           ctx.globalCompositeOperation = 'source-over';
         });
       });
 
-      // Camera Shutter Capture with Flash Effect
-      shutterBtn.addEventListener('click', () => {
-        // Flash effect
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Binary Controls
+      document.getElementById('bin-spacing').addEventListener('input', (e) => document.getElementById('spacing-val').innerText = e.target.value);
+      document.getElementById('bin-zoom').addEventListener('input', (e) => document.getElementById('zoom-val').innerText = parseFloat(e.target.value).toFixed(1));
+      document.getElementById('bin-export').addEventListener('input', (e) => document.getElementById('export-val').innerText = parseFloat(e.target.value).toFixed(1));
+
+      document.getElementById('bin-start').addEventListener('click', (e) => {
+        useWebcam = true;
+        e.target.classList.add('active');
+        document.getElementById('bin-stop').classList.remove('active');
+        binPreviewVid.classList.remove('hidden');
+        binPreviewImg.classList.add('hidden');
+        canvas.style.transform = "scaleX(-1)";
+        if(!webcamStream) startWebcam();
+      });
+
+      document.getElementById('bin-stop').addEventListener('click', (e) => {
+        useWebcam = false;
+        e.target.classList.add('active');
+        document.getElementById('bin-start').classList.remove('active');
+        stopWebcam();
+        // Clear canvas
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+      });
+
+      document.getElementById('bin-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          useWebcam = false;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            uploadedImg.src = event.target.result;
+            uploadedImg.onload = () => {
+              binPreviewImg.src = uploadedImg.src;
+              binPreviewImg.classList.remove('hidden');
+              binPreviewVid.classList.add('hidden');
+              binPreviewImg.classList.add('no-mirror');
+              canvas.style.transform = "scaleX(1)"; // Un-mirror for normal images
+              document.getElementById('bin-start').classList.remove('active');
+              document.getElementById('bin-stop').classList.remove('active');
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Camera Shutter Capture
+      captureBtn.addEventListener('click', () => {
+        let finalCanvas = canvas;
         
-        setTimeout(() => {
-          const link = document.createElement('a');
-          link.download = `interface_${currentMode}_${Date.now()}.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        }, 100);
+        // Handle High-Res Export for Binary Mode
+        if (currentMode === 'binary') {
+            const exportScale = parseFloat(document.getElementById('bin-export').value);
+            if (exportScale > 1.0) {
+                finalCanvas = document.createElement('canvas');
+                finalCanvas.width = canvas.width * exportScale;
+                finalCanvas.height = canvas.height * exportScale;
+                const hrCtx = finalCanvas.getContext('2d');
+                const spacing = parseInt(document.getElementById('bin-spacing').value) * exportScale;
+                const zoom = parseFloat(document.getElementById('bin-zoom').value);
+                renderBinaryMatrix(hrCtx, finalCanvas.width, finalCanvas.height, spacing, zoom);
+                
+                // If exporting an image, we need to manually flip it back so the saved file isn't mirrored
+                if (useWebcam) {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = finalCanvas.width;
+                    tempCanvas.height = finalCanvas.height;
+                    const tempCtx = tempCanvas.getContext('2d');
+                    tempCtx.translate(finalCanvas.width, 0);
+                    tempCtx.scale(-1, 1);
+                    tempCtx.drawImage(finalCanvas, 0, 0);
+                    finalCanvas = tempCanvas;
+                }
+            }
+        }
+
+        const link = document.createElement('a');
+        link.download = `archive_${currentMode}_${Date.now()}.png`;
+        link.href = finalCanvas.toDataURL('image/png');
+        link.click();
+        
+        // Flash effect
+        ctx.fillStyle = "white";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+      });
+
+      // Record Clip (canvas capture)
+      recordBtn.addEventListener('click', () => {
+        if (!isRecording) {
+          recordedChunks = [];
+          recordStartTime = Date.now();
+          recordTimer.textContent = '00:00';
+          recordTimer.classList.remove('hidden');
+          recordTimerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
+            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const secs = String(elapsed % 60).padStart(2, '0');
+            recordTimer.textContent = `${mins}:${secs}`;
+          }, 500);
+          const stream = canvas.captureStream(30);
+          let mimeType = 'video/webm;codecs=vp9';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm;codecs=vp8';
+          }
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm';
+          }
+
+          mediaRecorder = new MediaRecorder(stream, { mimeType });
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+              recordedChunks.push(event.data);
+            }
+          };
+          mediaRecorder.onstop = () => {
+            if (recordTimerInterval) {
+              clearInterval(recordTimerInterval);
+              recordTimerInterval = null;
+            }
+            const blob = new Blob(recordedChunks, { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `interface_recording_${currentMode}_${Date.now()}.webm`;
+            link.click();
+            URL.revokeObjectURL(url);
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          recordBtn.classList.add('recording');
+          recordBtn.textContent = 'STOP';
+        } else {
+          mediaRecorder.stop();
+          isRecording = false;
+          recordBtn.classList.remove('recording');
+          recordBtn.textContent = 'REC';
+          recordTimer.classList.add('hidden');
+          if (recordTimerInterval) {
+            clearInterval(recordTimerInterval);
+            recordTimerInterval = null;
+          }
+        }
       });
 
       // Main Processing Loop
       function processFrame() {
-        if (video.paused || video.ended) return;
+        if (currentMode !== 'binary' && (video.paused || video.ended)) {
+            animationFrameId = requestAnimationFrame(processFrame);
+            return;
+        }
 
-        // Depending on the mode, we draw the canvas differently
         switch (currentMode) {
-          case 'wireframe':
-            drawWireframe();
-            break;
-          case 'thermal':
-            drawThermal();
-            break;
-          case 'zeroday':
-            drawZeroDay();
+          case 'wireframe': drawWireframe(); break;
+          case 'thermal': drawThermal(); break;
+          case 'zeroday': drawZeroDay(); break;
+          case 'temporal': drawTemporalGrid(); break;
+          case 'poly': drawPolyConstruct(performance.now()); break;
+          case 'binary': 
+            const spacing = parseInt(document.getElementById('bin-spacing').value);
+            const zoom = parseFloat(document.getElementById('bin-zoom').value);
+            renderBinaryMatrix(ctx, canvas.width, canvas.height, spacing, zoom); 
             break;
         }
-        
         animationFrameId = requestAnimationFrame(processFrame);
       }
 
-      // --- 1. NEON WIREFRAME (PS5 / Edge Detection) ---
+      // --- NEW 1. TEMPORAL GRID (CCTV Delays) ---
+      function drawTemporalGrid() {
+        const w = canvas.width / 2;
+        const h = canvas.height / 2;
+        
+        // Save current frame to an offscreen canvas for memory efficiency
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = w; offCanvas.height = h;
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.drawImage(video, 0, 0, w, h);
+        
+        // Add to buffer, remove oldest if over limit
+        frameBuffer.push(offCanvas);
+        if (frameBuffer.length > MAX_FRAMES) frameBuffer.shift();
+
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Frame Indexes (approx 30fps)
+        const live = frameBuffer.length - 1;
+        const delay2s = Math.max(0, frameBuffer.length - 60);
+        const delay4s = Math.max(0, frameBuffer.length - 120);
+        const delay6s = Math.max(0, frameBuffer.length - 180);
+
+        // Draw Live Feed (Top Left)
+        if (frameBuffer[live]) ctx.drawImage(frameBuffer[live], 0, 0, w, h);
+        
+        // Draw 2s Delay (Top Right)
+        if (frameBuffer[delay2s]) {
+          ctx.drawImage(frameBuffer[delay2s], w, 0, w, h);
+          drawCCTVText(w + 10, 20, "CAM 02 - T-2.0s");
+        }
+        
+        // Draw 4s Delay (Bottom Left)
+        if (frameBuffer[delay4s]) {
+          ctx.drawImage(frameBuffer[delay4s], 0, h, w, h);
+          drawCCTVText(10, h + 20, "CAM 03 - T-4.0s");
+        }
+        
+        // Draw 6s Delay (Bottom Right)
+        if (frameBuffer[delay6s]) {
+          ctx.drawImage(frameBuffer[delay6s], w, h, w, h);
+          drawCCTVText(w + 10, h + 20, "CAM 04 - T-6.0s");
+        }
+
+        drawCCTVText(10, 20, "CAM 01 - LIVE");
+        
+        // Draw Crosshairs/Grid lines
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(w, 0); ctx.lineTo(w, canvas.height); // Vertical
+        ctx.moveTo(0, h); ctx.lineTo(canvas.width, h); // Horizontal
+        ctx.stroke();
+      }
+
+      function drawCCTVText(x, y, text) {
+        ctx.fillStyle = "rgba(255, 0, 0, 0.8)";
+        ctx.font = "12px Courier New";
+        ctx.fillText(text, x, y);
+      }
+
+      // --- NEW 2. THE POLY-CONSTRUCT (PS5 / Techwear 3D Mesh) ---
+      function drawPolyConstruct(timestamp) {
+        // Throttle frame rate to ~15fps so it looks jittery/computational and saves CPU
+        if (timestamp - lastPolyTime < 60) return; 
+        lastPolyTime = timestamp;
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        
+        const points = [];
+        const numPoints = 600;
+
+        // Edge-biased sampling: Randomly pick points, keep if high contrast, else keep rarely
+        for (let i = 0; i < 3000 && points.length < numPoints; i++) {
+          const x = Math.floor(Math.random() * (canvas.width - 2)) + 1;
+          const y = Math.floor(Math.random() * (canvas.height - 2)) + 1;
+          
+          const idx = (y * canvas.width + x) * 4;
+          const rightIdx = (y * canvas.width + (x + 1)) * 4;
+          const bottomIdx = ((y + 1) * canvas.width + x) * 4;
+
+          const lum = 0.299 * data[idx] + 0.587 * data[idx+1] + 0.114 * data[idx+2];
+          const lumRight = 0.299 * data[rightIdx] + 0.587 * data[rightIdx+1] + 0.114 * data[rightIdx+2];
+          const lumBottom = 0.299 * data[bottomIdx] + 0.587 * data[bottomIdx+1] + 0.114 * data[bottomIdx+2];
+
+          const contrast = Math.abs(lum - lumRight) + Math.abs(lum - lumBottom);
+
+          if (contrast > 20 || Math.random() > 0.9) {
+            points.push([x, y]);
+          }
+        }
+
+        // Ensure corners are covered so the mesh fills the screen
+        points.push([0,0], [canvas.width,0], [0,canvas.height], [canvas.width,canvas.height]);
+
+        // Format points for Delaunator
+        const flatPoints = [];
+        for(let p of points) { flatPoints.push(p[0], p[1]); }
+        
+        const delaunay = new Delaunator(flatPoints);
+        const triangles = delaunay.triangles;
+
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 1;
+
+        // Draw triangles
+        for (let i = 0; i < triangles.length; i += 3) {
+          const p0 = points[triangles[i]];
+          const p1 = points[triangles[i + 1]];
+          const p2 = points[triangles[i + 2]];
+
+          // Find centroid of triangle to get color
+          const cx = Math.floor((p0[0] + p1[0] + p2[0]) / 3);
+          const cy = Math.floor((p0[1] + p1[1] + p2[1]) / 3);
+          const cIdx = (cy * canvas.width + cx) * 4;
+
+          const r = data[cIdx]; const g = data[cIdx+1]; const b = data[cIdx+2];
+          
+          ctx.beginPath();
+          ctx.moveTo(p0[0], p0[1]);
+          ctx.lineTo(p1[0], p1[1]);
+          ctx.lineTo(p2[0], p2[1]);
+          ctx.closePath();
+
+          // Fill with original color but add PS5 blue/green glow to the strokes
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
+          ctx.fill();
+          
+          // Wireframe glow
+          ctx.strokeStyle = `rgba(0, 255, 136, ${Math.max(0.1, r/255)})`;
+          ctx.stroke();
+        }
+      }
+
+      // --- BINARY MATRIX GENERATOR ---
+      function renderBinaryMatrix(targetCtx, w, h, spacing, zoom) {
+        targetCtx.fillStyle = '#000';
+        targetCtx.fillRect(0, 0, w, h);
+
+        const source = useWebcam ? video : uploadedImg;
+        if (!source || (useWebcam && !webcamStream) || (!useWebcam && !uploadedImg.src)) return;
+
+        const cols = Math.floor(w / spacing);
+        const rows = Math.floor(h / spacing);
+
+        // Create a tiny offscreen canvas to sample the image pixels
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = cols;
+        offCanvas.height = rows;
+        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+
+        // Calculate zoom cropping
+        const dw = cols * zoom;
+        const dh = rows * zoom;
+        const dx = (cols - dw) / 2;
+        const dy = (rows - dh) / 2;
+        
+        offCtx.drawImage(source, dx, dy, dw, dh);
+        const imgData = offCtx.getImageData(0, 0, cols, rows).data;
+
+        targetCtx.font = `${spacing}px Courier New`;
+        targetCtx.textAlign = 'center';
+        targetCtx.textBaseline = 'middle';
+
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            const i = (y * cols + x) * 4;
+            const brightness = (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
+
+            // Map brightness to binary visibility
+            if (brightness > 30) { 
+              targetCtx.fillStyle = `rgba(0, 255, 136, ${brightness / 255})`; // Glowing PS5 Green
+              const char = Math.random() > 0.5 ? '1' : '0';
+              targetCtx.fillText(char, x * spacing + spacing/2, y * spacing + spacing/2);
+            }
+          }
+        }
+      }
+
+      // --- NEON WIREFRAME ---
       function drawWireframe() {
-        // A clever, lightning-fast edge detection hack using blend modes
         ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
         ctx.globalCompositeOperation = 'difference';
-        // Shift the image slightly and blend it with itself to find edges
         ctx.drawImage(video, -2, -2, canvas.width, canvas.height);
-        
         ctx.globalCompositeOperation = 'source-over';
-        // Colorize it to Neon Green (PS5 aesthetic)
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imgData.data;
         for (let i = 0; i < data.length; i += 4) {
-          let brightness = (data[i] + data[i+1] + data[i+2]) / 3;
-          if (brightness > 20) {
-            data[i] = 0;       // R
-            data[i+1] = 255;   // G (Neon)
-            data[i+2] = 136;   // B (Green/Blue hue)
+          if ((data[i] + data[i+1] + data[i+2]) / 3 > 20) {
+            data[i] = 0; data[i+1] = 255; data[i+2] = 136; 
           } else {
-            data[i] = data[i+1] = data[i+2] = 0; // Black background
+            data[i] = data[i+1] = data[i+2] = 0;
           }
         }
         ctx.putImageData(imgData, 0, 0);
       }
 
-      // --- 2. THERMAL VISION (Improved FLIR Gradient) ---
+      // --- TRUE FLIR THERMAL VISION ---
       function drawThermal() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imgData.data;
-        
         for (let i = 0; i < data.length; i += 4) {
-          // Get luminance (brightness)
           let lum = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
-          
-          // True FLIR thermal gradient: Black → Blue → Purple → Red → Yellow → White
-          if (lum < 40) { // Very Cold / Black
-            data[i] = 0; data[i+1] = 0; data[i+2] = 0;
-          } else if (lum < 80) { // Cold / Blue
-            data[i] = 0; data[i+1] = 0; data[i+2] = (lum - 40) * 6;
-          } else if (lum < 120) { // Cool / Purple
-            const t = (lum - 80) / 40;
-            data[i] = t * 180; data[i+1] = 0; data[i+2] = 255;
-          } else if (lum < 160) { // Warm / Red
-            const t = (lum - 120) / 40;
-            data[i] = 255; data[i+1] = 0; data[i+2] = (1 - t) * 255;
-          } else if (lum < 200) { // Hot / Orange/Yellow
-            const t = (lum - 160) / 40;
-            data[i] = 255; data[i+1] = t * 255; data[i+2] = 0;
-          } else { // Very Hot / Yellow/White
-            const t = (lum - 200) / 55;
-            data[i] = 255; data[i+1] = 255; data[i+2] = t * 255;
-          }
+          if (lum < 40) { data[i] = 0; data[i+1] = 0; data[i+2] = lum * 6.3; } 
+          else if (lum < 100) { let t = (lum - 40) / 60; data[i] = t * 255; data[i+1] = 0; data[i+2] = 255 - (t * 255); } 
+          else if (lum < 180) { let t = (lum - 100) / 80; data[i] = 255; data[i+1] = t * 255; data[i+2] = 0; } 
+          else { let t = (lum - 180) / 75; data[i] = 255; data[i+1] = 255; data[i+2] = t * 255; }
         }
         ctx.putImageData(imgData, 0, 0);
       }
 
-      // --- 3. ZERO-DAY ANONYMIZER (Hacker/Cybersecurity with Eye Tracking) ---
-      const binaryChars = ['0', '1', 'ERROR', 'NULL', 'SYSTEM', 'ACCESS', 'DENIED'];
-      
+      // --- ZERO-DAY ANONYMIZER ---
       function drawZeroDay() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Pixelate detected eye regions if tracking.js found any
-        if (detectedEyes && detectedEyes.length > 0) {
-          detectedEyes.forEach(eye => {
-            // Eye coordinates from tracking.js
-            const ex = eye.x;
-            const ey = eye.y;
-            const ew = eye.width;
-            const eh = eye.height;
-            
-            // Expand the region slightly for better coverage
-            const expandedX = Math.max(0, ex - 15);
-            const expandedY = Math.max(0, ey - 15);
-            const expandedW = Math.min(canvas.width - expandedX, ew + 30);
-            const expandedH = Math.min(canvas.height - expandedY, eh + 30);
-            
-            // Pixelate this region
-            pixelateRegion(expandedX, expandedY, expandedW, expandedH, 12);
-            
-            // Add glitch bar over the eye
-            ctx.fillStyle = '#000';
-            ctx.fillRect(expandedX - 10, ey + eh/2 - 10, expandedW + 20, 30);
-            
-            // Matrix Green Text on the censor bar
-            ctx.fillStyle = '#00ff88';
-            ctx.font = '16px Courier';
-            const randomText = binaryChars[Math.floor(Math.random() * binaryChars.length)];
-            ctx.fillText(randomText, expandedX, ey + eh/2 + 10);
+        if (detectedEyes.length > 0) {
+          detectedEyes.forEach(rect => {
+            let x = rect.x - 15; let y = rect.y - 15; let w = rect.width + 30; let h = rect.height + 30;
+            pixelateRegion(x, y, w, h, 12);
           });
         }
       }
-      
-      // Helper function to pixelate a specific region
+
       function pixelateRegion(x, y, w, h, size) {
+        x = Math.max(0, x); y = Math.max(0, y);
+        w = Math.min(canvas.width - x, w); h = Math.min(canvas.height - y, h);
+        if(w <= 0 || h <= 0) return;
         const imgData = ctx.getImageData(x, y, w, h);
         const data = imgData.data;
-        
         for(let py = 0; py < h; py += size) {
           for(let px = 0; px < w; px += size) {
-            const i = (py * w + px) * 4;
-            const r = data[i]; 
-            const g = data[i+1]; 
-            const b = data[i+2];
-            
-            ctx.fillStyle = `rgb(${r},${g},${b})`;
+            let i = (py * w + px) * 4;
+            ctx.fillStyle = `rgb(${data[i]},${data[i+1]},${data[i+2]})`;
             ctx.fillRect(x + px, y + py, size, size);
           }
         }

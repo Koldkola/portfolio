@@ -1144,6 +1144,29 @@ canvas#mirror-canvas {
   gap: 15px;
 }
 
+.capture-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.webcam-toggle-btn {
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.webcam-toggle-btn:hover {
+  background: rgba(255,255,255,0.16);
+}
+
 .shutter-btn {
   width: 70px;
   height: 70px;
@@ -1173,6 +1196,80 @@ canvas#mirror-canvas {
   letter-spacing: 3px;
   color: var(--text-muted);
 }
+
+.record-btn {
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 0, 76, 0.2);
+  color: #fff;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.record-btn:hover {
+  background: rgba(255, 0, 76, 0.35);
+}
+
+.record-btn.recording {
+  background: #ff004c;
+  color: #000;
+  box-shadow: 0 0 12px rgba(255, 0, 76, 0.6);
+}
+
+.record-timer {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.75);
+  font-variant-numeric: tabular-nums;
+}
+
+.record-timer.hidden {
+  display: none;
+}
+
+/* =========================================
+   SPECIFIC CONTROLS (Binary Panel)
+========================================= */
+.specific-controls { 
+  background: rgba(0,0,0,0.6); 
+  padding: 15px; 
+  border-radius: 8px; 
+  margin-top: 15px; 
+  width: 100%; 
+  border: 1px solid var(--glass-border); 
+  font-family: var(--font-sans);
+}
+.specific-controls.hidden { display: none; }
+
+.live-preview-box { margin-bottom: 15px; border: 1px solid #333; padding: 5px; border-radius: 4px; background: #000;}
+.live-preview-box p { font-size: 0.65rem; text-align: center; color: var(--accent-gaming); margin-bottom: 5px; letter-spacing: 2px;}
+.live-preview-box video, .live-preview-box img { width: 100%; height: auto; border-radius: 4px; transform: scaleX(-1);} /* Mirror preview */
+.live-preview-box img.no-mirror { transform: scaleX(1); }
+
+.control-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
+.control-group.row-btns { flex-direction: row; justify-content: space-between; }
+.control-group label { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;}
+.control-group input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent-gaming); }
+
+.mini-btn { 
+  background: #222; 
+  color: #fff; 
+  border: 1px solid #444; 
+  padding: 6px 10px; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: 0.7rem; 
+  text-transform: uppercase;
+  flex: 1;
+  text-align: center;
+  transition: all 0.2s;
+}
+.mini-btn:hover { background: #333; }
+.mini-btn.active { background: var(--accent-gaming); color: #000; font-weight: bold; border-color: var(--accent-gaming);} 
 
 /* =========================================
   WEEKLY WONDER SLIDESHOW (continued)
@@ -2256,5 +2353,4 @@ canvas#mirror-canvas {
   .target-box p {
     font-size: 0.7rem;
   }
-}
 }
