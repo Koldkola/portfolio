@@ -103,8 +103,8 @@
             </div>
             <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
-            <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner"> POST TO KORNER</button>
-            <button id="video-message-btn" class="feature-btn" title="Record 5-15 second video message">VIDEO TO KORNER</button>
+            <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner"> POST TO KOMMUNITY</button>
+            <button id="video-message-btn" class="feature-btn" title="Record 5-15 second video message">VIDEO TO KOMMUNITY</button>
             <button id="photobooth-btn" class="feature-btn" title="Auto-capture photos every 5 seconds"> PHOTOBOOTH</button>
           </div>
         </div>
@@ -478,9 +478,9 @@
       </div>
       <div class="category-modal-body">
         <div style="display: flex; gap: 16px;">
-          <div style="flex: 1;">
+          <div style="flex: 0 0 220px;">
             <img id="snap-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: block;" />
-            <video id="snap-preview-video" controls style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: none;"></video>
+            <video id="snap-preview-video" controls style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000; display: none; max-height: 220px;"></video>
           </div>
           <form id="snap-post-form" style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
             <!-- Auto-add checkbox -->
@@ -522,7 +522,7 @@
   <div id="video-message-modal" class="category-modal">
     <div class="category-modal-content" style="max-width: 700px;">
       <div class="category-modal-header">
-        <h2>Record Video Message</h2>
+        <h2>Record Video </h2>
         <button class="category-modal-close" onclick="closeVideoMessageModal()" aria-label="Close modal">&times;</button>
       </div>
       <div class="category-modal-body">
@@ -549,7 +549,7 @@
             </button>
           </div>
           <p style="margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;">
-            Record a short video message (5-15 seconds) to share with the Kommunity
+            Record a short video to share with the Kommunity
           </p>
         </div>
       </div>
