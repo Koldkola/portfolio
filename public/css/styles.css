@@ -242,9 +242,10 @@ body {
 /* Sticky Notes */
 /* Base style to ensure the animation is smooth */
 .board-sticky { 
-  width: 100%; 
-  min-height: auto; 
-  padding: 6px; 
+  width: 160px;  /* Forces a small width */
+  height: 160px; /* Forces an equal height to make it square */
+  padding: 12px;
+  overflow: hidden; /* Hides any extra text that doesn't fit in the square */
   border-radius: 3px; 
   box-shadow: 0 2px 6px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.16); 
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
@@ -325,6 +326,29 @@ body {
 .board-sticky-name { font-weight: 700; font-size: 0.7rem; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
 .board-sticky-text { font-size: 0.65rem; line-height: 1.25; margin-bottom: 4px; word-wrap: break-word; }
 .board-sticky-meta { font-size: 0.55rem; opacity: 0.7; margin-top: auto; }
+
+/* Sticky Note Image Styling */
+.board-sticky img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Fills the square perfectly without distorting */
+  border-radius: 4px;
+  cursor: zoom-in; /* Changes the mouse pointer to a magnifying glass */
+  transition: all 0.3s ease;
+}
+
+.board-sticky img:active {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw;  /* Expands to 80% of the screen width */
+  height: 80vh; /* Expands to 80% of the screen height */
+  object-fit: contain; /* Ensures the entire uncropped photo is visible */
+  z-index: 9999; /* Puts it above absolutely everything else */
+  box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.85); /* Creates a fake dark background */
+  cursor: zoom-out;
+}
 
 /* Polaroids */
 .board-polaroid { width: 100%; background: white; padding: 10px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2); transform: rotate(-2deg); transition: all 0.3s var(--ease-out-expo); cursor: pointer; position: relative; display: flex; flex-direction: column; }
