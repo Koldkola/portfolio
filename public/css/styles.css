@@ -1247,6 +1247,37 @@ canvas#mirror-canvas {
   display: none;
 }
 
+.snap-board-btn {
+  border: 1px solid var(--accent-gaming);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
+  color: var(--accent-gaming);
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+  font-weight: 600;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.snap-board-btn:hover {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.3) 100%);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px);
+}
+
+.snap-board-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
+}
+
 /* =========================================
    SPECIFIC CONTROLS (Binary Panel)
 ========================================= */

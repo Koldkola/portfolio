@@ -92,6 +92,7 @@
             </div>
             <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
+            <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner">📷 POST TO BOARD</button>
           </div>
         </div>
         
@@ -437,6 +438,58 @@
     <img id="photo-modal-img" src="" alt="Enlarged photo" />
   </div>
 
+  <!-- Snap to Board Quick Post Modal -->
+  <div id="snap-to-board-modal" class="category-modal">
+    <div class="category-modal-content" style="max-width: 600px;">
+      <div class="category-modal-header">
+        <h2>Post to Kommunity Korner</h2>
+        <button class="category-modal-close" onclick="closeSnapToBoardModal()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="category-modal-body">
+        <div style="display: flex; gap: 16px;">
+          <div style="flex: 1;">
+            <img id="snap-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 8px; border: 2px solid var(--accent-gaming); background: #000;" />
+          </div>
+          <form id="snap-post-form" style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+            <!-- Auto-add checkbox -->
+            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--accent-gaming); border-radius: 6px;">
+              <input type="checkbox" id="autoAddCheckbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-gaming);" />
+              <label for="autoAddCheckbox" style="cursor: pointer; color: var(--accent-gaming); font-weight: 500; margin: 0; flex: 1;">
+                ✓ Auto add to Kommunity Korner
+              </label>
+            </div>
+
+            <!-- Manual form (hidden when auto-add checked) -->
+            <div id="manual-form-section">
+              <div class="form-group">
+                <label for="snapName">Your Name</label>
+                <input type="text" id="snapName" placeholder="What's your name?" required />
+              </div>
+              <div class="form-group">
+                <label for="snapCaption">Caption (Optional)</label>
+                <textarea id="snapCaption" placeholder="Add a caption to your photo..." rows="3" style="resize: vertical;"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="snapAge">Age (Optional)</label>
+                <input type="number" id="snapAge" placeholder="18" min="1" max="120" />
+              </div>
+            </div>
+
+            <!-- Auto-add confirmation (hidden until checked) -->
+            <div id="auto-add-confirmation" style="display: none; padding: 12px; background: rgba(168, 85, 247, 0.15); border-radius: 6px; color: var(--text-primary); font-size: 0.9rem; line-height: 1.5;">
+              📸 Your photo will be posted with the current date and time. Ready to upload!
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button type="submit" class="btn primary" style="flex: 1;">Post to Board</button>
+              <button type="button" class="btn secondary" onclick="closeSnapToBoardModal()" style="flex: 1;">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="footer-content">
       <p>© 2026 Kenechi Obiozor.</p>
@@ -520,9 +573,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       
       // --- EYE TRACKING INITIALIZATION ---
       const eyeTracker = new tracking.ObjectTracker('eye');
-      eyeTracker.setInitialScale(4);
-      eyeTracker.setStepSize(2);
-      eyeTracker.setEdgesDensity(0.1);
+      eyeTracker.setInitialScale(2);
+      eyeTracker.setStepSize(1);
+      eyeTracker.setEdgesDensity(0.5);
       eyeTracker.on('track', function(event) {
         detectedEyes = event.data.length === 0 ? [] : event.data;
       });
@@ -679,6 +732,136 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         }
       });
 
+      // Snap to Board functionality
+      const snapToBoardBtn = document.getElementById('snap-to-board-btn');
+      if (snapToBoardBtn) {
+        snapToBoardBtn.addEventListener('click', () => {
+          if (!webcamToggleBtn.classList.contains('active')) {
+            showNotification('Please start your camera first!', 'error');
+            return;
+          }
+
+          // Capture current canvas frame with active filter
+          const imageData = canvas.toDataURL('image/png');
+          
+          // Store for the modal
+          window.snapPhotoData = imageData;
+          
+          // Show modal with preview
+          const modal = document.getElementById('snap-to-board-modal');
+          const previewImg = document.getElementById('snap-preview-img');
+          previewImg.src = imageData;
+          modal.style.display = 'flex';
+          
+          // Focus on name input
+          setTimeout(() => document.getElementById('snapName').focus(), 100);
+        });
+      }
+
+      // Handle snap post form submission
+      const snapPostForm = document.getElementById('snap-post-form');
+      if (snapPostForm) {
+        // Handle auto-add checkbox toggle
+        const autoAddCheckbox = document.getElementById('autoAddCheckbox');
+        const manualFormSection = document.getElementById('manual-form-section');
+        const autoAddConfirmation = document.getElementById('auto-add-confirmation');
+        const snapName = document.getElementById('snapName');
+
+        if (autoAddCheckbox) {
+          autoAddCheckbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              // Auto-add mode: hide form, show confirmation
+              manualFormSection.style.display = 'none';
+              autoAddConfirmation.style.display = 'block';
+              snapName.removeAttribute('required');
+            } else {
+              // Manual mode: show form, hide confirmation
+              manualFormSection.style.display = 'block';
+              autoAddConfirmation.style.display = 'none';
+              snapName.setAttribute('required', '');
+            }
+          });
+        }
+
+        snapPostForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const isAutoAdd = autoAddCheckbox.checked;
+          const name = document.getElementById('snapName').value.trim();
+          const caption = document.getElementById('snapCaption').value.trim();
+          const age = document.getElementById('snapAge').value;
+          
+          // Validation: name required only for manual mode
+          if (!isAutoAdd && !name) {
+            showNotification('Please enter your name!', 'error');
+            return;
+          }
+          
+          // Disable submit button
+          const submitBtn = snapPostForm.querySelector('button[type="submit"]');
+          submitBtn.disabled = true;
+          
+          try {
+            // Create entry based on mode
+            const entry = isAutoAdd 
+              ? {
+                  name: 'Anonymous',
+                  text: `Snapped with The Interface 📷`,
+                  photo: window.snapPhotoData,
+                  timestamp: new Date().toISOString(),
+                  textColor: '#333',
+                  bgColor: '#ffffff'
+                }
+              : {
+                  name: name,
+                  text: caption || 'Snapped with The Interface 📷',
+                  age: age ? parseInt(age) : null,
+                  photo: window.snapPhotoData,
+                  timestamp: new Date().toISOString(),
+                  textColor: '#333',
+                  bgColor: '#ffffff'
+                };
+            
+            const success = await addEntry(entry);
+            
+            if (success) {
+              closeSnapToBoardModal();
+              showNotification(isAutoAdd 
+                ? '🎉 Your filtered photo has been auto-posted to Kommunity Korner!' 
+                : '🎉 Your filtered photo has been posted to Kommunity Korner!');
+              snapPostForm.reset();
+              autoAddCheckbox.checked = false;
+              manualFormSection.style.display = 'block';
+              autoAddConfirmation.style.display = 'none';
+              snapName.setAttribute('required', '');
+            } else {
+              showNotification('Failed to post. Please try again.', 'error');
+            }
+          } catch (error) {
+            console.error('Error posting to board:', error);
+            showNotification('Error posting to board.', 'error');
+          } finally {
+            submitBtn.disabled = false;
+          }
+        });
+      }
+
+      // Close snap-to-board modal
+      window.closeSnapToBoardModal = function() {
+        const modal = document.getElementById('snap-to-board-modal');
+        modal.style.display = 'none';
+        window.snapPhotoData = null;
+        // Reset form state
+        const autoAddCheckbox = document.getElementById('autoAddCheckbox');
+        const manualFormSection = document.getElementById('manual-form-section');
+        const autoAddConfirmation = document.getElementById('auto-add-confirmation');
+        if (autoAddCheckbox) {
+          autoAddCheckbox.checked = false;
+          manualFormSection.style.display = 'block';
+          autoAddConfirmation.style.display = 'none';
+        }
+      };
+
       // Main Processing Loop
       function processFrame() {
         if (video.paused || video.ended) {
@@ -796,24 +979,41 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (detectedEyes.length > 0) {
           detectedEyes.forEach(rect => {
-            // Aggressive pixelation with expansion
-            let x = rect.x - 25; let y = rect.y - 25; let w = rect.width + 50; let h = rect.height + 50;
-            pixelateRegion(x, y, w, h, 8);
+            // HEAVY tracking expansion - massive coverage area
+            let x = rect.x - 50; 
+            let y = rect.y - 40; 
+            let w = rect.width + 100; 
+            let h = rect.height + 80;
             
-            // Add secondary pixelation layer for extra obfuscation
-            pixelateRegion(x + 5, y + 5, w - 10, h - 10, 6);
+            // Triple-layer pixelation for extreme obfuscation
+            pixelateRegion(x, y, w, h, 12);
+            pixelateRegion(x + 8, y + 8, w - 16, h - 16, 8);
+            pixelateRegion(x + 15, y + 12, w - 30, h - 24, 4);
             
-            // Draw glitch bars over eyes
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-            ctx.fillRect(x - 10, rect.y + rect.height / 2 - 8, w + 20, 16);
+            // Heavy glitch bars - multiple overlays
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+            ctx.fillRect(x - 15, rect.y + rect.height / 2 - 12, w + 30, 24);
+            ctx.fillRect(x - 10, rect.y - 8, w + 20, 6);
+            ctx.fillRect(x - 10, rect.y + rect.height + 8, w + 20, 6);
             
-            // Matrix green text overlay
+            // Heavy matrix character overlay
             ctx.fillStyle = '#00ff88';
-            ctx.font = '14px Courier';
-            const glitchChars = ['█', '▓', '▒', '░', '▰', 'X', '#'];
-            for (let i = 0; i < 5; i++) {
+            ctx.font = 'bold 16px Courier';
+            const glitchChars = ['█', '▓', '▒', '░', '▰', 'X', '#', '🔒', '◼', '■'];
+            for (let i = 0; i < 15; i++) {
               const char = glitchChars[Math.floor(Math.random() * glitchChars.length)];
-              ctx.fillText(char, x + Math.random() * w, rect.y + rect.height / 2 + 3);
+              ctx.fillText(char, x + Math.random() * w, y + Math.random() * h);
+            }
+            
+            // Red scan line effect
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 5; i++) {
+              ctx.beginPath();
+              const scanY = y + (h / 5) * i + (Date.now() / 50) % (h / 5);
+              ctx.moveTo(x, scanY);
+              ctx.lineTo(x + w, scanY);
+              ctx.stroke();
             }
           });
         }
