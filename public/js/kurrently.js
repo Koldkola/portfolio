@@ -173,10 +173,8 @@
     startKurrentlyLoop();
   }
 
-  // Start animation when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startKurrentlyAnimation);
-  } else {
-    startKurrentlyAnimation();
-  }
+  // Expose to global scope so it can be called from HTML
+  window.startKurrentlyAnimation = startKurrentlyAnimation;
+
+  // NOTE: Function is now called from index.html instead of auto-running here
 })();
