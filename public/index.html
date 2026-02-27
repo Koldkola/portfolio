@@ -783,19 +783,16 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
     // Use drawing as photo
     useDrawingBtn.addEventListener('click', () => {
       const drawingData = canvas.toDataURL('image/png');
-      document.getElementById('userPhoto').value = '';
       
-      // Create a hidden input to store the drawing
-      const drawingInput = document.getElementById('userDrawing');
-      if (drawingInput) {
-        drawingInput.value = drawingData;
-      } else {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.id = 'userDrawing';
-        input.value = drawingData;
-        document.getElementById('globe-form').appendChild(input);
+      // Store drawing data in a hidden input to be picked up by form submission
+      let drawingInput = document.getElementById('userDrawing');
+      if (!drawingInput) {
+        drawingInput = document.createElement('input');
+        drawingInput.type = 'hidden';
+        drawingInput.id = 'userDrawing';
+        document.getElementById('globe-form').appendChild(drawingInput);
       }
+      drawingInput.value = drawingData;
       
       alert('Drawing saved! It will be submitted with your message.');
       clearCanvasBtn.click();
@@ -807,14 +804,34 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
     globeForm.addEventListener('submit', (e) => {
       const drawingInput = document.getElementById('userDrawing');
       if (drawingInput && drawingInput.value) {
-        const photoInput = document.getElementById('userPhoto');
-        const dataTransfer = new DataTransfer();
-        const blob = new Blob([atob(drawingInput.value.split(',')[1])], { type: 'image/png' });
-        const file = new File([blob], 'drawing.png', { type: 'image/png' });
-        dataTransfer.items.add(file);
-        photoInput.files = dataTransfer.files;
+        // Override the form submission to include the drawing
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        const name = document.getElementById('userName').value.trim();
+        const text = document.getElementById('weekFeeling').value.trim();
+        const age = document.getElementById('userAge').value;
+        const textColor = document.getElementById('textColor').value;
+        const bgColor = document.getElementById('bgColor').value;
+        const userFont = document.getElementById('userFont').value;
+        const drawingData = drawingInput.value;
+        
+        if (!name || !text) {
+          alert('Please enter a name and message');
+          return;
+        }
+        
+        // Disable submit button during processing
+        const submitBtn = document.querySelector('#globe-form button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+        
+        // Save entry with drawing data
+        saveNewEntry(name, text, age, textColor, bgColor, userFont, drawingData, submitBtn);
+        
+        // Clear drawing input after submission
+        drawingInput.value = '';
       }
-    });
+    }, true);
   </script>
 </body>
 </html>

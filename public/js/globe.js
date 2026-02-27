@@ -449,6 +449,7 @@ function handleFormSubmit(e) {
   const bgColor = document.getElementById('bgColor').value;
   const userFont = document.getElementById('userFont').value;
   const photoInput = document.getElementById('userPhoto');
+  const drawingInput = document.getElementById('userDrawing');
   
   if (!name || !text) {
     showNotification('Please enter a name and message', 'error');
@@ -459,8 +460,13 @@ function handleFormSubmit(e) {
   const submitBtn = document.querySelector('.globe-form button[type="submit"]');
   if (submitBtn) submitBtn.disabled = true;
   
+  // Check for drawing first
+  if (drawingInput && drawingInput.value) {
+    saveNewEntry(name, text, age, textColor, bgColor, userFont, drawingInput.value, submitBtn);
+    drawingInput.value = '';
+  }
   // Handle photo if provided
-  if (photoInput.files && photoInput.files[0]) {
+  else if (photoInput.files && photoInput.files[0]) {
     const reader = new FileReader();
     reader.onload = async function(e) {
       await saveNewEntry(name, text, age, textColor, bgColor, userFont, e.target.result, submitBtn);
