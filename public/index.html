@@ -81,7 +81,6 @@
             <button class="ctrl-btn" data-mode="thermal">Thermal</button>
             <button class="ctrl-btn" data-mode="zeroday">Anonymizer</button>
             <button class="ctrl-btn" data-mode="temporal">CCTV Lag</button>
-            <button class="ctrl-btn" data-mode="textrain">Text Rain</button>
           </div>
 
           <div class="color-palette-section">
@@ -585,6 +584,30 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       const recordBtn = document.getElementById('record-btn');
       const recordTimer = document.getElementById('record-timer');
       const webcamToggleBtn = document.getElementById('webcam-toggle');
+      
+      // Simple notification system
+      function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 12px 20px;
+          background: ${type === 'error' ? 'rgba(220, 38, 38, 0.95)' : 'rgba(139, 92, 246, 0.95)'};
+          color: white;
+          border-radius: 8px;
+          font-size: 14px;
+          z-index: 10000;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transition = 'opacity 0.3s';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
       
       let currentMode = 'wireframe';
       let animationFrameId;
@@ -1456,65 +1479,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
               ctx.stroke();
             }
           });
-        }
-      }
-
-      // --- TEXT RAIN ---
-      function drawTextRain() {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Initialize particles on first run or add new ones randomly
-        if (Math.random() < 0.3) {
-          textRainParticles.push({
-            text: TEXT_RAIN_WORDS[Math.floor(Math.random() * TEXT_RAIN_WORDS.length)],
-            x: Math.random() * canvas.width,
-            y: -20,
-            speed: 1 + Math.random() * 2,
-            opacity: 0.7 + Math.random() * 0.3
-          });
-        }
-        
-        // Sample brightness map from video for collision detection
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        // Update and draw particles
-        textRainParticles.forEach((particle, idx) => {
-          // Check brightness at particle position for "surface" detection
-          const px = Math.floor(particle.x);
-          const py = Math.floor(particle.y);
-          
-          if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
-            const pixelIndex = (py * canvas.width + px) * 4;
-            const brightness = (data[pixelIndex] + data[pixelIndex + 1] + data[pixelIndex + 2]) / 3;
-            
-            // Slow down significantly if hitting a bright surface (shoulders, desk, etc.)
-            if (brightness > 120 && particle.speed > 0.1) {
-              particle.speed *= 0.3; // Pile up effect
-            }
-          }
-          
-          // Move particle down
-          particle.y += particle.speed;
-          
-          // Draw particle
-          ctx.fillStyle = `rgba(168, 85, 247, ${particle.opacity})`;
-          ctx.font = 'bold 16px Inter, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.shadowColor = 'rgba(168, 85, 247, 0.8)';
-          ctx.shadowBlur = 10;
-          ctx.fillText(particle.text, particle.x, particle.y);
-          ctx.shadowBlur = 0;
-          
-          // Remove particles that fall off screen
-          if (particle.y > canvas.height + 50) {
-            textRainParticles.splice(idx, 1);
-          }
-        });
-        
-        // Limit particle count for performance
-        if (textRainParticles.length > 80) {
-          textRainParticles.shift();
         }
       }
 
