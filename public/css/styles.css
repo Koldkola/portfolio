@@ -70,9 +70,10 @@ body {
   animation: float 20s infinite alternate var(--ease-out-expo);
 }
 
-.glow-1 { width: 600px; height: 600px; background: #1a1a3a; top: -10%; left: -10%; animation-delay: 0s; }
-.glow-2 { width: 500px; height: 500px; background: #3a1a2a; bottom: -20%; right: -10%; animation-delay: -5s; }
-.glow-3 { width: 400px; height: 400px; background: #0a2a2a; top: 40%; left: 40%; animation-delay: -10s; }
+/* Update the existing glow classes to use CSS variables */
+.glow-1 { width: 600px; height: 600px; background: var(--aura-1, #1a1a3a); top: -10%; left: -10%; animation-delay: 0s; transition: background 2s ease;}
+.glow-2 { width: 500px; height: 500px; background: var(--aura-2, #3a1a2a); bottom: -20%; right: -10%; animation-delay: -5s; transition: background 2s ease;}
+.glow-3 { width: 400px; height: 400px; background: var(--aura-3, #0a2a2a); top: 40%; left: 40%; animation-delay: -10s; transition: background 2s ease;}
 
 @keyframes float {
   0% { transform: translate(0, 0) scale(1); }
@@ -1058,6 +1059,46 @@ main.container .link { color: var(--text-primary); }
 .weekly-section { max-width: 1200px; margin: 100px auto; padding: 0 20px; }
 .interactive-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;}
 .interactive-header h2 { font-family: var(--font-serif); font-size: 2.5rem; font-style: italic; }
+
+/* =========================================
+   THE INTERFACE (Webcam Mirror)
+========================================= */
+.mirror-section { max-width: 900px; margin: 80px auto; padding: 0 40px; }
+.mirror-container { position: relative; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; overflow: hidden; }
+
+canvas#mirror-canvas { 
+  width: 100%; 
+  max-width: 640px; 
+  height: auto; 
+  aspect-ratio: 4/3;
+  border-radius: 8px; 
+  background: #000; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  /* Flips the webcam so it acts like a mirror */
+  transform: scaleX(-1); 
+}
+
+.mirror-controls { width: 100%; max-width: 640px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+.mode-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.mode-buttons .ctrl-btn { 
+  background: rgba(255,255,255,0.05); 
+  border: 1px solid rgba(255,255,255,0.1); 
+  padding: 8px 16px; 
+  border-radius: 20px; 
+  font-size: 0.8rem; 
+  text-transform: uppercase; 
+  letter-spacing: 1px;
+}
+.mode-buttons .ctrl-btn.active { background: #fff; color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+
+/* The Target box for the Zero-Day effect */
+.target-box { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 200px; height: 250px; border: 2px dashed #ff003c; border-radius: 10px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 10px; pointer-events: none; z-index: 10; opacity: 0.7;}
+.target-box p { color: #ff003c; font-family: monospace; font-size: 0.8rem; letter-spacing: 2px; text-shadow: 0 0 5px #ff003c;}
+.target-box.hidden { display: none; }
+
+/* =========================================
+  WEEKLY WONDER SLIDESHOW (continued)
+========================================= */
 .week-controls { display: flex; align-items: center; gap: 15px; padding: 8px 15px; border-radius: 30px; }
 .ctrl-btn { background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; }
 .ctrl-btn:hover { transform: scale(1.2); text-shadow: 0 0 10px #fff; }
@@ -2058,4 +2099,54 @@ main.container .link { color: var(--text-primary); }
     padding: 10px 18px;
     font-size: 0.9rem;
   }
+  
+  /* The Interface mobile optimizations */
+  .mirror-section {
+    padding: 0 20px;
+    margin: 60px auto;
+  }
+  
+  .mirror-section .section-header h2 {
+    font-size: 2rem;
+  }
+  
+  .mirror-section .section-header p {
+    font-size: 0.9rem;
+  }
+  
+  canvas#mirror-canvas {
+    max-width: 100%;
+    border-radius: 6px;
+  }
+  
+  .mirror-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .mode-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .mode-buttons .ctrl-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 12px;
+    font-size: 0.7rem;
+  }
+  
+  #capture-btn {
+    width: 100%;
+  }
+  
+  .target-box {
+    width: 150px;
+    height: 200px;
+  }
+  
+  .target-box p {
+    font-size: 0.7rem;
+  }
+}
 }
