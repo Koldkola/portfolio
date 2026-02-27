@@ -64,8 +64,8 @@
 
     <section id="interface" class="mirror-section">
       <div class="section-header interactive-header">
-        <h2>The Interface</h2>
-        <p>Interactive visual experiments blending cybersecurity, ambient art, and game logic.</p>
+        <h2>Kommunity Kamera</h2>
+        <p>Something to play around with.</p>
       </div>
       
       <div class="mirror-container glass-panel">
@@ -79,8 +79,8 @@
           <div class="mode-buttons-vertical">
             <button class="ctrl-btn active" data-mode="wireframe">Neon</button>
             <button class="ctrl-btn" data-mode="thermal">Thermal</button>
-            <button class="ctrl-btn" data-mode="zeroday">Anonymizer</button>
-            <button class="ctrl-btn" data-mode="temporal">CCTV Lag</button>
+            <button class="ctrl-btn" data-mode="zeroday">Normal</button>
+            <button class="ctrl-btn" data-mode="temporal">Lag</button>
           </div>
 
           <div class="color-palette-section">
@@ -477,7 +477,7 @@
             <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: rgba(168, 85, 247, 0.1); border: 1px solid var(--accent-gaming); border-radius: 6px;">
               <input type="checkbox" id="autoAddCheckbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-gaming);" />
               <label for="autoAddCheckbox" style="cursor: pointer; color: var(--accent-gaming); font-weight: 500; margin: 0; flex: 1;">
-                ✓ Auto add to Kommunity Korner
+                ✓ Anonymous add to Kommunity Korner
               </label>
             </div>
 
@@ -490,10 +490,6 @@
               <div class="form-group">
                 <label for="snapCaption">Caption (Optional)</label>
                 <textarea id="snapCaption" placeholder="Add a caption to your photo..." rows="3" style="resize: vertical;"></textarea>
-              </div>
-              <div class="form-group">
-                <label for="snapAge">Age (Optional)</label>
-                <input type="number" id="snapAge" placeholder="18" min="1" max="120" />
               </div>
             </div>
 
@@ -600,6 +596,25 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           setTimeout(() => notification.remove(), 300);
         }, 3000);
       }
+
+      function getRandomKornerColors() {
+        const palette = [
+          '#F6E8FF', '#E8F1FF', '#E8FFF2', '#FFF2E8', '#FFF9E1',
+          '#EDE9FE', '#DCFCE7', '#FFE4E6', '#E0F2FE', '#FAF5FF'
+        ];
+        const darkTextPalette = ['#0f172a', '#111827', '#1f2937', '#0b0f1a'];
+        const lightTextPalette = ['#ffffff', '#f8fafc', '#f1f5f9', '#e2e8f0'];
+        const bgColor = palette[Math.floor(Math.random() * palette.length)];
+        const hex = bgColor.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        const textColor = luminance > 0.7
+          ? darkTextPalette[Math.floor(Math.random() * darkTextPalette.length)]
+          : lightTextPalette[Math.floor(Math.random() * lightTextPalette.length)];
+        return { bgColor, textColor };
+      }
       
       let currentMode = 'wireframe';
       let animationFrameId;
@@ -694,13 +709,33 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
       // Camera Shutter Capture
       captureBtn.addEventListener('click', () => {
-        let finalCanvas = canvas;
+        // Create temporary canvas for timestamp overlay
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
         
-
+        // Draw the filtered canvas
+        tempCtx.drawImage(canvas, 0, 0);
+        
+        // Add timestamp overlay
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        
+        // Bottom right corner with background
+        tempCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        tempCtx.fillRect(tempCanvas.width - 200, tempCanvas.height - 50, 190, 45);
+        
+        tempCtx.fillStyle = '#fff';
+        tempCtx.font = 'bold 14px Arial';
+        tempCtx.textAlign = 'right';
+        tempCtx.fillText(dateStr, tempCanvas.width - 15, tempCanvas.height - 28);
+        tempCtx.fillText(timeStr, tempCanvas.width - 15, tempCanvas.height - 10);
 
         const link = document.createElement('a');
         link.download = `archive_${currentMode}_${Date.now()}.png`;
-        link.href = finalCanvas.toDataURL('image/png');
+        link.href = tempCanvas.toDataURL('image/png');
         link.click();
         
         // Flash effect
@@ -821,8 +856,32 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       }
 
       function capturePhotoboothFrame() {
-        const frameData = canvas.toDataURL('image/png');
-        const timestamp = new Date().toLocaleTimeString();
+        // Create temporary canvas for timestamp overlay
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        // Draw the filtered canvas
+        tempCtx.drawImage(canvas, 0, 0);
+        
+        // Add timestamp overlay
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        
+        // Bottom right corner with background
+        tempCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        tempCtx.fillRect(tempCanvas.width - 200, tempCanvas.height - 50, 190, 45);
+        
+        tempCtx.fillStyle = '#fff';
+        tempCtx.font = 'bold 14px Arial';
+        tempCtx.textAlign = 'right';
+        tempCtx.fillText(dateStr, tempCanvas.width - 15, tempCanvas.height - 28);
+        tempCtx.fillText(timeStr, tempCanvas.width - 15, tempCanvas.height - 10);
+        
+        const frameData = tempCanvas.toDataURL('image/png');
+        const timestamp = timeStr;
         photoboothFrames.push({ data: frameData, time: timestamp });
 
         const frameDiv = document.createElement('div');
@@ -900,8 +959,32 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             return;
           }
 
-          // Capture current canvas frame with active filter
-          const imageData = canvas.toDataURL('image/png');
+          // Create temporary canvas for timestamp overlay
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = canvas.width;
+          tempCanvas.height = canvas.height;
+          const tempCtx = tempCanvas.getContext('2d');
+          
+          // Draw the filtered canvas
+          tempCtx.drawImage(canvas, 0, 0);
+          
+          // Add timestamp overlay
+          const now = new Date();
+          const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          
+          // Bottom right corner with background
+          tempCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          tempCtx.fillRect(tempCanvas.width - 200, tempCanvas.height - 50, 190, 45);
+          
+          tempCtx.fillStyle = '#fff';
+          tempCtx.font = 'bold 14px Arial';
+          tempCtx.textAlign = 'right';
+          tempCtx.fillText(dateStr, tempCanvas.width - 15, tempCanvas.height - 28);
+          tempCtx.fillText(timeStr, tempCanvas.width - 15, tempCanvas.height - 10);
+          
+          // Capture frame with timestamp
+          const imageData = tempCanvas.toDataURL('image/png');
           
           // Store for the modal
           window.snapPhotoData = imageData;
@@ -948,7 +1031,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           const isAutoAdd = autoAddCheckbox.checked;
           const name = document.getElementById('snapName').value.trim();
           const caption = document.getElementById('snapCaption').value.trim();
-          const age = document.getElementById('snapAge').value;
+          const { bgColor, textColor } = getRandomKornerColors();
           
           // Validation: name required only for manual mode
           if (!isAutoAdd && !name) {
@@ -968,17 +1051,16 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
                   text: `Snapped with The Interface 📷`,
                   photo: window.snapPhotoData,
                   timestamp: new Date().toISOString(),
-                  textColor: '#333',
-                  bgColor: '#ffffff'
+                  textColor,
+                  bgColor
                 }
               : {
                   name: name,
-                  text: caption || 'Snapped with The Interface 📷',
-                  age: age ? parseInt(age) : null,
+                  text: caption || 'Snapped with The Kamera 📷',
                   photo: window.snapPhotoData,
                   timestamp: new Date().toISOString(),
-                  textColor: '#333',
-                  bgColor: '#ffffff'
+                  textColor,
+                  bgColor
                 };
             
             const success = await addEntry(entry);
