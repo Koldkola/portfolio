@@ -1515,8 +1515,8 @@ main.container .link { color: var(--text-primary); }
 }
 
 .tooltip-popup {
-  position: fixed;
-  bottom: auto;
+  position: absolute;
+  bottom: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%) translateY(-8px);
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.98), rgba(109, 40, 217, 0.98));
