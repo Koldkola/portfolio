@@ -683,8 +683,8 @@ main.container .link { color: var(--text-primary); }
   overflow-y: visible;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-  padding: 72px 0 8px;
-  margin-top: -72px;
+  padding: 140px 0 8px;
+  margin-top: -140px;
   flex: 1;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
@@ -1531,7 +1531,7 @@ main.container .link { color: var(--text-primary); }
   white-space: normal;
   width: max-content;
   min-width: 220px;
-  max-width: min(520px, 90vw);
+  max-width: min(640px, 90vw);
   text-align: center;
   pointer-events: none;
   opacity: 0;
