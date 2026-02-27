@@ -1666,33 +1666,58 @@ main.container .link { color: var(--text-primary); }
   }
   
   /* Make tabs visible and usable on mobile - position at top next to logo */
+  /* Mobile tabs - Scrollable pill-style buttons */
   .project-tabs {
-    position: fixed;
-    top: 70px;
-    left: 0;
-    right: 0;
-    z-index: 99;
+    display: flex;
     overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-    padding: 12px 20px;
-    margin: 0;
-    background: rgba(5, 5, 5, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    scroll-behavior: smooth;
+    background: transparent;
+    border-bottom: none;
+    
+    /* Hides the scrollbar for a clean, app-like look */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  
+  /* Hides the scrollbar in Chrome, Safari, and iOS */
+  .project-tabs::-webkit-scrollbar {
+    display: none;
   }
   
   .tab-btn {
+    /* Prevents buttons from shrinking or wrapping text */
+    flex: 0 0 auto;
     white-space: nowrap;
-    flex-shrink: 0;
-    font-size: 15px;
-    padding: 12px 20px;
-    min-width: fit-content;
+    
+    /* Console-style aesthetics */
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    
+    /* Smooth color transitions */
+    transition: all 0.3s ease;
   }
   
-  /* Add padding to main content to account for fixed tabs */
-  main.container {
-    padding-top: 60px;
+  .tab-btn:hover {
+    background: rgba(45, 112, 254, 0.2);
+    color: #fff;
+    border-color: rgba(45, 112, 254, 0.5);
+    box-shadow: 0 0 10px rgba(45, 112, 254, 0.3);
+  }
+  
+  .tab-btn.active {
+    background: rgba(45, 112, 254, 0.2);
+    color: #fff;
+    border-color: rgba(45, 112, 254, 0.5);
+    box-shadow: 0 0 10px rgba(45, 112, 254, 0.3);
+  }
   }
   
   /* Allow tooltips to overflow window bodies */
