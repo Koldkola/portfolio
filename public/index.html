@@ -2214,7 +2214,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           let html = '';
           for (let i = 0; i < text.length; i++) {
             const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
-            html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${text[i]}</span>`;
+            html += `<span style="font-family: '${randomFont}', serif !important; display: inline-block;">${text[i]}</span>`;
           }
           element.innerHTML = html;
         };
