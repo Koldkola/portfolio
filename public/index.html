@@ -2200,6 +2200,24 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         'Tomatoes', 'Wedding Day', 'Xiomara', 'Yokelvision'
       ];
 
+      // Reusable function to randomize any element's font
+      function startRandomizing(element, text) {
+        // Guard clause in case the element doesn't exist on the page
+        if (!element || !text) return;
+
+        const randomize = () => {
+          let html = '';
+          for (let i = 0; i < text.length; i++) {
+            const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
+            html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${text[i]}</span>`;
+          }
+          element.innerHTML = html;
+        };
+
+        randomize(); // Run immediately
+        setInterval(randomize, 3000); // Run every 3 seconds
+      }
+
       function startTitleFontRandomization() {
         const kumachiTitle = document.getElementById('kumachi-title');
         const kameraTitle = document.getElementById('kommunity-kamera-title');
@@ -2212,61 +2230,11 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const yourOriginalText = yourText ? yourText.textContent : '';
         const myOriginalText = myText ? myText.textContent : '';
 
-        // Randomize Kumachi title
-        if (kumachiTitle && kumachiText) {
-          const randomizeKumachi = () => {
-            let html = '';
-            for (let i = 0; i < kumachiText.length; i++) {
-              const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
-              html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${kumachiText[i]}</span>`;
-            }
-            kumachiTitle.innerHTML = html;
-          };
-          randomizeKumachi(); // Run immediately
-          setInterval(randomizeKumachi, 3000);
-        }
-
-        // Randomize Kamera title
-        if (kameraTitle && kameraText) {
-          const randomizeKamera = () => {
-            let html = '';
-            for (let i = 0; i < kameraText.length; i++) {
-              const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
-              html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${kameraText[i]}</span>`;
-            }
-            kameraTitle.innerHTML = html;
-          };
-          randomizeKamera(); // Run immediately
-          setInterval(randomizeKamera, 3000);
-        }
-
-        // Randomize "your" text
-        if (yourText && yourOriginalText) {
-          const randomizeYour = () => {
-            let html = '';
-            for (let i = 0; i < yourOriginalText.length; i++) {
-              const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
-              html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${yourOriginalText[i]}</span>`;
-            }
-            yourText.innerHTML = html;
-          };
-          randomizeYour(); // Run immediately
-          setInterval(randomizeYour, 3000);
-        }
-
-        // Randomize "my" text
-        if (myText && myOriginalText) {
-          const randomizeMy = () => {
-            let html = '';
-            for (let i = 0; i < myOriginalText.length; i++) {
-              const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
-              html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${myOriginalText[i]}</span>`;
-            }
-            myText.innerHTML = html;
-          };
-          randomizeMy(); // Run immediately
-          setInterval(randomizeMy, 3000);
-        }
+        // Apply randomization to each element
+        startRandomizing(kumachiTitle, kumachiText);
+        startRandomizing(kameraTitle, kameraText);
+        startRandomizing(yourText, yourOriginalText);
+        startRandomizing(myText, myOriginalText);
       }
 
       startTitleFontRandomization();
