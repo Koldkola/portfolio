@@ -274,11 +274,6 @@ function openGlobeViewModal() {
       }, 0);
     }
   }
-  
-  // Trigger Kurrently window
-  if (window.triggerKurrently) {
-    window.triggerKurrently();
-  }
 
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';
