@@ -1063,172 +1063,360 @@ main.container .link { color: var(--text-primary); }
 /* =========================================
    THE INTERFACE (Webcam Mirror)
 ========================================= */
-.mirror-section { max-width: 1000px; margin: 100px auto; padding: 0 40px; }
+.mirror-section {
+  padding: 4rem 2rem;
+  border-top: 1px solid rgba(0, 255, 136, 0.2);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+  position: relative;
+  overflow: hidden;
+}
 
-/* Flex layout: Canvas on Left, Controls on Right */
-.mirror-container { 
-  border-radius: 16px; 
-  display: flex; 
-  flex-direction: row; 
-  align-items: stretch; 
-  overflow: hidden; 
-  padding: 0; /* Removing padding so the divider goes edge-to-edge */
+.mirror-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 0, 127, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  animation: subtle-shift 20s ease-in-out infinite;
+}
+
+@keyframes subtle-shift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -20px); }
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+}
+
+.section-header p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.interactive-header {
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+.mirror-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
 .canvas-wrapper {
-  flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 136, 0.1);
 }
 
-canvas#mirror-canvas { 
-  width: 100%; 
-  max-width: 700px; 
-  height: auto; 
-  display: block;
-  /* Flips the webcam so it acts like a mirror */
-  transform: scaleX(-1); 
+.canvas-wrapper.binary-layout {
+  flex-direction: row;
+}
+
+.split-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: width 0.4s ease, opacity 0.4s ease;
+}
+
+.canvas-wrapper.binary-layout .split-view {
+  width: 50%;
+}
+
+.view-label {
+  color: #00ff88;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.view-label.hidden {
+  display: none;
+  opacity: 0;
+}
+
+.split-view.hidden {
+  display: none;
+}
+
+.split-view.full {
+  width: 100%;
+}
+
+#mirror-canvas,
+#bin-preview-vid,
+#bin-preview-img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+#mirror-canvas,
+#bin-preview-vid {
+  transform: scaleX(-1);
+}
+
+#bin-preview-img {
+  transform: scaleX(1);
+  object-fit: contain;
+  max-height: 480px;
 }
 
 .mirror-side-controls {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 40px 30px;
-  min-width: 250px;
-  background: rgba(0,0,0,0.4);
-  border-left: 1px solid var(--glass-border);
+  gap: 15px;
+  flex: 0 0 200px;
+  align-self: flex-start;
 }
 
 .mode-buttons-vertical {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 8px;
   width: 100%;
 }
 
-.mode-buttons-vertical .ctrl-btn { 
-  background: rgba(255,255,255,0.05); 
-  border: 1px solid rgba(255,255,255,0.1); 
-  padding: 12px 20px; 
-  border-radius: 8px; 
-  font-size: 0.85rem; 
-  text-transform: uppercase; 
-  letter-spacing: 1px;
-  color: var(--text-muted);
+.ctrl-btn {
+  padding: 10px 14px;
+  background: rgba(0, 255, 136, 0.05);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ff88;
   cursor: pointer;
-  transition: all 0.3s;
-  text-align: left;
-}
-
-.mode-buttons-vertical .ctrl-btn:hover {
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-
-.mode-buttons-vertical .ctrl-btn.active { 
-  background: #fff; 
-  color: #000; 
-  box-shadow: 0 0 15px rgba(255,255,255,0.4); 
+  font-size: 0.85rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Physical Camera Shutter Button */
+.ctrl-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 255, 136, 0.2);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.ctrl-btn:hover::before {
+  left: 0;
+}
+
+.ctrl-btn.active {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: rgba(0, 255, 136, 0.6);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), inset 0 0 15px rgba(0, 255, 136, 0.05);
+}
+
+.specific-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 6px;
+}
+
+.specific-controls.hidden {
+  display: none;
+}
+
+#poly-panel {
+  background: rgba(0, 10, 30, 0.6);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+#binary-panel {
+  background: rgba(0, 10, 30, 0.6);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-group.row-btns {
+  flex-direction: row;
+  gap: 8px;
+}
+
+.control-group label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.control-group label span {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.control-group input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+  accent-color: #00ff88;
+  background: transparent;
+}
+
+.mini-btn,
+.file-upload {
+  padding: 8px 12px;
+  background: rgba(0, 255, 136, 0.05);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ff88;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.mini-btn:hover,
+.file-upload:hover {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: rgba(0, 255, 136, 0.6);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+}
+
+.mini-btn.active {
+  background: rgba(0, 255, 136, 0.2);
+  border-color: rgba(0, 255, 136, 0.7);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
 .camera-shutter-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-}
-
-.capture-row {
-  display: flex;
-  align-items: center;
   gap: 12px;
-}
-
-.webcam-toggle-btn {
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  font-size: 0.7rem;
-  letter-spacing: 1px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-}
-
-.webcam-toggle-btn:hover {
-  background: rgba(255,255,255,0.16);
+  padding-top: 10px;
 }
 
 .shutter-btn {
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  background: #fff;
-  border: 4px solid #111;
-  outline: 4px solid #fff;
+  background: radial-gradient(circle at 30% 30%, rgba(0, 255, 136, 0.4), rgba(0, 255, 136, 0.1));
+  border: 2px solid rgba(0, 255, 136, 0.5);
   cursor: pointer;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.8);
-  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.shutter-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle at 30% 30%, rgba(0, 255, 136, 0.6), rgba(0, 255, 136, 0.2));
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .shutter-btn:hover {
-  background: #f0f0f0;
-  outline-color: #ccc;
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.5), inset 0 0 30px rgba(0, 255, 136, 0.2);
+  border-color: rgba(0, 255, 136, 0.8);
 }
 
 .shutter-btn:active {
-  transform: scale(0.92);
-  background: #ccc;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 2px 5px rgba(0,0,0,0.8);
+  transform: scale(0.95);
+  box-shadow: 0 0 40px rgba(0, 255, 136, 0.7), inset 0 0 40px rgba(0, 255, 136, 0.3);
 }
 
 .shutter-label {
-  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  color: var(--text-muted);
-}
-
-.record-btn {
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255, 0, 76, 0.2);
-  color: #fff;
-  font-size: 0.7rem;
-  letter-spacing: 1px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-}
-
-.record-btn:hover {
-  background: rgba(255, 0, 76, 0.35);
-}
-
-.record-btn.recording {
-  background: #ff004c;
-  color: #000;
-  box-shadow: 0 0 12px rgba(255, 0, 76, 0.6);
-}
-
-.record-timer {
-  font-size: 0.7rem;
   letter-spacing: 2px;
-  color: rgba(255,255,255,0.75);
-  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
-.record-timer.hidden {
-  display: none;
+@media (max-width: 900px) {
+  .mirror-container {
+    flex-direction: column;
+  }
+
+  .mirror-side-controls {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .mode-buttons-vertical {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .canvas-wrapper {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .canvas-wrapper.binary-layout {
+    flex-direction: column;
+  }
+
+  .canvas-wrapper.binary-layout .split-view {
+    width: 100%;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+  }
 }
 
 /* =========================================
