@@ -106,6 +106,21 @@ function rotateEntries() {
 // Open submission modal
 function openGlobeModal() {
   const modal = document.getElementById('globe-modal');
+  const aboutWindow = document.getElementById('aboutWindow');
+  const notesWindow = document.getElementById('notesWindow');
+  
+  // Fade out floating windows
+  if (aboutWindow) {
+    aboutWindow.style.opacity = '0';
+    aboutWindow.style.pointerEvents = 'none';
+    aboutWindow.style.transition = 'opacity 0.3s ease';
+  }
+  if (notesWindow) {
+    notesWindow.style.opacity = '0';
+    notesWindow.style.pointerEvents = 'none';
+    notesWindow.style.transition = 'opacity 0.3s ease';
+  }
+  
   if (modal) {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -115,6 +130,19 @@ function openGlobeModal() {
 // Close submission modal
 function closeGlobeModal() {
   const modal = document.getElementById('globe-modal');
+  const aboutWindow = document.getElementById('aboutWindow');
+  const notesWindow = document.getElementById('notesWindow');
+  
+  // Fade in floating windows
+  if (aboutWindow) {
+    aboutWindow.style.opacity = '1';
+    aboutWindow.style.pointerEvents = 'auto';
+  }
+  if (notesWindow) {
+    notesWindow.style.opacity = '1';
+    notesWindow.style.pointerEvents = 'auto';
+  }
+  
   if (modal) {
     modal.classList.remove('active');
     document.body.style.overflow = '';
@@ -127,11 +155,19 @@ function openGlobeViewModal() {
   const modal = document.getElementById('globe-view-modal');
   const content = document.getElementById('globe-view-content');
   
-  // Hide me.txt and content.txt windows
+  // Fade out me.txt and context.txt windows
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
-  if (aboutWindow) aboutWindow.style.display = 'none';
-  if (notesWindow) notesWindow.style.display = 'none';
+  if (aboutWindow) {
+    aboutWindow.style.opacity = '0';
+    aboutWindow.style.pointerEvents = 'none';
+    aboutWindow.style.transition = 'opacity 0.3s ease';
+  }
+  if (notesWindow) {
+    notesWindow.style.opacity = '0';
+    notesWindow.style.pointerEvents = 'none';
+    notesWindow.style.transition = 'opacity 0.3s ease';
+  }
   
   if (!modal || !content) return;
   
@@ -389,17 +425,16 @@ function closeGlobeViewModal() {
     renderBoardModal();
   }
   
-  // Restore windows visibility
+  // Fade in floating windows
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
-  const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
-  const notesVisible = sessionStorage.getItem('notesWindowVisible');
-  
-  if (aboutWindow && aboutVisible !== 'false') {
-    aboutWindow.style.display = 'block';
+  if (aboutWindow) {
+    aboutWindow.style.opacity = '1';
+    aboutWindow.style.pointerEvents = 'auto';
   }
-  if (notesWindow && notesVisible !== 'false') {
-    notesWindow.style.display = 'block';
+  if (notesWindow) {
+    notesWindow.style.opacity = '1';
+    notesWindow.style.pointerEvents = 'auto';
   }
 }
 
