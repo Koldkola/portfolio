@@ -1518,8 +1518,8 @@ main.container .link { color: var(--text-primary); }
 }
 
 .tooltip-popup {
-  position: absolute;
-  bottom: calc(100% + 12px);
+  position: fixed;
+  bottom: auto;
   left: 50%;
   transform: translateX(-50%) translateY(-8px);
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.98), rgba(109, 40, 217, 0.98));
@@ -1530,8 +1530,8 @@ main.container .link { color: var(--text-primary); }
   font-weight: 500;
   white-space: normal;
   width: max-content;
-  min-width: 220px;
-  max-width: min(640px, 90vw);
+  min-width: 320px;
+  max-width: 400px;
   text-align: center;
   pointer-events: none;
   opacity: 0;
