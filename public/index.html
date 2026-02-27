@@ -103,9 +103,9 @@
             </div>
             <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
-            <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner">📷 POST TO KORNER</button>
-            <button id="video-message-btn" class="feature-btn" title="Record 5-15 second video message">🎥 VIDEO MESSAGE</button>
-            <button id="photobooth-btn" class="feature-btn" title="Auto-capture photos every 5 seconds">📸 PHOTOBOOTH</button>
+            <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner"> POST TO KORNER</button>
+            <button id="video-message-btn" class="feature-btn" title="Record 5-15 second video message">VIDEO TO KORNER</button>
+            <button id="photobooth-btn" class="feature-btn" title="Auto-capture photos every 5 seconds"> PHOTOBOOTH</button>
           </div>
         </div>
         
@@ -1879,8 +1879,8 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         });
         
         // Connect nearby points with lines (constellation effect)
-        ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(150, 180, 255, 0.4)';
+        ctx.lineWidth = 1.5;
         
         for (let i = 0; i < constellationPoints.length; i++) {
           const p1 = constellationPoints[i];
@@ -1892,12 +1892,18 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
               Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)
             );
             
-            // Connect if within threshold distance
-            if (distance < 80) {
-              const alpha = (1 - distance / 80) * 0.4;
+            // Connect if within threshold distance (increased from 80 to 150)
+            if (distance < 150) {
+              const alpha = (1 - distance / 150) * 0.6;
               ctx.strokeStyle = `rgba(150, 180, 255, ${alpha})`;
               ctx.beginPath();
               ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
               ctx.lineTo(p2.x, p2.y);
               ctx.stroke();
             }
