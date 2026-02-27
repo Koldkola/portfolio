@@ -602,7 +602,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   </section>
 
   <!-- Kurrently Window -->
-  <section class="window kurrently-window" id="kurrentlyWindow" style="position: fixed; top: 30px; right: 30px; display: block;">
+  <section class="window kurrently-window" id="kurrentlyWindow" style="position: fixed; top: 150px; left: 50%; transform: translateX(-50%); display: block;">
     <div class="window-header drag-handle">
       <span class="dot red"></span>
       <span class="dot yellow"></span>
@@ -610,7 +610,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       <span class="window-title">Kurrently</span>
     </div>
     <div class="window-body">
-      <div id="kurrentlyContent" style="font-size: 0.85rem; line-height: 1.4; font-family: 'Courier New', monospace; min-height: 80px;"></div>
+      <div id="kurrentlyContent" style="font-size: 0.85rem; line-height: 1.6; font-family: 'Courier New', monospace; min-height: 120px; white-space: pre-wrap;"></div>
     </div>
   </section>
 
@@ -2227,7 +2227,8 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       const pauseAtEnd = 2000; // ms pause before restart
 
       async function typeLines() {
-        while (true) {
+        let cycleCount = 0;
+        while (cycleCount < 2) {
           contentDiv.textContent = '';
           
           for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
@@ -2246,8 +2247,17 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             }
           }
           
-          // Pause before restarting
-          await new Promise(resolve => setTimeout(resolve, pauseAtEnd));
+          cycleCount++;
+          
+          // Pause before restarting or fade out after 2nd cycle
+          if (cycleCount < 2) {
+            await new Promise(resolve => setTimeout(resolve, pauseAtEnd));
+          } else {
+            // After 2nd cycle, wait then fade out
+            await new Promise(resolve => setTimeout(resolve, pauseAtEnd));
+            kurrentlyWindow.style.transition = 'opacity 1s ease-out';
+            kurrentlyWindow.style.opacity = '0';
+          }
         }
       }
 
