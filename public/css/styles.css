@@ -89,16 +89,6 @@ body::before {
   line-height: 1.65;
   text-shadow: 0 0 6px rgba(0, 255, 136, 0.2);
   box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6), 0 6px 24px rgba(0, 0, 0, 0.35);
-  position: relative;
-}
-
-.terminal-block::after {
-  content: "▍";
-  display: inline-block;
-  margin-left: 6px;
-  color: #9affb0;
-  animation: terminalBlink 1s steps(1, end) infinite;
-  opacity: 0.85;
 }
 
 .terminal-block .typing-word {
@@ -113,11 +103,6 @@ body::before {
 @keyframes wordType {
   0% { opacity: 0; filter: blur(1px); transform: translateY(2px); }
   100% { opacity: 1; filter: blur(0); transform: translateY(0); }
-}
-
-@keyframes terminalBlink {
-  0%, 49% { opacity: 0; }
-  50%, 100% { opacity: 0.85; }
 }
 
 /* =========================================
