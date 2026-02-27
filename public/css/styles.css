@@ -1558,13 +1558,6 @@ main.container .link { color: var(--text-primary); }
   animation: tooltipBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* Projects tab: keep tooltips inside cards to avoid clipping in the carousel */
-.project-card .tooltip-popup {
-  max-width: 240px;
-  min-width: 0;
-  width: 240px;
-}
-
 @keyframes tooltipBounce {
   0% {
     transform: translateX(-50%) translateY(-8px) scale(0.8);
