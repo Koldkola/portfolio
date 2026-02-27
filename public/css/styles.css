@@ -242,8 +242,14 @@ body {
 /* Sticky Notes */
 /* Base style to ensure the animation is smooth */
 .board-sticky { 
-  width: 160px;  /* Forces a small width */
-  height: 160px; /* Forces an equal height to make it square */
+  width: 160px;
+  height: 160px;
+  
+  /* --- THE FIX --- */
+  flex: 0 0 160px; /* This absolutely locks the size. It means: don't grow, don't shrink, stay exactly 160px */
+  max-width: 160px; /* A secondary lock just in case */
+  /* --------------- */
+  
   padding: 12px;
   overflow: hidden; /* Hides any extra text that doesn't fit in the square */
   border-radius: 3px; 
@@ -331,10 +337,16 @@ body {
 .board-sticky img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Fills the square perfectly without distorting */
+  
+  /* --- THE FIX --- */
+  max-width: 100%; /* Forces the image to never exceed the 160px parent */
+  display: block;  /* Removes the invisible extra space browsers put under images */
+  /* --------------- */
+  
+  object-fit: cover; 
   border-radius: 4px;
-  cursor: zoom-in; /* Changes the mouse pointer to a magnifying glass */
-  transition: all 0.3s ease;
+  cursor: zoom-in; 
+  transition: transform 0.3s ease;
 }
 
 .board-sticky img:active {
