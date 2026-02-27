@@ -622,12 +622,14 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   <script src="/js/security.js"></script>
   <script src="/js/weekly.js"></script>
   <script src="/js/globe.js"></script>
+  <script src="/js/kurrently.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/tracking-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/eye-min.js"></script>
   <script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script>
   <script>
     // The Interface - Webcam Mirror Effects with Eye Tracking
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('🎉 DOMContentLoaded fired - script is running');
       const video = document.getElementById('webcam');
       const canvas = document.getElementById('mirror-canvas');
       const ctx = canvas.getContext('2d');
@@ -2249,8 +2251,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       startTitleFontRandomization();
     });
   </script>
-  
-  <script src="/js/kurrently.js"></script>
   
   <style>
     /* Allow tooltips to escape window boundaries */
