@@ -147,11 +147,11 @@ function openGlobeModal() {
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
   
-  // Hide floating windows (only if not already faded by timeout)
-  if (aboutWindow && !window.windowsFaded) {
+  // Hide floating windows
+  if (aboutWindow) {
     aboutWindow.style.display = 'none';
   }
-  if (notesWindow && !window.windowsFaded) {
+  if (notesWindow) {
     notesWindow.style.display = 'none';
   }
   
@@ -167,12 +167,14 @@ function closeGlobeModal() {
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
   
-  // Fade in floating windows (only if they haven't been auto-faded)
-  if (aboutWindow && !window.windowsFaded) {
+  // Show floating windows
+  if (aboutWindow) {
     aboutWindow.style.display = 'block';
+    aboutWindow.style.opacity = '1';
   }
-  if (notesWindow && !window.windowsFaded) {
+  if (notesWindow) {
     notesWindow.style.display = 'block';
+    notesWindow.style.opacity = '1';
   }
   
   if (modal) {
@@ -187,13 +189,13 @@ function openGlobeViewModal() {
   const modal = document.getElementById('globe-view-modal');
   const content = document.getElementById('globe-view-content');
   
-  // Hide me.txt and context.txt windows (only if not already faded)
+  // Hide me.txt and context.txt windows
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
-  if (aboutWindow && !window.windowsFaded) {
+  if (aboutWindow) {
     aboutWindow.style.display = 'none';
   }
-  if (notesWindow && !window.windowsFaded) {
+  if (notesWindow) {
     notesWindow.style.display = 'none';
   }
   
@@ -337,14 +339,14 @@ function closeGlobeViewModal() {
   // Restore windows visibility
   const aboutWindow = document.getElementById('aboutWindow');
   const notesWindow = document.getElementById('notesWindow');
-  const aboutVisible = sessionStorage.getItem('aboutWindowVisible');
-  const notesVisible = sessionStorage.getItem('notesWindowVisible');
   
-  if (aboutWindow && aboutVisible !== 'false') {
+  if (aboutWindow) {
     aboutWindow.style.display = 'block';
+    aboutWindow.style.opacity = '1';
   }
-  if (notesWindow && notesVisible !== 'false') {
+  if (notesWindow) {
     notesWindow.style.display = 'block';
+    notesWindow.style.opacity = '1';
   }
 }
 
