@@ -111,7 +111,7 @@
             </div>
             <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
-            <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner">📷 POST TO BOARD</button>
+            <button id="snap-to-board-btn" class="snap-board-btn" title="Snap photo and post to Kommunity Korner">📷 POST TO KORNER</button>
           </div>
         </div>
         
@@ -500,7 +500,7 @@
             </div>
 
             <div style="display: flex; gap: 8px;">
-              <button type="submit" class="btn primary" style="flex: 1;">Post to Board</button>
+              <button type="submit" class="btn primary" style="flex: 1;">Post to Korner</button>
               <button type="button" class="btn secondary" onclick="closeSnapToBoardModal()" style="flex: 1;">Cancel</button>
             </div>
           </form>
@@ -755,7 +755,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       const snapToBoardBtn = document.getElementById('snap-to-board-btn');
       if (snapToBoardBtn) {
         snapToBoardBtn.addEventListener('click', () => {
-          if (!webcamToggleBtn.classList.contains('active')) {
+          if (!webcamStream) {
             showNotification('Please start your camera first!', 'error');
             return;
           }
