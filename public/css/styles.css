@@ -1618,6 +1618,18 @@ main.container .link { color: var(--text-primary); }
     flex-direction: column;
     gap: 3px;
   }
+
+  /* Reposition floating windows at top on mobile */
+  .about-window {
+    top: 10px !important;
+    left: 10px !important;
+  }
+  
+  .notes-window {
+    top: 120px !important;
+    bottom: auto !important;
+    right: 10px !important;
+  }
 }
 
 /* =========================================
