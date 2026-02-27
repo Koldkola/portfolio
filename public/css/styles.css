@@ -1647,23 +1647,6 @@ main.container .link { color: var(--text-primary); }
 }
 
 @media (max-width: 768px) {
-  /* Mobile tooltip positioning - show below the word */
-  .tooltip-popup {
-    bottom: auto;
-    top: calc(100% + 12px);
-    transform: translateX(-50%) translateY(8px);
-  }
-  
-  .tooltip-popup::after {
-    top: auto;
-    bottom: 100%;
-    border-color: transparent transparent rgba(109, 40, 217, 0.98) transparent;
-  }
-  
-  .tooltip-word:hover .tooltip-popup {
-    transform: translateX(-50%) translateY(16px);
-  }
-  
   .hero { flex-direction: column; text-align: center; margin: 40px auto; }
   .hero-content { margin-bottom: 40px; }
   .nav-links { display: none; }
