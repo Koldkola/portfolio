@@ -1507,56 +1507,49 @@ main.container .link { color: var(--text-primary); }
 
 .tooltip-word {
   position: relative;
-  text-decoration: underline;
-  text-decoration-color: #a855f7;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
   cursor: help;
-  color: #a855f7;
-  font-weight: 600;
+  text-decoration: underline dotted rgba(255, 255, 255, 0.5);
 }
 
 .tooltip-popup {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.98), rgba(109, 40, 217, 0.98));
-  color: #ffffff;
-  padding: 20px 24px;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  white-space: normal;
-  min-width: 320px;
-  max-width: 400px;
-  text-align: center;
-  pointer-events: none;
-  opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  z-index: 10000;
-  line-height: 1.5;
-  letter-spacing: 0.3px;
-  backdrop-filter: blur(10px);
+  opacity: 0;
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 220px;
+  background-color: #222;
+  color: #fff;
+  font-size: 12px;
+  font-weight: normal;
+  text-align: center;
+  line-height: 1.4;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 9999;
+  transition: opacity 0.2s ease, bottom 0.2s ease;
+  pointer-events: none;
 }
 
 .tooltip-popup::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top-color: rgba(109, 40, 217, 0.98);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #222 transparent transparent transparent;
 }
 
 .tooltip-word:hover .tooltip-popup {
-  opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(-16px);
-  animation: tooltipBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  opacity: 1;
+  bottom: 130%;
 }
 
 /* Smooth pop-in animation for sticky notes */
