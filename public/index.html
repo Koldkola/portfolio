@@ -2213,51 +2213,59 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const myOriginalText = myText ? myText.textContent : '';
 
         // Randomize Kumachi title
-        if (kumachiTitle) {
-          setInterval(() => {
+        if (kumachiTitle && kumachiText) {
+          const randomizeKumachi = () => {
             let html = '';
             for (let i = 0; i < kumachiText.length; i++) {
               const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
               html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${kumachiText[i]}</span>`;
             }
             kumachiTitle.innerHTML = html;
-          }, 3000);
+          };
+          randomizeKumachi(); // Run immediately
+          setInterval(randomizeKumachi, 3000);
         }
 
         // Randomize Kamera title
-        if (kameraTitle) {
-          setInterval(() => {
+        if (kameraTitle && kameraText) {
+          const randomizeKamera = () => {
             let html = '';
             for (let i = 0; i < kameraText.length; i++) {
               const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
               html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${kameraText[i]}</span>`;
             }
             kameraTitle.innerHTML = html;
-          }, 3000);
+          };
+          randomizeKamera(); // Run immediately
+          setInterval(randomizeKamera, 3000);
         }
 
         // Randomize "your" text
-        if (yourText) {
-          setInterval(() => {
+        if (yourText && yourOriginalText) {
+          const randomizeYour = () => {
             let html = '';
             for (let i = 0; i < yourOriginalText.length; i++) {
               const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
               html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${yourOriginalText[i]}</span>`;
             }
             yourText.innerHTML = html;
-          }, 3000);
+          };
+          randomizeYour(); // Run immediately
+          setInterval(randomizeYour, 3000);
         }
 
         // Randomize "my" text
-        if (myText) {
-          setInterval(() => {
+        if (myText && myOriginalText) {
+          const randomizeMy = () => {
             let html = '';
             for (let i = 0; i < myOriginalText.length; i++) {
               const randomFont = TITLE_FONTS[Math.floor(Math.random() * TITLE_FONTS.length)];
               html += `<span style="font-family: '${randomFont}', serif; display: inline-block;">${myOriginalText[i]}</span>`;
             }
             myText.innerHTML = html;
-          }, 3000);
+          };
+          randomizeMy(); // Run immediately
+          setInterval(randomizeMy, 3000);
         }
       }
 
