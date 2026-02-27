@@ -1898,18 +1898,16 @@ canvas#mirror-canvas {
   min-width: 280px;
   overflow: hidden;
   z-index: 1000;
+  
+  /* The default state is visible */
   opacity: 1;
-  transition: opacity 1s ease-out;
+  transition: opacity 1s ease-out; 
 }
 
+/* The state JS applies after 20 seconds */
 .window.faded {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.window.faded:hover {
-  opacity: 1 !important;
-  pointer-events: auto !important;
+  opacity: 0; 
+  /* Removed pointer-events: none so the invisible window can still detect your mouse to wake up! */
 }
 
 .window-header {

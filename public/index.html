@@ -2147,46 +2147,45 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       // Start Kurrently typing animation
       startKurrentlyAnimation();
 
-      // Fade out Me.txt and Context.txt after 20 seconds (Kurrently-style fading)
+      // Fade out Me.txt and Context.txt after 20 seconds
       function startWindowsFadeLoop() {
         const aboutWindow = document.getElementById('aboutWindow');
         const notesWindow = document.getElementById('notesWindow');
         
         if (!aboutWindow || !notesWindow) return;
 
-        async function fadeWindowsLoop() {
-          while (true) {
-            // Show windows with no transition
-            aboutWindow.style.opacity = '1';
-            notesWindow.style.opacity = '1';
-            aboutWindow.style.transition = 'opacity 0s';
-            notesWindow.style.transition = 'opacity 0s';
-            
-            // Wait 20 seconds
-            await new Promise(resolve => setTimeout(resolve, 20000));
-            
-            // Fade out with transition
-            aboutWindow.style.transition = 'opacity 1s ease-out';
-            notesWindow.style.transition = 'opacity 1s ease-out';
-            aboutWindow.style.opacity = '0';
-            notesWindow.style.opacity = '0';
-            
-            // Wait before next cycle
-            await new Promise(resolve => setTimeout(resolve, 20000));
-          }
+        // Make sure they start visible
+        aboutWindow.style.display = 'block';
+        notesWindow.style.display = 'block';
+
+        let fadeTimeout;
+
+        // Function to wake windows up and restart the 20s clock
+        function resetFadeTimer() {
+          aboutWindow.classList.remove('faded');
+          notesWindow.classList.remove('faded');
+
+          clearTimeout(fadeTimeout);
+
+          // After 20 seconds of no interaction, add the faded class back
+          fadeTimeout = setTimeout(() => {
+            aboutWindow.classList.add('faded');
+            notesWindow.classList.add('faded');
+          }, 20000); 
         }
 
-        fadeWindowsLoop();
+        // Start the timer when the script runs
+        resetFadeTimer();
 
-        // Hover to restore
-        aboutWindow.addEventListener('mouseenter', function() {
-          this.style.opacity = '1';
-          this.style.transition = 'opacity 0.3s ease-in';
-        });
-
-        notesWindow.addEventListener('mouseenter', function() {
-          this.style.opacity = '1';
-          this.style.transition = 'opacity 0.3s ease-in';
+        // If the user hovers, clear the timer so it doesn't fade while they read
+        [aboutWindow, notesWindow].forEach(win => {
+          win.addEventListener('mouseenter', () => {
+            clearTimeout(fadeTimeout);
+            win.classList.remove('faded'); // Wake it up instantly
+          });
+          
+          // When the mouse leaves, start the 20-second countdown again
+          win.addEventListener('mouseleave', resetFadeTimer);
         });
       }
 
