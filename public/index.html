@@ -70,20 +70,9 @@
       
       <div class="mirror-container glass-panel">
         
-        <div class="canvas-wrapper" id="main-canvas-wrapper">
-          
-          <div id="binary-input-container" class="split-view hidden">
-            <p class="view-label">LIVE INPUT</p>
-            <video id="bin-preview-vid" autoplay playsinline muted></video>
-            <img id="bin-preview-img" class="hidden" />
-          </div>
-
-          <div id="canvas-container" class="split-view full">
-            <p class="view-label hidden" id="canvas-label">BINARY OUTPUT</p>
-            <video id="webcam" width="640" height="480" autoplay playsinline style="display: none;"></video>
-            <canvas id="mirror-canvas" width="640" height="480"></canvas>
-          </div>
-
+        <div class="canvas-wrapper">
+          <video id="webcam" width="640" height="480" autoplay playsinline style="display: none;"></video>
+          <canvas id="mirror-canvas" width="640" height="480"></canvas>
         </div>
 
         <div class="mirror-side-controls">
@@ -91,19 +80,18 @@
             <button class="ctrl-btn active" data-mode="wireframe">Neon Wireframe</button>
             <button class="ctrl-btn" data-mode="thermal">Thermal Vision</button>
             <button class="ctrl-btn" data-mode="zeroday">Zero-Day Anonymizer</button>
+            <button class="ctrl-btn" data-mode="binary">Binary Matrix</button>
             <button class="ctrl-btn" data-mode="temporal">Temporal Grid</button>
             <button class="ctrl-btn" data-mode="poly">Poly-Construct</button>
-            <button class="ctrl-btn" data-mode="binary">Binary Matrix</button>
           </div>
           
-          <div id="poly-panel" class="specific-controls hidden">
-            <div class="control-group">
-              <label>Mesh Density: <span id="poly-density-val">600</span></label>
-              <input type="range" id="poly-density" min="100" max="1500" step="50" value="600">
-            </div>
-          </div>
-
           <div id="binary-panel" class="specific-controls hidden">
+            <div class="live-preview-box">
+              <p>LIVE INPUT</p>
+              <video id="bin-preview-vid" autoplay playsinline muted></video>
+              <img id="bin-preview-img" class="hidden" />
+            </div>
+
             <div class="control-group row-btns">
               <button id="bin-start" class="mini-btn active">Webcam</button>
               <button id="bin-stop" class="mini-btn">Stop</button>
@@ -122,10 +110,20 @@
               <label>Image Zoom: <span id="zoom-val">1.0</span>x</label>
               <input type="range" id="bin-zoom" min="0.5" max="3.0" step="0.1" value="1.0">
             </div>
+
+            <div class="control-group">
+              <label>Export Size: <span id="export-val">1.0</span>x</label>
+              <input type="range" id="bin-export" min="1.0" max="4.0" step="0.5" value="1.0">
+            </div>
           </div>
           
           <div class="camera-shutter-wrapper">
-            <button id="capture-btn" class="shutter-btn" title="Capture Archive"></button>
+            <button id="webcam-toggle" class="webcam-toggle-btn" title="Start or stop webcam">START CAMERA</button>
+            <div class="capture-row">
+              <button id="capture-btn" class="shutter-btn" title="Capture Archive"></button>
+              <button id="record-btn" class="record-btn" title="Record Clip">REC</button>
+            </div>
+            <span id="record-timer" class="record-timer hidden">00:00</span>
             <span class="shutter-label">CAPTURE</span>
           </div>
         </div>
@@ -518,24 +516,14 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   <script>
     // The Interface - Webcam Mirror Effects with Eye Tracking
     document.addEventListener('DOMContentLoaded', () => {
-      // ===== ELEMENT REFERENCES =====
       const video = document.getElementById('webcam');
       const canvas = document.getElementById('mirror-canvas');
       const ctx = canvas.getContext('2d');
       const buttons = document.querySelectorAll('.mode-buttons-vertical .ctrl-btn');
       const captureBtn = document.getElementById('capture-btn');
-      
-      // Layout management
-      const mainWrapper = document.getElementById('main-canvas-wrapper');
-      const binInputContainer = document.getElementById('binary-input-container');
-      const canvasContainer = document.getElementById('canvas-container');
-      const canvasLabel = document.getElementById('canvas-label');
-      
-      // Poly-Construct controls
-      const polyPanel = document.getElementById('poly-panel');
-      const polySlider = document.getElementById('poly-density');
-      const polyDensityVal = document.getElementById('poly-density-val');
-      let currentPolyDensity = 600;
+      const recordBtn = document.getElementById('record-btn');
+      const recordTimer = document.getElementById('record-timer');
+      const webcamToggleBtn = document.getElementById('webcam-toggle');
       
       // Binary specific elements
       const binaryPanel = document.getElementById('binary-panel');
@@ -551,7 +539,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       
       // Temporal Grid Buffer
       const frameBuffer = [];
-      const MAX_FRAMES = 180;
+      const MAX_FRAMES = 180; // 6 seconds at 30fps
 
       // Poly-Construct Timing
       let lastPolyTime = 0;
@@ -561,7 +549,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       let recordStartTime = 0;
       let recordTimerInterval = null;
       
-      // ===== EYE TRACKING INITIALIZATION =====
+      // --- EYE TRACKING INITIALIZATION ---
       const eyeTracker = new tracking.ObjectTracker('eye');
       eyeTracker.setInitialScale(4);
       eyeTracker.setStepSize(2);
@@ -570,9 +558,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         detectedEyes = event.data.length === 0 ? [] : event.data;
       });
 
-      // ===== WEBCAM MANAGEMENT =====
+      // Start Webcam Function
       function startWebcam() {
-        navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: true })
+        navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
           .then(stream => {
             webcamStream = stream;
             video.srcObject = stream;
@@ -580,6 +568,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             video.play();
             tracking.track('#webcam', eyeTracker);
             if (!animationFrameId) requestAnimationFrame(processFrame);
+            webcamToggleBtn.textContent = 'STOP CAMERA';
           })
           .catch(err => console.error("Camera access denied.", err));
       }
@@ -603,41 +592,34 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.font = '14px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('Camera is off', canvas.width / 2, canvas.height / 2);
+        webcamToggleBtn.textContent = 'START CAMERA';
       }
 
-      // ===== UI EVENT LISTENERS =====
+      webcamToggleBtn.addEventListener('click', () => {
+        if (webcamStream) {
+          stopWebcam();
+        } else {
+          startWebcam();
+        }
+      });
+
+      // --- UI EVENT LISTENERS ---
       buttons.forEach(btn => {
         btn.addEventListener('click', (e) => {
           buttons.forEach(b => b.classList.remove('active'));
           e.target.classList.add('active');
           currentMode = e.target.dataset.mode;
           
-          // Hide all panels first
-          polyPanel.classList.add('hidden');
-          binaryPanel.classList.add('hidden');
-          
-          // Show active mode panel
-          if (currentMode === 'poly') {
-            polyPanel.classList.remove('hidden');
-          } else if (currentMode === 'binary') {
-            binaryPanel.classList.remove('hidden');
-          }
-          
-          // Toggle Binary Layout (split-view)
+          // Toggle Binary Panel visibility
           if (currentMode === 'binary') {
-            mainWrapper.classList.add('binary-layout');
-            binInputContainer.classList.remove('hidden');
-            canvasContainer.classList.remove('full');
-            canvasLabel.classList.remove('hidden');
+            binaryPanel.classList.remove('hidden');
+            canvas.style.transform = useWebcam ? "scaleX(-1)" : "scaleX(1)"; // Fix mirror flip for images
           } else {
-            mainWrapper.classList.remove('binary-layout');
-            binInputContainer.classList.add('hidden');
-            canvasContainer.classList.add('full');
-            canvasLabel.classList.add('hidden');
+            binaryPanel.classList.add('hidden');
             canvas.style.transform = "scaleX(-1)";
           }
 
-          // Clear temporal buffer to save RAM
+          // Clear temporal buffer if we switch modes to save RAM
           if (currentMode !== 'temporal') frameBuffer.length = 0;
           
           ctx.globalAlpha = 1.0;
@@ -645,9 +627,10 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         });
       });
 
-      // ===== BINARY CONTROLS =====
+      // Binary Controls
       document.getElementById('bin-spacing').addEventListener('input', (e) => document.getElementById('spacing-val').innerText = e.target.value);
       document.getElementById('bin-zoom').addEventListener('input', (e) => document.getElementById('zoom-val').innerText = parseFloat(e.target.value).toFixed(1));
+      document.getElementById('bin-export').addEventListener('input', (e) => document.getElementById('export-val').innerText = parseFloat(e.target.value).toFixed(1));
 
       document.getElementById('bin-start').addEventListener('click', (e) => {
         useWebcam = true;
@@ -664,6 +647,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         e.target.classList.add('active');
         document.getElementById('bin-start').classList.remove('active');
         stopWebcam();
+        // Clear canvas
         ctx.fillStyle = '#000';
         ctx.fillRect(0,0,canvas.width, canvas.height);
       });
@@ -680,7 +664,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
               binPreviewImg.classList.remove('hidden');
               binPreviewVid.classList.add('hidden');
               binPreviewImg.classList.add('no-mirror');
-              canvas.style.transform = "scaleX(1)";
+              canvas.style.transform = "scaleX(1)"; // Un-mirror for normal images
               document.getElementById('bin-start').classList.remove('active');
               document.getElementById('bin-stop').classList.remove('active');
             }
@@ -689,17 +673,39 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         }
       });
 
-      // ===== POLY-CONSTRUCT DENSITY CONTROL =====
-      polySlider.addEventListener('input', (e) => {
-        currentPolyDensity = parseInt(e.target.value);
-        polyDensityVal.textContent = currentPolyDensity;
-      });
-
-      // ===== CAMERA SHUTTER CAPTURE =====
+      // Camera Shutter Capture
       captureBtn.addEventListener('click', () => {
+        let finalCanvas = canvas;
+        
+        // Handle High-Res Export for Binary Mode
+        if (currentMode === 'binary') {
+            const exportScale = parseFloat(document.getElementById('bin-export').value);
+            if (exportScale > 1.0) {
+                finalCanvas = document.createElement('canvas');
+                finalCanvas.width = canvas.width * exportScale;
+                finalCanvas.height = canvas.height * exportScale;
+                const hrCtx = finalCanvas.getContext('2d');
+                const spacing = parseInt(document.getElementById('bin-spacing').value) * exportScale;
+                const zoom = parseFloat(document.getElementById('bin-zoom').value);
+                renderBinaryMatrix(hrCtx, finalCanvas.width, finalCanvas.height, spacing, zoom);
+                
+                // If exporting an image, we need to manually flip it back so the saved file isn't mirrored
+                if (useWebcam) {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = finalCanvas.width;
+                    tempCanvas.height = finalCanvas.height;
+                    const tempCtx = tempCanvas.getContext('2d');
+                    tempCtx.translate(finalCanvas.width, 0);
+                    tempCtx.scale(-1, 1);
+                    tempCtx.drawImage(finalCanvas, 0, 0);
+                    finalCanvas = tempCanvas;
+                }
+            }
+        }
+
         const link = document.createElement('a');
         link.download = `archive_${currentMode}_${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = finalCanvas.toDataURL('image/png');
         link.click();
         
         // Flash effect
@@ -707,7 +713,83 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.fillRect(0,0,canvas.width,canvas.height);
       });
 
-      // ===== MAIN PROCESSING LOOP =====
+      // Record Clip (canvas capture)
+      recordBtn.addEventListener('click', () => {
+        if (!isRecording) {
+          recordedChunks = [];
+          recordStartTime = Date.now();
+          recordTimer.textContent = '00:00';
+          recordTimer.classList.remove('hidden');
+          recordTimerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
+            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const secs = String(elapsed % 60).padStart(2, '0');
+            recordTimer.textContent = `${mins}:${secs}`;
+          }, 500);
+          // Capture canvas video + audio from webcam
+          const canvasStream = canvas.captureStream(30);
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const audioDestination = audioContext.createMediaStreamDestination();
+          
+          // If webcam is active, mix its audio with the recording
+          if (webcamStream) {
+            const audioTracks = webcamStream.getAudioTracks();
+            if (audioTracks.length > 0) {
+              const audioSource = audioContext.createMediaStreamSource(webcamStream);
+              audioSource.connect(audioDestination);
+            }
+          }
+          
+          // Combine canvas video with audio stream
+          const stream = new MediaStream();
+          canvasStream.getVideoTracks().forEach(track => stream.addTrack(track));
+          audioDestination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+          let mimeType = 'video/webm;codecs=vp9';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm;codecs=vp8';
+          }
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm';
+          }
+
+          mediaRecorder = new MediaRecorder(stream, { mimeType });
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+              recordedChunks.push(event.data);
+            }
+          };
+          mediaRecorder.onstop = () => {
+            if (recordTimerInterval) {
+              clearInterval(recordTimerInterval);
+              recordTimerInterval = null;
+            }
+            const blob = new Blob(recordedChunks, { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `interface_recording_${currentMode}_${Date.now()}.webm`;
+            link.click();
+            URL.revokeObjectURL(url);
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          recordBtn.classList.add('recording');
+          recordBtn.textContent = 'STOP';
+        } else {
+          mediaRecorder.stop();
+          isRecording = false;
+          recordBtn.classList.remove('recording');
+          recordBtn.textContent = 'REC';
+          recordTimer.classList.add('hidden');
+          if (recordTimerInterval) {
+            clearInterval(recordTimerInterval);
+            recordTimerInterval = null;
+          }
+        }
+      });
+
+      // Main Processing Loop
       function processFrame() {
         if (currentMode !== 'binary' && (video.paused || video.ended)) {
             animationFrameId = requestAnimationFrame(processFrame);
@@ -729,36 +811,46 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         animationFrameId = requestAnimationFrame(processFrame);
       }
 
-      // ===== TEMPORAL GRID (CCTV Delays) =====
+      // --- NEW 1. TEMPORAL GRID (CCTV Delays) ---
       function drawTemporalGrid() {
         const w = canvas.width / 2;
         const h = canvas.height / 2;
         
+        // Save current frame to an offscreen canvas for memory efficiency
         const offCanvas = document.createElement('canvas');
         offCanvas.width = w; offCanvas.height = h;
         const offCtx = offCanvas.getContext('2d');
         offCtx.drawImage(video, 0, 0, w, h);
         
+        // Add to buffer, remove oldest if over limit
         frameBuffer.push(offCanvas);
         if (frameBuffer.length > MAX_FRAMES) frameBuffer.shift();
 
         ctx.fillStyle = "#000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        // Frame Indexes (approx 30fps)
         const live = frameBuffer.length - 1;
         const delay2s = Math.max(0, frameBuffer.length - 60);
         const delay4s = Math.max(0, frameBuffer.length - 120);
         const delay6s = Math.max(0, frameBuffer.length - 180);
 
+        // Draw Live Feed (Top Left)
         if (frameBuffer[live]) ctx.drawImage(frameBuffer[live], 0, 0, w, h);
+        
+        // Draw 2s Delay (Top Right)
         if (frameBuffer[delay2s]) {
           ctx.drawImage(frameBuffer[delay2s], w, 0, w, h);
           drawCCTVText(w + 10, 20, "CAM 02 - T-2.0s");
         }
+        
+        // Draw 4s Delay (Bottom Left)
         if (frameBuffer[delay4s]) {
           ctx.drawImage(frameBuffer[delay4s], 0, h, w, h);
           drawCCTVText(10, h + 20, "CAM 03 - T-4.0s");
         }
+        
+        // Draw 6s Delay (Bottom Right)
         if (frameBuffer[delay6s]) {
           ctx.drawImage(frameBuffer[delay6s], w, h, w, h);
           drawCCTVText(w + 10, h + 20, "CAM 04 - T-6.0s");
@@ -766,11 +858,12 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
         drawCCTVText(10, 20, "CAM 01 - LIVE");
         
+        // Draw Crosshairs/Grid lines
         ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(w, 0); ctx.lineTo(w, canvas.height);
-        ctx.moveTo(0, h); ctx.lineTo(canvas.width, h);
+        ctx.moveTo(w, 0); ctx.lineTo(w, canvas.height); // Vertical
+        ctx.moveTo(0, h); ctx.lineTo(canvas.width, h); // Horizontal
         ctx.stroke();
       }
 
@@ -780,9 +873,10 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.fillText(text, x, y);
       }
 
-      // ===== POLY-CONSTRUCT (Delaunay Mesh) =====
+      // --- NEW 2. THE POLY-CONSTRUCT (PS5 / Techwear 3D Mesh) ---
       function drawPolyConstruct(timestamp) {
-        if (timestamp - lastPolyTime < 60) return;
+        // Throttle frame rate to ~15fps so it looks jittery/computational and saves CPU
+        if (timestamp - lastPolyTime < 60) return; 
         lastPolyTime = timestamp;
 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -790,8 +884,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const data = imgData.data;
         
         const points = [];
-        const numPoints = currentPolyDensity;
+        const numPoints = 600;
 
+        // Edge-biased sampling: Randomly pick points, keep if high contrast, else keep rarely
         for (let i = 0; i < 3000 && points.length < numPoints; i++) {
           const x = Math.floor(Math.random() * (canvas.width - 2)) + 1;
           const y = Math.floor(Math.random() * (canvas.height - 2)) + 1;
@@ -811,8 +906,10 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           }
         }
 
+        // Ensure corners are covered so the mesh fills the screen
         points.push([0,0], [canvas.width,0], [0,canvas.height], [canvas.width,canvas.height]);
 
+        // Format points for Delaunator
         const flatPoints = [];
         for(let p of points) { flatPoints.push(p[0], p[1]); }
         
@@ -823,11 +920,13 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 1;
 
+        // Draw triangles
         for (let i = 0; i < triangles.length; i += 3) {
           const p0 = points[triangles[i]];
           const p1 = points[triangles[i + 1]];
           const p2 = points[triangles[i + 2]];
 
+          // Find centroid of triangle to get color
           const cx = Math.floor((p0[0] + p1[0] + p2[0]) / 3);
           const cy = Math.floor((p0[1] + p1[1] + p2[1]) / 3);
           const cIdx = (cy * canvas.width + cx) * 4;
@@ -840,15 +939,17 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           ctx.lineTo(p2[0], p2[1]);
           ctx.closePath();
 
+          // Fill with original color but add PS5 blue/green glow to the strokes
           ctx.fillStyle = `rgb(${r},${g},${b})`;
           ctx.fill();
           
+          // Wireframe glow
           ctx.strokeStyle = `rgba(0, 255, 136, ${Math.max(0.1, r/255)})`;
           ctx.stroke();
         }
       }
 
-      // ===== BINARY MATRIX GENERATOR =====
+      // --- BINARY MATRIX GENERATOR ---
       function renderBinaryMatrix(targetCtx, w, h, spacing, zoom) {
         targetCtx.fillStyle = '#000';
         targetCtx.fillRect(0, 0, w, h);
@@ -859,11 +960,13 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const cols = Math.floor(w / spacing);
         const rows = Math.floor(h / spacing);
 
+        // Create a tiny offscreen canvas to sample the image pixels
         const offCanvas = document.createElement('canvas');
         offCanvas.width = cols;
         offCanvas.height = rows;
         const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
 
+        // Calculate zoom cropping
         const dw = cols * zoom;
         const dh = rows * zoom;
         const dx = (cols - dw) / 2;
@@ -881,8 +984,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
             const i = (y * cols + x) * 4;
             const brightness = (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
 
+            // Map brightness to binary visibility
             if (brightness > 30) { 
-              targetCtx.fillStyle = `rgba(0, 255, 136, ${brightness / 255})`;
+              targetCtx.fillStyle = `rgba(0, 255, 136, ${brightness / 255})`; // Glowing PS5 Green
               const char = Math.random() > 0.5 ? '1' : '0';
               targetCtx.fillText(char, x * spacing + spacing/2, y * spacing + spacing/2);
             }
@@ -890,7 +994,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         }
       }
 
-      // ===== NEON WIREFRAME =====
+      // --- NEON WIREFRAME ---
       function drawWireframe() {
         ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -901,7 +1005,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         const data = imgData.data;
         for (let i = 0; i < data.length; i += 4) {
           if ((data[i] + data[i+1] + data[i+2]) / 3 > 20) {
-            data[i] = 0; data[i+1] = 255; data[i+2] = 136;
+            data[i] = 0; data[i+1] = 255; data[i+2] = 136; 
           } else {
             data[i] = data[i+1] = data[i+2] = 0;
           }
@@ -909,30 +1013,22 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
         ctx.putImageData(imgData, 0, 0);
       }
 
-      // ===== THERMAL VISION =====
+      // --- TRUE FLIR THERMAL VISION ---
       function drawThermal() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imgData.data;
         for (let i = 0; i < data.length; i += 4) {
           let lum = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
-          if (lum < 40) { 
-            data[i] = 0; data[i+1] = 0; data[i+2] = lum * 6.3;
-          } else if (lum < 100) { 
-            let t = (lum - 40) / 60; 
-            data[i] = t * 255; data[i+1] = 0; data[i+2] = 255 - (t * 255);
-          } else if (lum < 180) { 
-            let t = (lum - 100) / 80; 
-            data[i] = 255; data[i+1] = t * 255; data[i+2] = 0;
-          } else { 
-            let t = (lum - 180) / 75; 
-            data[i] = 255; data[i+1] = 255; data[i+2] = t * 255;
-          }
+          if (lum < 40) { data[i] = 0; data[i+1] = 0; data[i+2] = lum * 6.3; } 
+          else if (lum < 100) { let t = (lum - 40) / 60; data[i] = t * 255; data[i+1] = 0; data[i+2] = 255 - (t * 255); } 
+          else if (lum < 180) { let t = (lum - 100) / 80; data[i] = 255; data[i+1] = t * 255; data[i+2] = 0; } 
+          else { let t = (lum - 180) / 75; data[i] = 255; data[i+1] = 255; data[i+2] = t * 255; }
         }
         ctx.putImageData(imgData, 0, 0);
       }
 
-      // ===== ZERO-DAY ANONYMIZER =====
+      // --- ZERO-DAY ANONYMIZER ---
       function drawZeroDay() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (detectedEyes.length > 0) {
@@ -957,9 +1053,6 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
           }
         }
       }
-
-      // ===== AUTO-START WEBCAM ON LOAD =====
-      startWebcam();
     });
   </script>
   <script>
