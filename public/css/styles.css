@@ -967,11 +967,11 @@ main.container .link { color: var(--text-primary); }
     padding: 6px;
   }
 }
-.project-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 24px; transition: all 0.4s var(--ease-out-expo); cursor: pointer; overflow: visible; }
-.project-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.project-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 24px; transition: all 0.4s var(--ease-out-expo); cursor: pointer; overflow: visible; position: relative; z-index: 1; }
+.project-card:hover { background: rgba(255,255,255,0.06); border-color: var(--glass-glow); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 10; }
 .project-card h3 { font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 12px; color: #fff; }
 .project-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
-.project-info { display: flex; flex-direction: column; overflow: visible; }
+.project-info { display: flex; flex-direction: column; overflow: visible !important; }
 .project-card .link { margin-right: 12px; display: inline-block; margin-bottom: 8px; }
 
 /* Search Box */
