@@ -574,6 +574,20 @@ function openCategoryModal(item, bgColor) {
     }
   }
   
+  // Add "Read as Newspaper" button to header
+  let newspaperBtn = document.querySelector('.modal-newspaper-btn');
+  if (!newspaperBtn) {
+    newspaperBtn = document.createElement('button');
+    newspaperBtn.className = 'modal-newspaper-btn';
+    newspaperBtn.textContent = '📰 Newspaper View';
+    newspaperBtn.style.cssText = 'position: absolute; bottom: 15px; right: 80px; padding: 8px 15px; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;';
+    newspaperBtn.onclick = () => {
+      closeCategoryModal();
+      openNewspaperModal(item);
+    };
+    modalContent.appendChild(newspaperBtn);
+  }
+  
   // Populate modal content
   modalTitle.textContent = item.title;
   modalCategory.textContent = item.category;
@@ -661,6 +675,64 @@ function closeCategoryModal() {
     notesWindow.style.display = 'block';
     notesWindow.style.opacity = '1';
   }
+}
+
+// Newspaper Modal Functions
+function openNewspaperModal(item) {
+  const newspaperModal = document.getElementById('newspaper-modal');
+  
+  // Set title and week info
+  document.getElementById('newspaper-title').textContent = item.highlights ? 'Key Highlights' : item.title;
+  document.getElementById('newspaper-week-info').textContent = `Week of ${item.week || 'This Week'}`;
+  
+  // Set intro text
+  document.getElementById('newspaper-intro-text').textContent = item.intro || '';
+  
+  // Set highlights
+  const highlightsContent = document.getElementById('newspaper-highlights-content');
+  highlightsContent.innerHTML = '';
+  if (item.highlights && Array.isArray(item.highlights)) {
+    item.highlights.forEach(highlight => {
+      const div = document.createElement('div');
+      div.className = 'newspaper-highlight-item';
+      div.textContent = highlight;
+      highlightsContent.appendChild(div);
+    });
+  }
+  
+  // Set inspiration
+  const inspirationContent = document.getElementById('newspaper-inspiration-content');
+  inspirationContent.innerHTML = '';
+  if (item.inspiration && Array.isArray(item.inspiration)) {
+    item.inspiration.forEach(insp => {
+      const div = document.createElement('div');
+      div.className = 'newspaper-inspiration-item';
+      div.textContent = insp;
+      inspirationContent.appendChild(div);
+    });
+  }
+  
+  // Set tools
+  const toolsContent = document.getElementById('newspaper-tools-content');
+  toolsContent.innerHTML = '';
+  if (item.tools && Array.isArray(item.tools)) {
+    item.tools.forEach(tool => {
+      const div = document.createElement('div');
+      div.className = 'newspaper-tools-item';
+      div.textContent = tool;
+      toolsContent.appendChild(div);
+    });
+  }
+  
+  // Show modal
+  newspaperModal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeNewspaperModal() {
+  const newspaperModal = document.getElementById('newspaper-modal');
+  newspaperModal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 async function hashWeeklyPassword(password, salt) {

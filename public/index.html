@@ -308,6 +308,57 @@
     </div>
   </div>
 
+  <!-- Newspaper-Style Weekly Highlights Modal -->
+  <div id="newspaper-modal" class="newspaper-modal" style="display: none;">
+    <div class="newspaper-content">
+      <button class="newspaper-close" onclick="closeNewspaperModal()" aria-label="Close">&times;</button>
+      
+      <div class="newspaper-header">
+        <h1 id="newspaper-title">Weekly Highlights</h1>
+        <p id="newspaper-week-info" class="newspaper-subtitle"></p>
+      </div>
+
+      <div class="newspaper-grid">
+        <div class="newspaper-main-column">
+          <!-- Featured Image -->
+          <div id="newspaper-featured-image" class="newspaper-featured-image"></div>
+          
+          <!-- Intro/Main Story -->
+          <div id="newspaper-intro-section" class="newspaper-section">
+            <h2 class="newspaper-section-title">Weekly Overview</h2>
+            <p id="newspaper-intro-text"></p>
+          </div>
+
+          <!-- Highlights -->
+          <div id="newspaper-highlights-section" class="newspaper-section">
+            <h2 class="newspaper-section-title">Key Highlights</h2>
+            <div id="newspaper-highlights-content"></div>
+          </div>
+        </div>
+
+        <div class="newspaper-sidebar">
+          <!-- Inspiration Column -->
+          <div id="newspaper-inspiration-section" class="newspaper-section newspaper-sidebar-section">
+            <h3 class="newspaper-sidebar-title">Inspiration</h3>
+            <div id="newspaper-inspiration-content"></div>
+          </div>
+
+          <!-- Tools Column -->
+          <div id="newspaper-tools-section" class="newspaper-section newspaper-sidebar-section">
+            <h3 class="newspaper-sidebar-title">Tools & Resources</h3>
+            <div id="newspaper-tools-content"></div>
+          </div>
+
+          <!-- Image Gallery -->
+          <div id="newspaper-gallery-section" class="newspaper-section newspaper-sidebar-section">
+            <h3 class="newspaper-sidebar-title">Gallery</h3>
+            <div id="newspaper-gallery" class="newspaper-gallery"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Globe Submission Modal -->
   <div id="globe-modal" class="category-modal">
     <div class="category-modal-content">
@@ -2253,6 +2304,209 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
   </script>
   
   <style>
+    /* Newspaper Modal */
+    .newspaper-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .newspaper-content {
+      background: #f5f5f0;
+      width: 100%;
+      max-width: 1200px;
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      color: #1a1a1a;
+      font-family: 'Georgia', serif;
+      border-top: 3px solid #000;
+    }
+
+    .newspaper-close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.3s;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .newspaper-close:hover {
+      color: #000;
+    }
+
+    .newspaper-header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 15px;
+    }
+
+    .newspaper-header h1 {
+      font-size: 3.5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin: 0 0 10px 0;
+      font-family: 'Times New Roman', serif;
+      text-transform: uppercase;
+    }
+
+    .newspaper-subtitle {
+      font-size: 1rem;
+      color: #666;
+      letter-spacing: 1px;
+      margin: 0;
+      font-style: italic;
+    }
+
+    .newspaper-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+    }
+
+    .newspaper-main-column {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .newspaper-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .newspaper-featured-image {
+      width: 100%;
+      height: 300px;
+      background: #ddd;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #666;
+      overflow: hidden;
+    }
+
+    .newspaper-featured-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .newspaper-section {
+      border-left: 3px solid #333;
+      padding-left: 20px;
+    }
+
+    .newspaper-section-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 0 0 15px 0;
+      font-family: 'Times New Roman', serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #999;
+      padding-bottom: 8px;
+    }
+
+    .newspaper-sidebar-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 0 0 10px 0;
+      font-family: 'Times New Roman', serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .newspaper-sidebar-section {
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #999;
+      border-left: 3px solid #333;
+    }
+
+    #newspaper-highlights-content,
+    #newspaper-inspiration-content,
+    #newspaper-tools-content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .newspaper-highlight-item,
+    .newspaper-inspiration-item,
+    .newspaper-tools-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .newspaper-highlight-item:last-child,
+    .newspaper-inspiration-item:last-child,
+    .newspaper-tools-item:last-child {
+      border-bottom: none;
+    }
+
+    .newspaper-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .newspaper-gallery-item {
+      width: 100%;
+      height: 100px;
+      background: #ddd;
+      border: 1px solid #999;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .newspaper-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 900px) {
+      .newspaper-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .newspaper-content {
+        padding: 25px;
+      }
+
+      .newspaper-header h1 {
+        font-size: 2.5rem;
+      }
+    }
+
     /* Allow tooltips to escape window boundaries */
     .window-body {
       overflow: visible !important;
