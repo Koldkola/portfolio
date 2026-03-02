@@ -545,122 +545,171 @@ function openCategoryModal(item, bgColor) {
   if (aboutWindow) aboutWindow.style.display = 'none';
   if (notesWindow) notesWindow.style.display = 'none';
   
-  const modal = document.getElementById('category-modal');
-  const modalContent = modal.querySelector('.category-modal-content');
-  const modalTitle = document.getElementById('modal-title');
-  const modalCategory = document.getElementById('modal-category');
-  const modalWeek = document.getElementById('modal-week');
-  const modalIntro = document.getElementById('modal-intro');
-  const modalHighlights = document.getElementById('modal-highlights');
-  const modalInspiration = document.getElementById('modal-inspiration');
-  const modalTools = document.getElementById('modal-tools');
-  
-  // Apply sticky note styling to modal
-  if (modalContent && bgColor) {
-    modalContent.style.background = bgColor;
-    modalContent.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2)';
-    modalContent.style.position = 'relative';
-    
-    // Apply dark text colors for readability on pastel backgrounds
-    modalTitle.style.color = '#000';
-    modalCategory.style.color = '#000';
-    modalWeek.style.color = '#000';
-    modalIntro.style.color = '#000';
-    
-    // Style all content in modal body
-    const modalBody = modal.querySelector('.category-modal-body');
-    if (modalBody) {
-      modalBody.style.color = '#000';
-    }
-  }
-  
-  // Add "Read as Newspaper" button to header
-  let newspaperBtn = document.querySelector('.modal-newspaper-btn');
-  if (!newspaperBtn) {
-    newspaperBtn = document.createElement('button');
-    newspaperBtn.className = 'modal-newspaper-btn';
-    newspaperBtn.textContent = '📰 Newspaper View';
-    newspaperBtn.style.cssText = 'position: absolute; bottom: 15px; right: 80px; padding: 8px 15px; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;';
-    newspaperBtn.onclick = () => {
-      closeCategoryModal();
-      openNewspaperModal(item);
-    };
-    modalContent.appendChild(newspaperBtn);
-  }
-  
-  // Populate modal content
-  modalTitle.textContent = item.title;
-  modalCategory.textContent = item.category;
-  
-  const dateDisplay = getDateDisplay(weeklyData[currentWeekIndex].startDate);
-  modalWeek.textContent = dateDisplay;
-  
-  if (item.detailedContent) {
-    const introHtml = item.detailedContent.intro || '';
-    modalIntro.innerHTML = introHtml;
-
-    const images = getWeeklyImages(item);
-    const imageGrid = buildWeeklyImageGrid(images, item.title);
-    if (imageGrid) {
-      modalIntro.prepend(imageGrid);
-    }
-
-    const videos = getWeeklyVideos(item);
-    const videoGrid = buildWeeklyVideoGrid(videos);
-    if (videoGrid) {
-      if (imageGrid) {
-        imageGrid.after(videoGrid);
-      } else {
-        modalIntro.prepend(videoGrid);
-      }
-    }
-    
-    const highlightsRaw = item.detailedContent.highlights || [];
-    const highlights = Array.isArray(highlightsRaw)
-      ? highlightsRaw
-      : String(highlightsRaw).split('\n').filter(Boolean);
-    
-    // Create highlights list - only show if not empty
-    if (highlights.length > 0) {
-      modalHighlights.innerHTML = '<h3 style="color: #000;">Key Highlights</h3><ul>' + 
-        highlights.map(h => `<li>${h}</li>`).join('') + 
-        '</ul>';
-      modalHighlights.style.display = 'block';
-    } else {
-      modalHighlights.style.display = 'none';
-    }
-    
-    // Show inspiration only if not empty
-    const inspiration = item.detailedContent.inspiration || '';
-    if (inspiration.trim()) {
-      modalInspiration.innerHTML = `<h3 style="color: #000;">Inspiration</h3><p>${inspiration}</p>`;
-      modalInspiration.style.display = 'block';
-    } else {
-      modalInspiration.style.display = 'none';
-    }
-    
-    // Show tools only if not empty
-    const toolsText = item.detailedContent.tools || '';
-    if (toolsText.trim()) {
-      modalTools.innerHTML = `<h3 style="color: #000;">Tools & Resources</h3><p>${toolsText}</p>`;
-      modalTools.style.display = 'block';
-    } else {
-      modalTools.style.display = 'none';
-    }
-  }
-
-  const modalTextNodes = modal.querySelectorAll('.category-modal-body p, .category-modal-body li');
-  modalTextNodes.forEach(node => {
-    node.style.color = '#000';
-  });
-  
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  // Open newspaper modal with the item and color
+  openNewspaperModal(item, bgColor);
 }
 
 function closeCategoryModal() {
-  const modal = document.getElementById('category-modal');
-  modal.classList.remove('active');
+  closeNewspaperModal();
+}
+
+// Newspaper Modal Functions
+function openNewspaperModal(item, bgColor) {
+  const newspaperModal = document.getElementById('newspaper-modal');
+  const wrapper = document.getElementById('newspaper-wrapper');
+  
+  // Apply sticky note background color to wrapper
+  if (bgColor && wrapper) {
+    wrapper.style.background = bgColor;
+  }
+  
+  // Populate header
+  document.getElementById('newspaper-main-title').textContent = 'Weekly Highlights';
+  const dateDisplay = getDateDisplay(weeklyData[currentWeekIndex].startDate);
+  
+  // Populate issue info
+  document.getElementById('newspaper-issue').textContent = `Issue #${currentWeekIndex + 1}`;
+  document.getElementById('newspaper-date').textContent = dateDisplay;
+  document.getElementById('newspaper-edition').textContent = item.category || 'Edition';
+  
+  // Populate main headline
+  document.getElementById('newspaper-headline').textContent = item.title;
+  
+  // Populate main text
+  const mainTextDiv = document.getElementById('newspaper-main-text');
+  if (item.detailedContent && item.detailedContent.intro) {
+    mainTextDiv.innerHTML = `<p>${item.detailedContent.intro}</p>`;
+  } else if (item.description) {
+    mainTextDiv.innerHTML = `<p>${item.description}</p>`;
+  } else {
+    mainTextDiv.innerHTML = '<p>Weekly highlights and updates.</p>';
+  }
+  
+  // Add featured image if available
+  const featuredDiv = document.getElementById('newspaper-featured');
+  featuredDiv.innerHTML = '';
+  const images = getWeeklyImages(item);
+  if (images && images.length > 0) {
+    const figure = document.createElement('figure');
+    const img = document.createElement('img');
+    img.src = images[0];
+    img.alt = item.title;
+    const figcaption = document.createElement('figcaption');
+    figcaption.textContent = item.title;
+    figure.appendChild(img);
+    figure.appendChild(figcaption);
+    featuredDiv.appendChild(figure);
+  }
+  
+  // Populate highlights list
+  const highlightsList = document.getElementById('newspaper-highlights-list');
+  highlightsList.innerHTML = '';
+  
+  if (item.detailedContent && item.detailedContent.highlights) {
+    const highlightsArray = Array.isArray(item.detailedContent.highlights)
+      ? item.detailedContent.highlights
+      : String(item.detailedContent.highlights).split('\n').filter(Boolean);
+    
+    if (highlightsArray.length > 0) {
+      const section = document.createElement('div');
+      section.className = 'newspaper-highlights-section';
+      const title = document.createElement('h3');
+      title.textContent = 'Key Highlights';
+      title.style.fontFamily = '"Playfair Display", serif';
+      title.style.fontSize = '20px';
+      title.style.fontStyle = 'italic';
+      title.style.marginBottom = '1rem';
+      title.style.marginTop = '1.5rem';
+      section.appendChild(title);
+      
+      highlightsArray.forEach(highlight => {
+        const item_elem = document.createElement('div');
+        item_elem.className = 'newspaper-highlight-item';
+        item_elem.style.marginBottom = '1rem';
+        item_elem.style.paddingBottom = '0.5rem';
+        item_elem.style.borderBottom = '1px solid #ddd';
+        item_elem.textContent = highlight;
+        section.appendChild(item_elem);
+      });
+      highlightsList.appendChild(section);
+    }
+  }
+  
+  // Populate sidebar
+  const sidebarContent = document.getElementById('newspaper-sidebar-content');
+  sidebarContent.innerHTML = '';
+  
+  // Inspiration section
+  if (item.detailedContent && item.detailedContent.inspiration) {
+    const inspirationArray = Array.isArray(item.detailedContent.inspiration)
+      ? item.detailedContent.inspiration
+      : String(item.detailedContent.inspiration).split('\n').filter(Boolean);
+    
+    if (inspirationArray.length > 0) {
+      const section = document.createElement('div');
+      const title = document.createElement('h3');
+      title.textContent = 'Inspiration';
+      title.style.fontFamily = '"Playfair Display", serif';
+      title.style.fontSize = '20px';
+      title.style.fontStyle = 'italic';
+      title.style.marginBottom = '1rem';
+      section.appendChild(title);
+      
+      inspirationArray.forEach(insp => {
+        const item_elem = document.createElement('a');
+        item_elem.href = '#';
+        item_elem.className = 'sidebar-item';
+        item_elem.style.display = 'block';
+        item_elem.style.marginBottom = '2rem';
+        const h5 = document.createElement('h5');
+        h5.textContent = insp;
+        item_elem.appendChild(h5);
+        section.appendChild(item_elem);
+      });
+      sidebarContent.appendChild(section);
+    }
+  }
+  
+  // Tools section
+  if (item.detailedContent && item.detailedContent.tools) {
+    const toolsArray = Array.isArray(item.detailedContent.tools)
+      ? item.detailedContent.tools
+      : String(item.detailedContent.tools).split('\n').filter(Boolean);
+    
+    if (toolsArray.length > 0) {
+      const section = document.createElement('div');
+      section.style.marginTop = '2rem';
+      const title = document.createElement('h3');
+      title.textContent = 'Tools & Resources';
+      title.style.fontFamily = '"Playfair Display", serif';
+      title.style.fontSize = '20px';
+      title.style.fontStyle = 'italic';
+      title.style.marginBottom = '1rem';
+      section.appendChild(title);
+      
+      toolsArray.forEach(tool => {
+        const item_elem = document.createElement('a');
+        item_elem.href = '#';
+        item_elem.className = 'sidebar-item';
+        item_elem.style.display = 'block';
+        item_elem.style.marginBottom = '2rem';
+        const h5 = document.createElement('h5');
+        h5.textContent = tool;
+        item_elem.appendChild(h5);
+        section.appendChild(item_elem);
+      });
+      sidebarContent.appendChild(section);
+    }
+  }
+  
+  // Show modal
+  newspaperModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeNewspaperModal() {
+  const newspaperModal = document.getElementById('newspaper-modal');
+  newspaperModal.classList.remove('active');
   document.body.style.overflow = '';
   
   // Restore windows visibility
@@ -675,64 +724,6 @@ function closeCategoryModal() {
     notesWindow.style.display = 'block';
     notesWindow.style.opacity = '1';
   }
-}
-
-// Newspaper Modal Functions
-function openNewspaperModal(item) {
-  const newspaperModal = document.getElementById('newspaper-modal');
-  
-  // Set title and week info
-  document.getElementById('newspaper-title').textContent = item.highlights ? 'Key Highlights' : item.title;
-  document.getElementById('newspaper-week-info').textContent = `Week of ${item.week || 'This Week'}`;
-  
-  // Set intro text
-  document.getElementById('newspaper-intro-text').textContent = item.intro || '';
-  
-  // Set highlights
-  const highlightsContent = document.getElementById('newspaper-highlights-content');
-  highlightsContent.innerHTML = '';
-  if (item.highlights && Array.isArray(item.highlights)) {
-    item.highlights.forEach(highlight => {
-      const div = document.createElement('div');
-      div.className = 'newspaper-highlight-item';
-      div.textContent = highlight;
-      highlightsContent.appendChild(div);
-    });
-  }
-  
-  // Set inspiration
-  const inspirationContent = document.getElementById('newspaper-inspiration-content');
-  inspirationContent.innerHTML = '';
-  if (item.inspiration && Array.isArray(item.inspiration)) {
-    item.inspiration.forEach(insp => {
-      const div = document.createElement('div');
-      div.className = 'newspaper-inspiration-item';
-      div.textContent = insp;
-      inspirationContent.appendChild(div);
-    });
-  }
-  
-  // Set tools
-  const toolsContent = document.getElementById('newspaper-tools-content');
-  toolsContent.innerHTML = '';
-  if (item.tools && Array.isArray(item.tools)) {
-    item.tools.forEach(tool => {
-      const div = document.createElement('div');
-      div.className = 'newspaper-tools-item';
-      div.textContent = tool;
-      toolsContent.appendChild(div);
-    });
-  }
-  
-  // Show modal
-  newspaperModal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeNewspaperModal() {
-  const newspaperModal = document.getElementById('newspaper-modal');
-  newspaperModal.style.display = 'none';
-  document.body.style.overflow = '';
 }
 
 async function hashWeeklyPassword(password, salt) {
