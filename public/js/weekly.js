@@ -577,6 +577,7 @@ function openNewspaperModal(item, bgColor) {
   
   // Populate main text
   const mainTextDiv = document.getElementById('newspaper-main-text');
+  mainTextDiv.innerHTML = '';
   if (item.detailedContent && item.detailedContent.intro) {
     mainTextDiv.innerHTML = `<p>${item.detailedContent.intro}</p>`;
   } else if (item.description) {
@@ -601,7 +602,7 @@ function openNewspaperModal(item, bgColor) {
     featuredDiv.appendChild(figure);
   }
   
-  // Populate highlights list
+  // Populate highlights list as grid items
   const highlightsList = document.getElementById('newspaper-highlights-list');
   highlightsList.innerHTML = '';
   
@@ -610,34 +611,28 @@ function openNewspaperModal(item, bgColor) {
       ? item.detailedContent.highlights
       : String(item.detailedContent.highlights).split('\n').filter(Boolean);
     
-    if (highlightsArray.length > 0) {
-      const section = document.createElement('div');
-      section.className = 'newspaper-highlights-section';
-      const title = document.createElement('h3');
-      title.textContent = 'Key Highlights';
-      title.style.fontFamily = '"Playfair Display", serif';
-      title.style.fontSize = '20px';
-      title.style.fontStyle = 'italic';
-      title.style.marginBottom = '1rem';
-      title.style.marginTop = '1.5rem';
-      section.appendChild(title);
+    // Create grid items from highlights
+    highlightsArray.forEach((highlight, index) => {
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'item-with-image with-border';
+      link.style.marginTop = '1.5rem';
       
-      highlightsArray.forEach(highlight => {
-        const item_elem = document.createElement('div');
-        item_elem.className = 'newspaper-highlight-item';
-        item_elem.style.marginBottom = '1rem';
-        item_elem.style.paddingBottom = '0.5rem';
-        item_elem.style.borderBottom = '1px solid #ddd';
-        item_elem.textContent = highlight;
-        section.appendChild(item_elem);
-      });
-      highlightsList.appendChild(section);
-    }
+      const h4 = document.createElement('h4');
+      h4.textContent = highlight;
+      
+      const p = document.createElement('p');
+      p.textContent = `Highlight ${index + 1}`;
+      
+      link.appendChild(h4);
+      link.appendChild(p);
+      highlightsList.appendChild(link);
+    });
   }
   
   // Populate sidebar
   const sidebarContent = document.getElementById('newspaper-sidebar-content');
-  sidebarContent.innerHTML = '';
+  sidebarContent.innerHTML = '<h3 class="title--big">More</h3>';
   
   // Inspiration section
   if (item.detailedContent && item.detailedContent.inspiration) {
@@ -645,29 +640,22 @@ function openNewspaperModal(item, bgColor) {
       ? item.detailedContent.inspiration
       : String(item.detailedContent.inspiration).split('\n').filter(Boolean);
     
-    if (inspirationArray.length > 0) {
-      const section = document.createElement('div');
-      const title = document.createElement('h3');
-      title.textContent = 'Inspiration';
-      title.style.fontFamily = '"Playfair Display", serif';
-      title.style.fontSize = '20px';
-      title.style.fontStyle = 'italic';
-      title.style.marginBottom = '1rem';
-      section.appendChild(title);
+    inspirationArray.forEach(insp => {
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'sidebar-item';
+      link.style.display = 'block';
       
-      inspirationArray.forEach(insp => {
-        const item_elem = document.createElement('a');
-        item_elem.href = '#';
-        item_elem.className = 'sidebar-item';
-        item_elem.style.display = 'block';
-        item_elem.style.marginBottom = '2rem';
-        const h5 = document.createElement('h5');
-        h5.textContent = insp;
-        item_elem.appendChild(h5);
-        section.appendChild(item_elem);
-      });
-      sidebarContent.appendChild(section);
-    }
+      const h5 = document.createElement('h5');
+      h5.textContent = insp;
+      
+      const p = document.createElement('p');
+      p.textContent = 'Inspiration';
+      
+      link.appendChild(h5);
+      link.appendChild(p);
+      sidebarContent.appendChild(link);
+    });
   }
   
   // Tools section
@@ -676,30 +664,22 @@ function openNewspaperModal(item, bgColor) {
       ? item.detailedContent.tools
       : String(item.detailedContent.tools).split('\n').filter(Boolean);
     
-    if (toolsArray.length > 0) {
-      const section = document.createElement('div');
-      section.style.marginTop = '2rem';
-      const title = document.createElement('h3');
-      title.textContent = 'Tools & Resources';
-      title.style.fontFamily = '"Playfair Display", serif';
-      title.style.fontSize = '20px';
-      title.style.fontStyle = 'italic';
-      title.style.marginBottom = '1rem';
-      section.appendChild(title);
+    toolsArray.forEach(tool => {
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'sidebar-item';
+      link.style.display = 'block';
       
-      toolsArray.forEach(tool => {
-        const item_elem = document.createElement('a');
-        item_elem.href = '#';
-        item_elem.className = 'sidebar-item';
-        item_elem.style.display = 'block';
-        item_elem.style.marginBottom = '2rem';
-        const h5 = document.createElement('h5');
-        h5.textContent = tool;
-        item_elem.appendChild(h5);
-        section.appendChild(item_elem);
-      });
-      sidebarContent.appendChild(section);
-    }
+      const h5 = document.createElement('h5');
+      h5.textContent = tool;
+      
+      const p = document.createElement('p');
+      p.textContent = 'Tool';
+      
+      link.appendChild(h5);
+      link.appendChild(p);
+      sidebarContent.appendChild(link);
+    });
   }
   
   // Show modal

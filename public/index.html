@@ -311,7 +311,7 @@
   <!-- Newspaper-Style Weekly Highlights Modal -->
   <div id="newspaper-modal" class="newspaper-modal">
     <button class="newspaper-modal-close" onclick="closeNewspaperModal()" aria-label="Close">&times;</button>
-    <div class="main__wrapper newspaper__wrapper" id="newspaper-wrapper">
+    <div class="main__wrapper" id="newspaper-wrapper">
       <main>
         <h1 id="newspaper-main-title">Weekly Highlights</h1>
         <aside id="newspaper-aside">
@@ -330,7 +330,9 @@
 
         <div id="newspaper-highlights-list"></div>
 
-        <div class="sidebar" id="newspaper-sidebar-content"></div>
+        <div class="sidebar" id="newspaper-sidebar-content">
+          <h3 class="title--big">More</h3>
+        </div>
       </main>
     </div>
   </div>
@@ -2323,193 +2325,20 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       background: #000;
     }
 
-    .newspaper__wrapper {
-      font-family: "EB Garamond", Georgia, serif;
-      color: #1c1f33;
-      padding: 3rem 2rem;
-      max-width: 1135px;
-      margin: auto;
+    #newspaper-wrapper {
       background: inherit;
     }
 
-    .newspaper__wrapper main {
-      display: block !important;
-      grid-template-columns: none !important;
-      grid-template-rows: none !important;
-      grid-gap: 0 !important;
+    #newspaper-wrapper main {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) 23%;
+      grid-template-rows: repeat(5, auto);
+      grid-gap: 1.2rem;
     }
 
-    .newspaper__wrapper h1 {
-      font-size: 70px;
-      line-height: 1;
-      text-align: center;
-      font-family: "Playfair Display SC", serif;
-      margin: 0 0 1rem 0;
-    }
-
-    .newspaper__wrapper aside {
-      text-align: center;
-      padding: 3px 0;
-      border: solid #1c1f33;
-      border-width: 2px 0;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin: 1.5rem 0;
-    }
-
-    .newspaper__wrapper aside > div {
-      display: flex;
-      align-items: center;
-      border: solid #1c1f33;
-      border-width: 1px 0;
-    }
-
-    .newspaper__wrapper aside div div {
-      flex: 1;
-      padding: 8px;
-      font-size: 14px;
-    }
-
-    .newspaper__wrapper .issue {
-      font-weight: bold;
-    }
-
-    .newspaper__wrapper .date {
-      font-size: 13px;
-    }
-
-    .newspaper__wrapper .edition {
-      font-style: italic;
-      font-size: 12px;
-    }
-
-    .newspaper__wrapper h2.main-title {
-      font-family: "Playfair Display", serif;
-      font-size: 42px;
-      font-style: italic;
-      text-align: left;
-      margin-bottom: 0.8rem;
-      margin-top: 0;
-    }
-
-    .newspaper__wrapper .main-text {
-      font-size: 1.1rem;
-      line-height: 1.3;
-      text-align: justify;
-      column-count: 2;
-      column-gap: 1.3rem;
-      margin-top: 0.75rem;
-    }
-
-    .newspaper__wrapper .main-text p {
-      line-height: 1.3;
-      margin-bottom: 0.8rem;
-    }
-
-    .newspaper__wrapper .main-text em {
-      font-style: italic;
-    }
-
-    .newspaper-featured-item {
-      margin: 1.5rem 0;
-      width: 100%;
-    }
-
-    .newspaper-featured-item figure {
-      margin: 0;
-      height: 100%;
-    }
-
-    .newspaper-featured-item img {
-      width: 100%;
-      height: auto;
-      max-height: 400px;
-      object-fit: cover;
-      border: 1px solid #1c1f33;
-      margin-bottom: 0.5rem;
-      filter: grayscale(95%);
-    }
-
-    .newspaper-featured-item figcaption {
-      font-style: italic;
-      font-size: 90%;
-    }
-
-    .newspaper-featured-item:hover img {
-      filter: grayscale(0);
-    }
-
-    .newspaper__wrapper .sidebar {
-      margin-top: 3rem;
-      border-left: 1px solid;
-      padding-left: 1.2rem;
-    }
-
-    .newspaper__wrapper .sidebar h3 {
-      font-family: "Playfair Display", serif;
-      font-size: 20px;
-      font-style: italic;
-      margin-bottom: 1rem;
-      margin-top: 0;
-    }
-
-    .newspaper__wrapper .sidebar-item {
-      margin: 2rem 0;
-      padding: 2rem 0 0;
-      border-top: 1px solid;
-      padding-top: 0.6rem;
-    }
-
-    .newspaper__wrapper .sidebar-item h5 {
-      font-weight: 700;
-      font-size: 20px;
-      line-height: 1;
-      text-align: center;
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0;
-      transition: 0.3s ease;
-    }
-
-    .newspaper__wrapper .sidebar-item:hover h5 {
-      background: #333;
-      color: #fff;
-    }
-
-    .newspaper__wrapper .sidebar-item p {
-      margin-top: 1rem;
-      line-height: 1.3;
-    }
-
-    @media (max-width: 900px) {
-      .newspaper__wrapper {
-        padding: 1rem;
-      }
-
-      .newspaper__wrapper h1 {
-        font-size: 48px;
-      }
-
-      .newspaper__wrapper h2.main-title {
-        font-size: 32px;
-      }
-
-      .newspaper__wrapper .main-text {
-        column-count: 1;
-      }
-
-      .newspaper__wrapper .sidebar {
-        border-left: none;
-        padding-left: 0;
-      }
-
-      .newspaper-modal-close {
-        top: 10px;
-        right: 10px;
-        width: 40px;
-        height: 40px;
-        font-size: 24px;
-      }
+    #newspaper-wrapper h1,
+    #newspaper-wrapper aside {
+      grid-column: 1 / -1;
     }
 
     /* Allow tooltips to escape window boundaries */
