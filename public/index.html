@@ -2512,6 +2512,17 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
     #newspaper-wrapper .item-with-image {
       margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    #newspaper-wrapper .item-with-image img {
+      height: 300px;
+      width: 100%;
+      object-fit: cover;
+      margin-bottom: 0.5rem;
+      display: block;
     }
 
     #newspaper-wrapper .item-with-image h4 {
@@ -2576,6 +2587,14 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       transform: rotate(60deg);
       transform-origin: 20% 65%;
       height: 100%;
+      min-height: 200px;
+    }
+
+    #newspaper-wrapper .hogwarts__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     /* Pie special element */
@@ -2587,6 +2606,10 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
     #newspaper-wrapper .pie__image {
       margin: 0;
       border: 0;
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
     }
 
     #newspaper-wrapper .pie__subtitle {
@@ -2621,7 +2644,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
       border: 0;
       grid-row: span 2;
       height: 100%;
+      width: 100%;
       object-fit: cover;
+      min-height: 200px;
     }
 
     #newspaper-wrapper .social__subtitle {
@@ -2647,7 +2672,9 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
     #newspaper-wrapper .workout__image {
       height: 16rem;
+      width: 100%;
       object-fit: cover;
+      display: block;
     }
 
     #newspaper-wrapper .workout__subtitle {
@@ -2692,6 +2719,14 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
     #newspaper-wrapper .cssgrid-collection__image {
       flex: 0 0 32%;
+      overflow: hidden;
+    }
+
+    #newspaper-wrapper .cssgrid-collection__image img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
     }
 
     #newspaper-wrapper .cssgrid-collection__content {
@@ -2717,17 +2752,32 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
     /* Menu special element */
     #newspaper-wrapper .menu figure {
       height: 100%;
+      margin: 0;
+    }
+
+    #newspaper-wrapper .menu figcaption {
+      font-size: 85%;
+      padding: 0.5rem 0;
     }
 
     #newspaper-wrapper .menu img {
-      height: 96%;
+      height: 250px;
+      width: 100%;
       object-fit: cover;
       object-position: left;
+      display: block;
     }
 
     /* Plan special element */
     #newspaper-wrapper .plan {
       padding-bottom: 1rem;
+    }
+
+    #newspaper-wrapper .plan img {
+      height: 300px;
+      width: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     /* Hover effects */
@@ -2769,6 +2819,7 @@ Will be adding to it as much as i can, hoping to make this a digital library</pr
 
       #newspaper-wrapper .workout__image {
         height: 25rem;
+        width: 100%;
       }
     }
 
