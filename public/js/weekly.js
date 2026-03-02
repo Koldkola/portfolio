@@ -570,12 +570,12 @@ function openNewspaperModal(item, bgColor) {
   // Populate issue info
   document.getElementById('newspaper-issue').textContent = `Issue #${currentWeekIndex + 1}`;
   document.getElementById('newspaper-date').textContent = dateDisplay;
-  document.getElementById('newspaper-edition').textContent = item.category || 'Edition';
+  document.getElementById('newspaper-edition').textContent = item.category || 'Special Edition';
   
   // Populate main headline
   document.getElementById('newspaper-headline').textContent = item.title;
   
-  // Populate main text
+  // Populate main text (intro paragraph)
   const mainTextDiv = document.getElementById('newspaper-main-text');
   mainTextDiv.innerHTML = '';
   if (item.detailedContent && item.detailedContent.intro) {
@@ -583,14 +583,17 @@ function openNewspaperModal(item, bgColor) {
   } else if (item.description) {
     mainTextDiv.innerHTML = `<p>${item.description}</p>`;
   } else {
-    mainTextDiv.innerHTML = '<p>Weekly highlights and updates.</p>';
+    mainTextDiv.innerHTML = '<p>Weekly highlights and updates from the week.</p>';
   }
   
-  // Add featured image if available
+  // Add featured image if available (terrarium style)
   const featuredDiv = document.getElementById('newspaper-featured');
   featuredDiv.innerHTML = '';
   const images = getWeeklyImages(item);
   if (images && images.length > 0) {
+    const link = document.createElement('a');
+    link.href = '#';
+    link.className = 'terrarium';
     const figure = document.createElement('figure');
     const img = document.createElement('img');
     img.src = images[0];
@@ -599,10 +602,11 @@ function openNewspaperModal(item, bgColor) {
     figcaption.textContent = item.title;
     figure.appendChild(img);
     figure.appendChild(figcaption);
-    featuredDiv.appendChild(figure);
+    link.appendChild(figure);
+    featuredDiv.appendChild(link);
   }
   
-  // Populate highlights list as grid items
+  // Populate highlights as grid items (like the newspaper articles)
   const highlightsList = document.getElementById('newspaper-highlights-list');
   highlightsList.innerHTML = '';
   
@@ -611,18 +615,25 @@ function openNewspaperModal(item, bgColor) {
       ? item.detailedContent.highlights
       : String(item.detailedContent.highlights).split('\n').filter(Boolean);
     
-    // Create grid items from highlights
+    // Create article-style grid items from highlights
     highlightsArray.forEach((highlight, index) => {
       const link = document.createElement('a');
       link.href = '#';
-      link.className = 'item-with-image with-border';
-      link.style.marginTop = '1.5rem';
+      
+      // Vary the classes to create visual interest
+      if (index === 0) {
+        link.className = 'item-with-image with-border';
+      } else if (index % 3 === 0) {
+        link.className = 'item-with-image span--2';
+      } else {
+        link.className = 'item-with-image with-border';
+      }
       
       const h4 = document.createElement('h4');
       h4.textContent = highlight;
       
       const p = document.createElement('p');
-      p.textContent = `Highlight ${index + 1}`;
+      p.textContent = 'Details about this highlight from the week.';
       
       link.appendChild(h4);
       link.appendChild(p);
@@ -632,25 +643,27 @@ function openNewspaperModal(item, bgColor) {
   
   // Populate sidebar
   const sidebarContent = document.getElementById('newspaper-sidebar-content');
-  sidebarContent.innerHTML = '<h3 class="title--big">More</h3>';
+  sidebarContent.innerHTML = '<h3>More This Week</h3>';
   
-  // Inspiration section
+  // Add inspiration items to sidebar
   if (item.detailedContent && item.detailedContent.inspiration) {
     const inspirationArray = Array.isArray(item.detailedContent.inspiration)
       ? item.detailedContent.inspiration
       : String(item.detailedContent.inspiration).split('\n').filter(Boolean);
     
-    inspirationArray.forEach(insp => {
+    inspirationArray.forEach((insp, index) => {
       const link = document.createElement('a');
       link.href = '#';
       link.className = 'sidebar-item';
-      link.style.display = 'block';
+      if (index > 0) {
+        link.classList.add('with-border');
+      }
       
       const h5 = document.createElement('h5');
       h5.textContent = insp;
       
       const p = document.createElement('p');
-      p.textContent = 'Inspiration';
+      p.textContent = 'Inspiration from the week';
       
       link.appendChild(h5);
       link.appendChild(p);
@@ -658,7 +671,7 @@ function openNewspaperModal(item, bgColor) {
     });
   }
   
-  // Tools section
+  // Add tools items to sidebar
   if (item.detailedContent && item.detailedContent.tools) {
     const toolsArray = Array.isArray(item.detailedContent.tools)
       ? item.detailedContent.tools
@@ -667,14 +680,13 @@ function openNewspaperModal(item, bgColor) {
     toolsArray.forEach(tool => {
       const link = document.createElement('a');
       link.href = '#';
-      link.className = 'sidebar-item';
-      link.style.display = 'block';
+      link.className = 'sidebar-item with-border';
       
       const h5 = document.createElement('h5');
       h5.textContent = tool;
       
       const p = document.createElement('p');
-      p.textContent = 'Tool';
+      p.textContent = 'Tool used this week';
       
       link.appendChild(h5);
       link.appendChild(p);
