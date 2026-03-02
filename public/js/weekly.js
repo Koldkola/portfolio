@@ -583,116 +583,350 @@ function openNewspaperModal(item, bgColor) {
   } else if (item.description) {
     mainTextDiv.innerHTML = `<p>${item.description}</p>`;
   } else {
-    mainTextDiv.innerHTML = '<p>Weekly highlights and updates from the week.</p>';
+    mainTextDiv.innerHTML = `
+      <p><em>This week brought exciting developments and creative breakthroughs.</em> The journey through various projects revealed fascinating patterns in how we approach problem-solving and innovation. Each challenge presented unique opportunities for growth and learning.</p>
+      <p>From technical implementations to design explorations, the week was filled with moments of discovery. The intersection of creativity and functionality continues to inspire new approaches to old problems. These experiences shape our understanding and push boundaries.</p>
+    `;
   }
   
   // Add featured image if available (terrarium style)
   const featuredDiv = document.getElementById('newspaper-featured');
   featuredDiv.innerHTML = '';
   const images = getWeeklyImages(item);
-  if (images && images.length > 0) {
-    const link = document.createElement('a');
-    link.href = '#';
-    link.className = 'terrarium';
-    const figure = document.createElement('figure');
-    const img = document.createElement('img');
-    img.src = images[0];
-    img.alt = item.title;
-    const figcaption = document.createElement('figcaption');
-    figcaption.textContent = item.title;
-    figure.appendChild(img);
-    figure.appendChild(figcaption);
-    link.appendChild(figure);
-    featuredDiv.appendChild(link);
-  }
+  const placeholderImages = [
+    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800',
+    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800',
+    'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800',
+    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
+    'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800'
+  ];
   
-  // Populate highlights as grid items (like the newspaper articles)
+  const featuredImage = (images && images.length > 0) ? images[0] : placeholderImages[0];
+  const link = document.createElement('a');
+  link.href = '#';
+  link.className = 'terrarium';
+  const figure = document.createElement('figure');
+  const img = document.createElement('img');
+  img.src = featuredImage;
+  img.alt = item.title;
+  const figcaption = document.createElement('figcaption');
+  figcaption.textContent = 'Featured highlight from this week';
+  figure.appendChild(img);
+  figure.appendChild(figcaption);
+  link.appendChild(figure);
+  featuredDiv.appendChild(link);
+  
+  // Populate highlights as diverse grid items with special elements
   const highlightsList = document.getElementById('newspaper-highlights-list');
   highlightsList.innerHTML = '';
   
+  // Prepare content arrays
+  let highlightsArray = [];
   if (item.detailedContent && item.detailedContent.highlights) {
-    const highlightsArray = Array.isArray(item.detailedContent.highlights)
+    highlightsArray = Array.isArray(item.detailedContent.highlights)
       ? item.detailedContent.highlights
       : String(item.detailedContent.highlights).split('\n').filter(Boolean);
+  }
+  
+  // Add placeholder items if we need more content
+  const minItems = 8;
+  const placeholderTitles = [
+    'Design System Evolution',
+    'Performance Optimization',
+    'Creative Exploration',
+    'Technical Innovation',
+    'User Experience Study',
+    'Code Architecture',
+    'Visual Development',
+    'Problem Solving Methods'
+  ];
+  
+  const placeholderDescriptions = [
+    'Exploring new patterns and methodologies for better solutions.',
+    'Refining approaches to enhance efficiency and effectiveness.',
+    'Discovering innovative techniques through experimentation.',
+    'Building robust foundations for scalable implementations.',
+    'Analyzing interactions to create more intuitive experiences.',
+    'Structuring components for maintainability and clarity.',
+    'Crafting visual elements that communicate effectively.',
+    'Developing systematic approaches to complex challenges.'
+  ];
+  
+  while (highlightsArray.length < minItems) {
+    const idx = highlightsArray.length;
+    highlightsArray.push(placeholderTitles[idx % placeholderTitles.length]);
+  }
+  
+  // Create varied grid items with special elements
+  highlightsArray.forEach((highlight, index) => {
+    const itemType = index % 7;
     
-    // Create article-style grid items from highlights
-    highlightsArray.forEach((highlight, index) => {
+    if (itemType === 0 && index === 0) {
+      // First item: Large span with image
       const link = document.createElement('a');
       link.href = '#';
+      link.className = 'item-with-image plan span--2 long--2';
       
-      // Vary the classes to create visual interest
-      if (index === 0) {
-        link.className = 'item-with-image with-border';
-      } else if (index % 3 === 0) {
-        link.className = 'item-with-image span--2';
-      } else {
-        link.className = 'item-with-image with-border';
-      }
+      const img = document.createElement('img');
+      img.src = placeholderImages[index % placeholderImages.length];
+      img.alt = highlight;
       
       const h4 = document.createElement('h4');
       h4.textContent = highlight;
       
       const p = document.createElement('p');
-      p.textContent = 'Details about this highlight from the week.';
+      p.textContent = placeholderDescriptions[index % placeholderDescriptions.length];
       
+      link.appendChild(img);
       link.appendChild(h4);
       link.appendChild(p);
       highlightsList.appendChild(link);
-    });
-  }
+      
+    } else if (itemType === 1) {
+      // Hogwarts special element
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'hogwarts';
+      
+      const title = document.createElement('div');
+      title.className = 'hogwarts__title';
+      title.textContent = highlight.toUpperCase();
+      
+      const imageWrapper = document.createElement('div');
+      imageWrapper.className = 'hogwarts__image';
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      img.src = placeholderImages[(index + 1) % placeholderImages.length];
+      img.alt = highlight;
+      span.appendChild(img);
+      imageWrapper.appendChild(span);
+      
+      link.appendChild(title);
+      link.appendChild(imageWrapper);
+      highlightsList.appendChild(link);
+      
+    } else if (itemType === 2) {
+      // Magazine with border
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'item-with-image magazine with-border';
+      
+      const img = document.createElement('img');
+      img.src = placeholderImages[(index + 2) % placeholderImages.length];
+      img.alt = highlight;
+      
+      const h4 = document.createElement('h4');
+      h4.textContent = highlight;
+      
+      const p = document.createElement('p');
+      p.textContent = placeholderDescriptions[index % placeholderDescriptions.length];
+      
+      link.appendChild(img);
+      link.appendChild(h4);
+      link.appendChild(p);
+      highlightsList.appendChild(link);
+      
+    } else if (itemType === 3) {
+      // Social element
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'social';
+      
+      const img = document.createElement('img');
+      img.className = 'social__image';
+      img.src = placeholderImages[(index + 3) % placeholderImages.length];
+      img.alt = highlight;
+      
+      const subtitle = document.createElement('div');
+      subtitle.className = 'social__subtitle';
+      subtitle.textContent = 'WEEKLY UPDATE';
+      
+      const content = document.createElement('div');
+      content.className = 'social__content';
+      content.innerHTML = `<strong>${highlight}</strong><br>${placeholderDescriptions[index % placeholderDescriptions.length]}`;
+      
+      link.appendChild(img);
+      link.appendChild(subtitle);
+      link.appendChild(content);
+      highlightsList.appendChild(link);
+      
+    } else if (itemType === 4) {
+      // Menu element
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'menu';
+      
+      const figure = document.createElement('figure');
+      const img = document.createElement('img');
+      img.src = placeholderImages[(index + 4) % placeholderImages.length];
+      img.alt = highlight;
+      
+      const figcaption = document.createElement('figcaption');
+      figcaption.innerHTML = `<strong>${highlight}</strong><br>${placeholderDescriptions[index % placeholderDescriptions.length]}`;
+      
+      figure.appendChild(img);
+      figure.appendChild(figcaption);
+      link.appendChild(figure);
+      highlightsList.appendChild(link);
+      
+    } else if (itemType === 5) {
+      // CSS Grid Collection
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'item-with-image cssgrid-collection';
+      
+      const imageLink = document.createElement('a');
+      imageLink.className = 'cssgrid-collection__image';
+      imageLink.href = '#';
+      const img = document.createElement('img');
+      img.src = placeholderImages[index % placeholderImages.length];
+      img.alt = highlight;
+      imageLink.appendChild(img);
+      
+      const content = document.createElement('div');
+      content.className = 'cssgrid-collection__content';
+      const h4 = document.createElement('h4');
+      const h4Link = document.createElement('a');
+      h4Link.href = '#';
+      h4Link.textContent = highlight;
+      h4.appendChild(h4Link);
+      
+      const multiCol = document.createElement('div');
+      multiCol.className = 'multi-column-3';
+      const p = document.createElement('p');
+      p.textContent = placeholderDescriptions[index % placeholderDescriptions.length] + ' ' + placeholderDescriptions[(index + 1) % placeholderDescriptions.length];
+      multiCol.appendChild(p);
+      
+      content.appendChild(h4);
+      content.appendChild(multiCol);
+      
+      link.appendChild(imageLink);
+      link.appendChild(content);
+      highlightsList.appendChild(link);
+      
+    } else {
+      // Standard item with image
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = index % 3 === 0 ? 'item-with-image span--2' : 'item-with-image with-border';
+      
+      const img = document.createElement('img');
+      img.src = placeholderImages[index % placeholderImages.length];
+      img.alt = highlight;
+      
+      const h4 = document.createElement('h4');
+      h4.textContent = highlight;
+      
+      const p = document.createElement('p');
+      p.textContent = placeholderDescriptions[index % placeholderDescriptions.length];
+      
+      link.appendChild(img);
+      link.appendChild(h4);
+      link.appendChild(p);
+      highlightsList.appendChild(link);
+    }
+  });
   
-  // Populate sidebar
+  // Populate sidebar with special elements
   const sidebarContent = document.getElementById('newspaper-sidebar-content');
   sidebarContent.innerHTML = '<h3>More This Week</h3>';
   
-  // Add inspiration items to sidebar
+  // Prepare sidebar content
+  let sidebarItems = [];
   if (item.detailedContent && item.detailedContent.inspiration) {
     const inspirationArray = Array.isArray(item.detailedContent.inspiration)
       ? item.detailedContent.inspiration
       : String(item.detailedContent.inspiration).split('\n').filter(Boolean);
-    
-    inspirationArray.forEach((insp, index) => {
-      const link = document.createElement('a');
-      link.href = '#';
-      link.className = 'sidebar-item';
-      if (index > 0) {
-        link.classList.add('with-border');
-      }
-      
-      const h5 = document.createElement('h5');
-      h5.textContent = insp;
-      
-      const p = document.createElement('p');
-      p.textContent = 'Inspiration from the week';
-      
-      link.appendChild(h5);
-      link.appendChild(p);
-      sidebarContent.appendChild(link);
-    });
+    sidebarItems = [...inspirationArray];
   }
   
-  // Add tools items to sidebar
   if (item.detailedContent && item.detailedContent.tools) {
     const toolsArray = Array.isArray(item.detailedContent.tools)
       ? item.detailedContent.tools
       : String(item.detailedContent.tools).split('\n').filter(Boolean);
-    
-    toolsArray.forEach(tool => {
+    sidebarItems = [...sidebarItems, ...toolsArray];
+  }
+  
+  // Add placeholders if needed
+  const sidebarPlaceholders = [
+    'Creative Insights',
+    'Technical Discoveries',
+    'Design Patterns',
+    'Development Tools',
+    'Learning Resources'
+  ];
+  
+  while (sidebarItems.length < 4) {
+    sidebarItems.push(sidebarPlaceholders[sidebarItems.length % sidebarPlaceholders.length]);
+  }
+  
+  // Create varied sidebar items
+  sidebarItems.forEach((sidebarItem, index) => {
+    if (index === 0) {
+      // Pie element
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'pie';
+      
+      const img = document.createElement('img');
+      img.className = 'pie__image';
+      img.src = placeholderImages[(index + 2) % placeholderImages.length];
+      img.alt = sidebarItem;
+      
+      const subtitle = document.createElement('div');
+      subtitle.className = 'pie__subtitle';
+      subtitle.textContent = 'FEATURED';
+      
+      const content = document.createElement('div');
+      content.className = 'pie__content';
+      content.textContent = sidebarItem;
+      
+      link.appendChild(img);
+      link.appendChild(subtitle);
+      link.appendChild(content);
+      sidebarContent.appendChild(link);
+      
+    } else if (index === sidebarItems.length - 1) {
+      // Workout element
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'workout';
+      
+      const img = document.createElement('img');
+      img.className = 'workout__image';
+      img.src = placeholderImages[(index + 3) % placeholderImages.length];
+      img.alt = sidebarItem;
+      
+      const title = document.createElement('div');
+      title.className = 'workout__title';
+      title.textContent = sidebarItem.toUpperCase();
+      
+      link.appendChild(img);
+      link.appendChild(title);
+      sidebarContent.appendChild(link);
+      
+    } else {
+      // Standard sidebar item
       const link = document.createElement('a');
       link.href = '#';
       link.className = 'sidebar-item with-border';
       
+      const img = document.createElement('img');
+      img.src = placeholderImages[(index + 1) % placeholderImages.length];
+      img.alt = sidebarItem;
+      
       const h5 = document.createElement('h5');
-      h5.textContent = tool;
+      h5.textContent = sidebarItem;
       
       const p = document.createElement('p');
-      p.textContent = 'Tool used this week';
+      p.textContent = 'Insights and resources from the week\'s explorations.';
       
+      link.appendChild(img);
       link.appendChild(h5);
       link.appendChild(p);
       sidebarContent.appendChild(link);
-    });
-  }
+    }
+  });
   
   // Show modal
   newspaperModal.classList.add('active');
